@@ -21,9 +21,8 @@ return new class extends Migration
             $table->string('phone', 20)->nullable();              
             $table->enum('role', ['admin', 'customer', 'courier']) 
                   ->default('customer');
-            $table->string('provider')->nullable();
-            $table->string('provider_id')->nullable();
-            $table->string('provider_token')->nullable();
+            $table->string('google_id')->nullable();
+            $table->text('google_token')->nullable();
             $table->timestamps();                
             $table->softDeletes();         
         });
