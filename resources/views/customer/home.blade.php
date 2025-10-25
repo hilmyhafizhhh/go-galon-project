@@ -1,0 +1,1 @@
+<h1>Halo {{ Auth::user()->name }}, ini halaman Home Customer</h1>

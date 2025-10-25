@@ -39,6 +39,8 @@ class ProviderController extends Controller
             ]
         );
 
+        Auth::login($user);
+
         // Tandai sebagai verified jika belum
         if (is_null($user->email_verified_at)) {
             $user->email_verified_at = now();
@@ -46,8 +48,16 @@ class ProviderController extends Controller
             event(new Verified($user));
         }
 
-        Auth::login($user);
+        if(!$user->hasAnyRole(['admin', 'customer', 'courier'])) {
+            $user->assignRole('customer');
+        };
 
-        return redirect('/dashboard');
+        if ($user->hasRole('admin')) {
+            return redirect()->route('admin');
+        } elseif ($user->hasRole('courier')) {
+            return redirect()->route('courier.home');
+        } else {
+            return redirect()->route('customer.home');
+        }
     }
 }
