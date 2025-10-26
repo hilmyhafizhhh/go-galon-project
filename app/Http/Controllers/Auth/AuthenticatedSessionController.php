@@ -29,7 +29,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         if(Auth::user()->hasRole('admin')) {
-            return redirect()->route('admin');
+            return redirect()->route('admin.dashboard');
         } elseif(Auth::user()->hasRole('courier')) {
             return redirect()->route('courier.home');
         } else{

@@ -23,7 +23,7 @@
                 class="inline-block px-5 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition">
                 ← Kembali
             </a>
-            <a href="{{ route('dashboard') }}"
+            <a href="{{ route('admin.dashboard') }}"
                 class="inline-block px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition ml-2">
                 Dashboard
             </a>

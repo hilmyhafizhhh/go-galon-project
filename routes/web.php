@@ -9,9 +9,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -20,9 +20,16 @@ Route::middleware('auth')->group(function () {
 });
 
 // Route Admin
-Route::get('admin', function() {
-    return '<h1>Hello Admin</h1>';
-})->middleware(['auth', 'verified', 'role:admin'])->name('admin');;
+// Route::get('admin', function() {
+//     return view('admin.dashboard');
+// })->middleware(['auth', 'verified', 'role:admin'])->name('admin');;
+
+// Route Admin
+Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('admin.')->group(function() {
+    Route::get('/dashboard', function() {
+        return view('admin.dashboard');
+    })->name('dashboard');
+});
 
 // Route Courier
 Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name('courier.')->group(function() {
@@ -37,9 +44,9 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
         return view('customer.home');
     })->name('home');
 
-    Route::get('/pesanan', function() {
-        return view('customer.pesanan');
-    })->name('pesanan');
+    Route::get('/order', function() {
+        return view('customer.order');
+    })->name('order');
 });
 
 // Route Google OAuth
