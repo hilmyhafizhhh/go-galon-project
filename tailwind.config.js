@@ -14,6 +14,13 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors :{
+                gogalon:{
+                primary: '#1E40AF',
+                secondary: '#2563EB',
+                tiga: '#00D26A',
+                }
+            }
         },
     },
 

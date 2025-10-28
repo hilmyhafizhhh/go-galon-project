@@ -2,6 +2,12 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
+        <div class="shrink-0 flex flex-col items-center justify-center mb-6">
+            <a href="{{ route('dashboard') }}">
+                <img src="{{ asset('assets/icons/Frame 44.png') }}" alt="Brand Logo" class="h-60 w-auto">
+            </a>
+        </div>
+
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')" />
@@ -52,9 +58,13 @@
                 {{ __('Already registered?') }}
             </a>
 
-            <x-primary-button class="ms-4">
+            <button class="bg-gogalon-primary text-white rounded-lg px-4 py-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center gap-2 ml-4">
+                {{_('Register')}}
+            </button>
+
+            {{-- <x-primary-button class="ms-4">
                 {{ __('Register') }}
-            </x-primary-button>
+            </x-primary-button> --}}
         </div>
     </form>
 </x-guest-layout>

@@ -23,7 +23,8 @@ return new class extends Migration
             //       ->default('customer');
             $table->string('google_id')->nullable();
             $table->text('google_token')->nullable();
-            $table->timestamps();                
+            $table->timestamps();
+            $table->rememberToken();      
             $table->softDeletes();         
         });
 

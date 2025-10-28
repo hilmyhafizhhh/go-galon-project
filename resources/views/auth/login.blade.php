@@ -4,6 +4,12 @@
 
     <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-md px-6 py-8">
 
+        <div class="shrink-0 flex flex-col items-center justify-center mb-6">
+            <a href="{{ route('dashboard') }}">
+                <img src="{{ asset('assets/icons/Frame 44.png') }}" alt="Brand Logo" class="h-60 w-auto">
+            </a>
+        </div>
+
         <!-- Google Sign In -->
         <div class="mb-6">
             <a href="/auth/google/redirect"
@@ -70,9 +76,14 @@
             </div>
 
             <!-- Submit -->
-            <x-primary-button class="w-full justify-center">
+            <button
+                class="w-full justify-center bg-gogalon-primary hover:bg-gogalon-secondary mb-4 px-4 py-2 rounded-lg text-white font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center gap-2"
+                type="submit">
                 {{ __('Log in') }}
-            </x-primary-button>
+            </button>
+            {{-- <x-primary-button class="w-full justify-center bg-gogalon-primary hover:bg-gogalon-secondary">
+                {{ __('Log in') }}
+            </x-primary-button> --}}
         </form>
 
         <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
