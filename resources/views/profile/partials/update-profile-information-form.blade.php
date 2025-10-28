@@ -1,4 +1,4 @@
-{{-- <style>
+ {{-- <style>
     #preview-image {
         width: 7rem;            /* default (w-28) */
         height: 7rem;           /* default (h-28) */

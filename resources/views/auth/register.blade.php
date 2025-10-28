@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form class="mb-6"  method="POST" action="{{ route('register') }}">
         @csrf
 
         <div class="shrink-0 flex flex-col items-center justify-center mb-6">

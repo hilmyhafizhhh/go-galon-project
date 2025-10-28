@@ -2,7 +2,7 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-md px-6 py-8">
+    <div class="w-full h-full max-w-md mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-sm px-6 py-8 mb-6">
 
         <div class="shrink-0 flex flex-col items-center justify-center mb-6">
             <a href="{{ route('admin.dashboard') }}">
