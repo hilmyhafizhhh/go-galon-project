@@ -3,7 +3,7 @@
         @csrf
 
         <div class="shrink-0 flex flex-col items-center justify-center mb-6">
-            <a href="{{ route('dashboard') }}">
+            <a href="{{ route('admin.dashboard') }}">
                 <img src="{{ asset('assets/icons/Frame 44.png') }}" alt="Brand Logo" class="h-60 w-auto">
             </a>
         </div>

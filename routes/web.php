@@ -14,10 +14,10 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Pesanan
-Route::get('/pesanan', function () {
-    return view('pesanan');
-})->middleware(['auth'])->name('pesanan');
+// // Pesanan
+// Route::get('/pesanan', function () {
+//     return view('pesanan');
+// })->middleware(['auth'])->name('pesanan');
 
 // Chat
 Route::get('/chat', function () {
@@ -62,7 +62,6 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
 });
 
 // Route Google OAuth
-// Google Auth
 Route::get('/auth/google/redirect', [ProviderController::class, 'redirect']);
 Route::get('/auth/google/callback', [ProviderController::class, 'callback']);
 

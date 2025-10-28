@@ -5,7 +5,7 @@
     <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-md px-6 py-8">
 
         <div class="shrink-0 flex flex-col items-center justify-center mb-6">
-            <a href="{{ route('dashboard') }}">
+            <a href="{{ route('admin.dashboard') }}">
                 <img src="{{ asset('assets/icons/Frame 44.png') }}" alt="Brand Logo" class="h-60 w-auto">
             </a>
         </div>
