@@ -58,8 +58,9 @@
                 {{ __('Already registered?') }}
             </a>
 
-            <button class="bg-gogalon-primary text-white rounded-lg px-4 py-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center gap-2 ml-4">
-                {{_('Register')}}
+            <button
+                class="bg-gogalon-primary text-white rounded-lg px-4 py-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center gap-2 ml-4">
+                {{__('Register')}}
             </button>
 
             {{-- <x-primary-button class="ms-4">
