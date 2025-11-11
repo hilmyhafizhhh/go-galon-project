@@ -243,7 +243,7 @@
                     <div class="flex items-center justify-end mt-4 mb-4">
                         <button
                             class="bg-gogalon-primary text-white rounded-lg px-4 py-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center gap-2 ml-4">
-                            {{ _('Register') }}
+                            {{-- {{ _('Register') }} --}}
                         </button>
                     </div>
                 </form>
