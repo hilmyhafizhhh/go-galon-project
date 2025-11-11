@@ -5,7 +5,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    // return view('welcome');
+    return redirect('/login');
 });
 
 
@@ -37,26 +38,26 @@ Route::middleware('auth')->group(function () {
 // })->middleware(['auth', 'verified', 'role:admin'])->name('admin');;
 
 // Route Admin
-Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('admin.')->group(function() {
-    Route::get('/dashboard', function() {
+Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
 });
 
 // Route Courier
-Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name('courier.')->group(function() {
-    Route::get('/home', function() {
+Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name('courier.')->group(function () {
+    Route::get('/home', function () {
         return view('courier.home');
     })->name('home');
 });
 
 // Route Customer
-Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->name('customer.')->group(function() {
-    Route::get('/home', function() {
+Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->name('customer.')->group(function () {
+    Route::get('/home', function () {
         return view('customer.home');
     })->name('home');
 
-    Route::get('/order', function() {
+    Route::get('/order', function () {
         return view('customer.order');
     })->name('order');
 });

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class=" w-full px-2 sm:px-4 md:px-6 lg:px-8 py-6">
+    <div class=" w-full px-2 sm:px-4 md:px-6 lg:px-40 py-6">
 
         <div class="mb-4 rounded-sm p-4 flex flex-wrap justify-center font-semibold items-center">
             <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gogalon-primary">Pesanan Saya</h1>

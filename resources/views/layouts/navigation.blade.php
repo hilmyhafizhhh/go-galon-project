@@ -34,9 +34,9 @@
                         <button
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:text-gray-900 focus:outline-none transition ease-in-out duration-150">
 
-                            <img class="h-8 w-8 rounded-full object-cover mr-2"
+                            {{-- <img class="h-8 w-8 rounded-full object-cover mr-2"
                                 src="{{ Auth::user()->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}"
-                                alt="{{ Auth::user()->name }}">
+                                alt="{{ Auth::user()->name }}"> --}}
                             <div>{{ Auth::user()->name }}</div>
 
                             <svg class="fill-current h-4 w-4 ms-1" xmlns="http://www.w3.org/2000/svg"
@@ -50,14 +50,14 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                            👤 {{ __('Profile') }}
+                             {{ __('Profile') }}
                         </x-dropdown-link>
 
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <x-dropdown-link :href="route('logout')"
                                 onclick="event.preventDefault(); this.closest('form').submit();">
-                                🚪 {{ __('Log Out') }}
+                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -94,19 +94,19 @@
         <!-- Menu utama -->
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('customer.home')" :active="request()->routeIs('dashboard')">
-                🏡 {{ __('Dashboard') }}
+                 {{ __('Home') }}
             </x-responsive-nav-link>
 
             <x-responsive-nav-link :href="route('customer.order')" :active="request()->routeIs('order')">
-                🧾 {{ __('Pesanan') }}
+                 {{ __('Pesanan') }}
             </x-responsive-nav-link>
 
             <x-responsive-nav-link :href="route('chat')" :active="request()->routeIs('chat')">
-                💬 {{ __('Chat') }}
+                 {{ __('Chat') }}
             </x-responsive-nav-link>
 
             <x-responsive-nav-link :href="route('profile.edit')">
-                👤 {{ __('Profile') }}
+                 {{ __('Profile') }}
             </x-responsive-nav-link>
 
             <!-- Logout -->
@@ -114,7 +114,7 @@
                 @csrf
                 <x-responsive-nav-link :href="route('logout')"
                     onclick="event.preventDefault(); this.closest('form').submit();">
-                    🚪 {{ __('Log Out') }}
+                     {{ __('Log Out') }}
                 </x-responsive-nav-link>
             </form>
         </div>
