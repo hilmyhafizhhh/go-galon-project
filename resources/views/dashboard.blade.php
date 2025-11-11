@@ -14,8 +14,9 @@
 
                 {{-- Produk Populer --}}
                 <section>
-                    <h2 class="text-base sm:text-lg font-bold mb-4 flex items-center gap-1 text-gray-800 dark:text-gray-100">
-                        💧 Produk Populer
+                    <h2
+                        class="text-base sm:text-lg font-bold mb-4 flex items-center gap-1 text-gray-800 dark:text-gray-100">
+                        💧 Produk Pesanan
                     </h2>
 
                     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
@@ -31,10 +32,8 @@
                             <p class="text-blue-800 dark:text-blue-400 font-bold text-lg sm:text-xl mb-2">Rp18.000</p>
                             <button
                                 class="w-full bg-blue-800 dark:bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-700 dark:hover:bg-blue-500 transition flex items-center justify-center gap-1 sm:gap-2">
-                                {{-- <img src="{{ asset('assets/icons/plus.svg') }}" alt="Tambah" --}}
-                                    {{-- class="w-4 h-4 sm:w-5 sm:h-5"> --}}
-                                Pesan
-                            </button>
+                                <img src="{{ asset('assets/icons/plus.svg') }}" alt="Tambah" {{-- class="w-4 h-4 sm:w-5 sm:h-5"> --}}
+                                    Pesan </button>
                         </div>
 
                         {{-- Produk 2 --}}
@@ -84,7 +83,8 @@
                     <div class="flex justify-between items-center">
                         <div>
                             <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Status</p>
-                            <p class="font-semibold text-orange-500 text-sm sm:text-base">Sedang Dalam Pengantaran 🛵</p>
+                            <p class="font-semibold text-orange-500 text-sm sm:text-base">Sedang Dalam Pengantaran 🛵
+                            </p>
                         </div>
                         <img src="{{ asset('assets/icons/Delivery Scooter.svg') }}" alt="Pengantaran"
                             class="w-6 h-6 sm:w-8 sm:h-8 animate-pulse">
@@ -101,7 +101,8 @@
                     <div class="border-l-4 border-orange-500 pl-4">
                         <div class="flex justify-between items-start mb-2">
                             <div>
-                                <p class="font-semibold text-sm sm:text-base text-gray-800 dark:text-gray-100">#00123</p>
+                                <p class="font-semibold text-sm sm:text-base text-gray-800 dark:text-gray-100">#00123
+                                </p>
                                 <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Dalam Pengantaran 🛵</p>
                             </div>
                             <span
@@ -119,4 +120,3 @@
         </div>
     </main>
 </x-app-layout>
-  

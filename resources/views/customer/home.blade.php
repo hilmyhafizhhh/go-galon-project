@@ -16,10 +16,10 @@
                 <section>
                     <h2
                         class="text-base sm:text-lg font-bold mb-4 flex items-center gap-1 text-gray-800 dark:text-gray-100">
-                        💧 Produk Populer
+                        💧 Produk
                     </h2>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-5">
                         {{-- Produk 1 --}}
                         <div
                             class="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition duration-200">
