@@ -3,6 +3,12 @@
 use App\Http\Controllers\Auth\ProviderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CourierController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SettingController;
 
 Route::get('/', function () {
     // return view('welcome');
@@ -10,10 +16,25 @@ Route::get('/', function () {
 });
 
 
-// Dashboard
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// // Dashboard
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+// // Pesanan
+// Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+
+// // Kurir
+// Route::get('/couriers', [CourierController::class, 'index'])->name('couriers.index');
+
+// // Inventory
+// Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+
+// // Laporan
+// Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+// // Pengaturan
+// Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
 
 // // Pesanan
 // Route::get('/pesanan', function () {
@@ -42,7 +63,24 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
+
+     // 🧾 Pesanan
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
+
+        // 🚴 Kurir
+    Route::get('/couriers', [CourierController::class, 'index'])->name('couriers');
+
+        // 📦 Inventory
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
+
+        // 📊 Laporan
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports');
+
+        // ⚙️ Pengaturan
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings');
 });
+
+
 
 // Route Courier
 Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name('courier.')->group(function () {

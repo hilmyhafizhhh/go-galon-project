@@ -18,12 +18,12 @@
             </div>
             <nav class="p-4">
                 <ul class="space-y-2">
-                    <li><a href="{{ route('dashboard') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">🏠 Dashboard</a></li>
-                    <li><a href="#" class="block p-2 rounded hover:bg-blue-100">🧾 Pesanan</a></li>
-                    <li><a href="#" class="block p-2 rounded hover:bg-blue-100">🚴 Kurir</a></li>
-                    <li><a href="#" class="block p-2 rounded hover:bg-blue-100">📦 Inventory</a></li>
-                    <li><a href="#" class="block p-2 rounded hover:bg-blue-100">📊 Laporan</a></li>
-                    <li><a href="#" class="block p-2 rounded hover:bg-blue-100">⚙️ Pengaturan</a></li>
+                    <li><a href="{{ route('admin.dashboard') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">🏠 Dashboard</a></li>
+                    <li><a href="{{ route('admin.orders') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">🧾 Pesanan</a></li>
+                    <li><a href="{{ route('admin.couriers') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">🚴 Kurir</a></li>
+                    <li><a href="{{ route('admin.inventory') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">📦 Inventory</a></li>
+                    <li><a href="{{ route('admin.reports') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">📊 Laporan</a></li>
+                    <li><a href="{{ route('admin.settings') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">⚙️ Pengaturan</a></li>
                 </ul>
             </nav>
         </aside>
