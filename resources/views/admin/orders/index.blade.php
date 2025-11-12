@@ -4,6 +4,7 @@
 @section('header', 'Daftar Pesanan')
 
 @section('content')
+<h1 class="text-2xl font-bold text-gray-800 mb-6">PESANAN</h1>
 <div class="bg-white shadow-md rounded-lg p-6">
     <table class="min-w-full border-collapse">
         <thead class="bg-gray-200">

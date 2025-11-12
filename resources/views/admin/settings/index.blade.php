@@ -4,6 +4,7 @@
 @section('header', 'Pengaturan Akun')
 
 @section('content')
+<h1 class="text-2xl font-bold text-gray-800 mb-6">PENGATURAN</h1>
 <div class="bg-white shadow-md rounded-lg p-6 max-w-lg">
     <form class="space-y-4">
         <div>
