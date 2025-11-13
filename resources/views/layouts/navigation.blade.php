@@ -27,8 +27,25 @@
                 </div>
             </div>
 
+            <!-- Cart Icon -->
+            {{-- <div class="flex items-center justify-between">
+                <a href="{{ route('cart') }}" class="relative hover:scale-105 transition-transform duration-200">
+                    <img src="{{ asset('assets/icons/cart.svg') }}" alt="Cart" class="w-6 h-6">
+                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
+                        2
+                    </span>
+                </a>
+            </div> --}}
             <!-- User Dropdown (Profile + Logout) -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-4">
+
+                <a href="{{ route('cart') }}" class="relative hover:scale-105 transition-transform duration-200 cart-icon">
+                    <img src="{{ asset('assets/icons/cart.svg') }}" alt="Cart" class="w-6 h-6">
+                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
+                        2
+                    </span>
+                </a>
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
@@ -50,22 +67,32 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                             {{ __('Profile') }}
+                            {{ __('Profile') }}
                         </x-dropdown-link>
 
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <x-dropdown-link :href="route('logout')"
                                 onclick="event.preventDefault(); this.closest('form').submit();">
-                                 {{ __('Log Out') }}
+                                {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
+
+
                 </x-dropdown>
             </div>
 
             <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
+
+            <div class="-me-2 flex items-center sm:hidden space-x-4">
+                <!-- Cart Icon -->
+                <a href="{{ route('cart') }}" class="relative hover:scale-110 transition-transform duration-200 cart-icon">
+                    <img src="{{ asset('assets/icons/cart.svg') }}" alt="Cart" class="w-6 h-6">
+                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
+                        2
+                    </span>
+                </a>
                 <button @click="open = ! open"
                     class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -94,19 +121,24 @@
         <!-- Menu utama -->
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('customer.home')" :active="request()->routeIs('dashboard')">
-                 {{ __('Home') }}
+                {{ __('Home') }}
             </x-responsive-nav-link>
 
             <x-responsive-nav-link :href="route('customer.order')" :active="request()->routeIs('order')">
-                 {{ __('Pesanan') }}
+                {{ __('Pesanan') }}
             </x-responsive-nav-link>
 
             <x-responsive-nav-link :href="route('chat')" :active="request()->routeIs('chat')">
-                 {{ __('Chat') }}
+                {{ __('Chat') }}
             </x-responsive-nav-link>
 
+            {{-- <x-responsive-nav-link :href="route('cart')" :active="request()->routeIs('cart')">
+                🛒 {{ __('Keranjang') }}
+            </x-responsive-nav-link> --}}
+
+
             <x-responsive-nav-link :href="route('profile.edit')">
-                 {{ __('Profile') }}
+                {{ __('Profile') }}
             </x-responsive-nav-link>
 
             <!-- Logout -->
@@ -114,7 +146,7 @@
                 @csrf
                 <x-responsive-nav-link :href="route('logout')"
                     onclick="event.preventDefault(); this.closest('form').submit();">
-                     {{ __('Log Out') }}
+                    {{ __('Log Out') }}
                 </x-responsive-nav-link>
             </form>
         </div>

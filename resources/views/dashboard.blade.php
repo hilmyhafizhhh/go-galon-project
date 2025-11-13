@@ -6,9 +6,9 @@
 
             {{-- Kiri: Banner & Produk --}}
             <div class="lg:col-span-2 space-y-6">
-                {{-- Banner Promosi --}}
+                Banner Promosi
                 <div class="rounded-xl overflow-hidden shadow-lg">
-                    <img src="{{ asset('assets/icons/Frame 48.png') }}" alt="Banner Promosi"
+                    <img src="{{ asset('assets/icons/map.png') }}" alt="Banner Promosi"
                         class="w-full h-40 sm:h-52 md:h-64 lg:h-72 object-cover">
                 </div>
 

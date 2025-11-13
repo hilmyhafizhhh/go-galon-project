@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\ProviderController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,6 +20,12 @@ Route::get('/dashboard', function () {
 // Route::get('/pesanan', function () {
 //     return view('pesanan');
 // })->middleware(['auth'])->name('pesanan');
+
+
+// cart
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart');
+});
 
 // Chat
 Route::get('/chat', function () {
@@ -60,6 +67,7 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     Route::get('/order', function () {
         return view('customer.order');
     })->name('order');
+    Route::get('/cart', [CartController::class, 'index'])->name('cart');
 });
 
 // Route Google OAuth
