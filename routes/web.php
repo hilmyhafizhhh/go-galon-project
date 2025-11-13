@@ -68,7 +68,8 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
 
         // 🚴 Kurir
-    Route::get('/couriers', [CourierController::class, 'index'])->name('couriers');
+    // Route::get('/couriers', [CourierController::class, 'index'])->name('couriers');
+    Route::resource('couriers', CourierController::class);
 
         // 📦 Inventory
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
