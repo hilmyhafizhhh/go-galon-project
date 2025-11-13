@@ -40,7 +40,7 @@ Route::get('/chat', function () {
 //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
 Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'profile'])->name('profile.profile');
     Route::get('/profile/edit', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
