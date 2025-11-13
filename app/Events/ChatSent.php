@@ -46,7 +46,9 @@ class ChatSent implements ShouldBroadcast
                 'sender_id' => $this->chat->sender_id,
                 'receiver_id' => $this->chat->receiver_id,
                 'message' => $this->chat->message,
-                'created_at' => $this->chat->created_at->format('H:i'),
+                // 'created_at' => $this->chat->created_at->format('H:i'),
+                'created_at' => $this->chat->created_at->setTimezone('Asia/Jakarta')->format('H:i'), // ← format di sini
+
             ]
         ];
     }

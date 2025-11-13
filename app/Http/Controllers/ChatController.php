@@ -78,7 +78,13 @@ class ChatController extends Controller
         broadcast( new ChatSent($chat))->toOthers();
 
         return response()->json([
-            'chat' => $chat,
+            'chat' => [
+                'id' => $chat->id,
+                'sender_id' => $chat->sender_id,
+                'receiver_id' => $chat->receiver_id,
+                'message' => $chat->message,
+                'created_at' => $chat->created_at->setTimezone('Asia/Jakarta')->format('H:i'),
+            ]
         ]);
     }
    
