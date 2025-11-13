@@ -32,7 +32,7 @@
             <!-- CHAT LIST -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-100">
                 @foreach($chats as $chat)
-                    <a href="{{ route('customer.realtime-chat.show', $chat->receiver_id) }}"
+                    <a href="{{ route('customer.chat.show', $chat->receiver_id) }}"
                         class="flex items-center gap-4 px-6 py-4 hover:bg-blue-50/50 transition-all duration-150">
                         <!-- Avatar -->
                         <div

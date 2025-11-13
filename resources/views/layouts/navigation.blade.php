@@ -25,14 +25,32 @@
                         {{ __('Chat') }}
                     </x-nav-link> --}}
 
-                    <x-nav-link :href="route('customer.realtime-chat')" :active="request()->routeIs('realtime-chat')">
-                        {{ __('Realtime Chat') }}
+                    <x-nav-link :href="route('customer.chat')" :active="request()->routeIs('chat')">
+                        {{ __('Chat') }}
                     </x-nav-link>
                 </div>
             </div>
 
+            <!-- Cart Icon -->
+            {{-- <div class="flex items-center justify-between">
+                <a href="{{ route('cart') }}" class="relative hover:scale-105 transition-transform duration-200">
+                    <img src="{{ asset('assets/icons/cart.svg') }}" alt="Cart" class="w-6 h-6">
+                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
+                        2
+                    </span>
+                </a>
+            </div> --}}
             <!-- User Dropdown (Profile + Logout) -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-4">
+
+                <a href="{{ route('customer.cart') }}"
+                    class="relative hover:scale-105 transition-transform duration-200 cart-icon">
+                    <img src="{{ asset('assets/icons/cart.svg') }}" alt="Cart" class="w-6 h-6">
+                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
+                        2
+                    </span>
+                </a>
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
@@ -65,11 +83,22 @@
                             </x-dropdown-link>
                         </form>
                     </x-slot>
+
+
                 </x-dropdown>
             </div>
 
             <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
+
+            <div class="-me-2 flex items-center sm:hidden space-x-4">
+                <!-- Cart Icon -->
+                <a href="{{ route('customer.cart') }}"
+                    class="relative hover:scale-110 transition-transform duration-200 cart-icon">
+                    <img src="{{ asset('assets/icons/cart.svg') }}" alt="Cart" class="w-6 h-6">
+                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
+                        2
+                    </span>
+                </a>
                 <button @click="open = ! open"
                     class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -109,10 +138,15 @@
                 {{ __('Chat') }}
             </x-responsive-nav-link> --}}
 
-            <x-responsive-nav-link :href="route('customer.realtime-chat')"
-                :active="request()->routeIs('realtime-chat')">
-                {{ __('Realtime Chat') }}
+            <x-responsive-nav-link :href="route('customer.chat')" :active="request()->routeIs('chat')">
+                {{ __('Chat') }}
+
             </x-responsive-nav-link>
+
+            {{-- <x-responsive-nav-link :href="route('cart')" :active="request()->routeIs('cart')">
+                🛒 {{ __('Keranjang') }}
+            </x-responsive-nav-link> --}}
+
 
             <x-responsive-nav-link :href="route('profile.edit')">
                 {{ __('Profile') }}

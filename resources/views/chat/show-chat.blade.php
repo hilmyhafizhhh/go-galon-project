@@ -56,7 +56,7 @@
             const msg = input.value.trim();
             if (!msg) return;
 
-            axios.post('{{ route('customer.realtime-chat.send') }}', {
+            axios.post('{{ route('customer.chat.send') }}', {
                 receiver_id: @json($receiver->id),
                 receiver_role: @json($receiver->getRoleNames()->first()),
                 message: msg

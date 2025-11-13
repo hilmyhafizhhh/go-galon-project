@@ -31,7 +31,7 @@ class ChatController extends Controller
             });
 
 
-        return view('chat.index-realtime-chat', compact('chats'));
+        return view('chat.index-chat', compact('chats'));
     }
 
     public function show($receiverId) {
@@ -48,7 +48,7 @@ class ChatController extends Controller
             $q->where('sender_id', $receiver->id)->where('receiver_id', $user->id);
         })->orderBy('created_at')->get();
 
-        return view('chat.show-realtime-chat', compact('chats', 'receiver'));
+        return view('chat.show-chat', compact('chats', 'receiver'));
     }
 
     public function sendChat(Request $request) {

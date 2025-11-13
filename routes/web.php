@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ProviderController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -11,15 +12,21 @@ Route::get('/', function () {
 });
 
 
-// Dashboard
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// // Dashboard
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 // // Pesanan
 // Route::get('/pesanan', function () {
 //     return view('pesanan');
 // })->middleware(['auth'])->name('pesanan');
+
+
+// cart
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/cart', [CartController::class, 'index'])->name('cart');
+// });
 
 // Chat
 // Route::get('/chat', function () {
@@ -66,10 +73,11 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
         return view('customer.chat');
     })->name('chat');
 
-    Route::get('/realtime-chat', [ChatController::class, 'index'])->name('realtime-chat');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat');
     
-    Route::get('/realtime-chat/{receiver}', [ChatController::class, 'show'])->name('realtime-chat.show');
-    Route::post('/realtime-chat/send', [ChatController::class, 'sendChat'])->name('realtime-chat.send');;
+    Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');;
+    Route::get('/cart', [CartController::class, 'index'])->name('cart');
 });
 
 // Route Google OAuth
