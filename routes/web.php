@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\ProviderController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,9 +22,9 @@ Route::get('/dashboard', function () {
 // })->middleware(['auth'])->name('pesanan');
 
 // Chat
-Route::get('/chat', function () {
-    return view('chat');
-})->middleware(['auth'])->name('chat');
+// Route::get('/chat', function () {
+//     return view('chat');
+// })->middleware(['auth'])->name('chat');
 
 // Profile routes
 Route::middleware('auth')->group(function () {
@@ -60,6 +61,15 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     Route::get('/order', function () {
         return view('customer.order');
     })->name('order');
+
+    Route::get('/chat', function() {
+        return view('customer.chat');
+    })->name('chat');
+
+    Route::get('/realtime-chat', [ChatController::class, 'index'])->name('realtime-chat');
+    
+    Route::get('/realtime-chat/{receiver}', [ChatController::class, 'show'])->name('realtime-chat.show');
+    Route::post('/realtime-chat/send', [ChatController::class, 'sendChat'])->name('realtime-chat.send');;
 });
 
 // Route Google OAuth
