@@ -18,7 +18,16 @@
 
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
-        @include('layouts.navigation')
+        @auth
+            @if (Auth::user()->hasRole('customer'))
+                @include('layouts.navigation-customer')
+            @elseif (Auth::user()->hasRole('admin'))
+                @include('layouts.navigation-admin')
+            @elseif (Auth::user()->hasRole('courier'))
+                @include('layouts.navigation-courier')
+            @endif
+        @endauth
+        {{-- @include('layouts.navigation') --}}
 
         <!-- Page Heading -->
         @isset($header)

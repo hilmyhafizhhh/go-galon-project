@@ -12,7 +12,34 @@
                 </div>
 
                 <!-- Navigation Links -->
+                <!-- Navigation Links -->
                 <div class="hidden sm:flex sm:space-x-8 sm:ms-10">
+                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('dashboard')">
+                        🏠 {{ __('Dashboard') }}
+                    </x-nav-link>
+                    
+                    <x-nav-link :href="route('admin.orders')" :active="request()->routeIs('orders.*')">
+                        🧾 {{ __('Pesanan') }}
+                    </x-nav-link>
+                    
+                    <x-nav-link :href="route('admin.couriers.index')" :active="request()->routeIs('couriers.*')">
+                        🚴 {{ __('Kurir') }}
+                    </x-nav-link>
+                    
+                    <x-nav-link :href="route('admin.inventory')" :active="request()->routeIs('inventory.*')">
+                        📦 {{ __('Inventory') }}
+                    </x-nav-link>
+                    
+                    <x-nav-link :href="route('admin.reports')" :active="request()->routeIs('reports.*')">
+                        📊 {{ __('Laporan') }}
+                    </x-nav-link>
+                    
+                    <x-nav-link :href="route('admin.settings')" :active="request()->routeIs('settings.*')">
+                        ⚙️ {{ __('Pengaturan') }}
+                    </x-nav-link>
+                </div>
+                {{-- <div class="hidden sm:flex sm:space-x-8 sm:ms-10">
+                    <x-nav-link :href="route('customer.home')" :active="request()->routeIs('dashboard')">
                     <x-nav-link :href="route('customer.home')" :active="request()->routeIs('home')">
                         {{ __('Home') }}
                     </x-nav-link>
@@ -28,7 +55,7 @@
                     <x-nav-link :href="route('customer.chat')" :active="request()->routeIs('chat')">
                         {{ __('Chat') }}
                     </x-nav-link>
-                </div>
+                </div> --}}
             </div>
 
             <!-- Cart Icon -->
