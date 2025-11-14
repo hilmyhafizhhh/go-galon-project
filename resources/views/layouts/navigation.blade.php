@@ -54,7 +54,7 @@
                             {{-- <img class="h-8 w-8 rounded-full object-cover mr-2"
                                 src="{{ Auth::user()->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}"
                                 alt="{{ Auth::user()->name }}"> --}}
-                            <div>{{ Auth::user()->name }}</div>
+                            <div class="navbar-user-name">{{ Auth::user()->name }}</div>
 
                             <svg class="fill-current h-4 w-4 ms-1" xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 20 20">

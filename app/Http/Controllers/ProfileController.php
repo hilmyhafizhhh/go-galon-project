@@ -20,12 +20,13 @@ class ProfileController extends Controller
         if ($user) {
             $request->validate([
                 'name' => 'required|string|max:255',
+                'username' => 'required|string|max:255',
                 'email' => 'required|email',
                 'alamat' => 'nullable|string',
                 'no_hp' => 'nullable|string',
             ]);
 
-            $user->update($request->only(['name', 'email', 'alamat', 'no_hp']));
+            $user->update($request->only(['name', 'username', 'email', 'alamat', 'no_hp']));
         } else {
             // Tangani kasus ketika objek pengguna `null`
         }

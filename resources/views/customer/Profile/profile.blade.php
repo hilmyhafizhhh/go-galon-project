@@ -5,58 +5,88 @@
         </h2>
     </x-slot>
 
-    <div x-data="editProfile()" class="py-6 bg-gray-50 min-h-screen">
-        <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div x-data="editProfile()"
+        class="py-6 bg-gray-50 min-h-screen opacity-0 translate-y-5 transition-all duration-700 ease-out"
+        x-effect="$nextTick(() => $el.classList.remove('opacity-0', 'translate-y-5'))">
+        <div
+            class="max-w-md lg:max-w-5xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden lg:grid lg:grid-cols-2 lg:gap-0">
             {{-- Header Profil --}}
-            <div class="bg-gradient-to-r from-blue-500 to-cyan-400 p-6 text-white flex items-center space-x-4">
+            <div
+                class="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-white flex flex-col justify-center items-center space-x-4">
                 <div class="relative">
                     <img src="{{ asset('assets/image/cowo1.png') }}" alt="User"
-                        class="w-16 h-16 rounded-full border-2 border-white object-cover">
+                        class="w-24 h-24 lg:w-48 lg:h-48 rounded-full border-4 border-white object-cover">
                     <div
                         class="absolute bottom-0 right-0 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
-                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
                 </div>
-                <div>
-                    <h3 class="text-lg font-semibold">{{ $user->name }}</h3>
-                    <p class="text-sm text-blue-100">{{ $user->email }}</p>
+                <div class="text-center lg:text-left">
+                    <h3 class="text-xl font-bold">{{ $user->name }}</h3>
+                    <p class="text-sm opacity-90">{{ $user->email }}</p>
                 </div>
             </div>
 
             {{-- Informasi Akun --}}
-            <div class="p-5 space-y-4 border-b">
-                <h4 class="text-blue-600 font-semibold flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    Informasi Akun
-                </h4>
+            <div class="p-6 lg:p-8 space-y-6">
+                <div class="space-y-4">
+                    <h4 class="text-blue-600 font-semibold flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Informasi Akun
+                    </h4>
 
-                <div class="text-sm text-gray-700 space-y-3">
-                    <div>
-                        <p class="font-medium">Nama Lengkap</p>
-                        <p x-text="form.name"></p>
-                    </div>
-                    <div>
-                        <p class="font-medium">Email</p>
-                        <p x-text="form.email"></p>
-                    </div>
-                    <div>
-                        <p class="font-medium">Alamat</p>
-                        <p x-text="form.alamat || 'Belum diisi'"></p>
-                    </div>
-                    <div>
-                        <p class="font-medium">No. Handphone</p>
-                        <p x-text="form.phone || 'Belum diisi'"></p>
+                    <div class="text-sm text-gray-700 space-y-3 grid grid-cols-1 gap-3">
+                        <div>
+                            <p class="font-medium">Nama Lengkap</p>
+                            <div class="flex justify-between items-center">
+                                <p x-text="form.name"></p>
+                                <img src="{{ asset('assets/icons/Note.svg') }}" alt="Note">
+                            </div>
+                        </div>
+                        <div>
+                            <p class="font-medium">Username</p>
+                            <div class="flex justify-between items-center">
+                                <p x-text="form.username"></p>
+                                <img src="{{ asset('assets/icons/Note.svg') }}" alt="Note">
+                            </div>
+                        </div>
+                        <div>
+                            <p class="font-medium">Email</p>
+
+                            <div class="items-center flex justify-between">
+                                <p x-text="form.email"></p>
+                                <img src="{{ asset('assets/icons/Email.svg') }}" alt="Email">
+                            </div>
+                        </div>
+                        <div>
+                            <p class="font-medium">Alamat</p>
+                            <div class="flex justify-between items-center">
+                                <p x-text="form.alamat || 'Belum diisi'"></p>
+                                <div class="flex items-end gap-2">
+                                    <img src="{{ asset('assets/icons/Group.svg') }}" alt="Location">
+                                    <img src="{{ asset('assets/icons/Note.svg') }}" alt="Note" class="w-4 h-4">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="font-medium">No. Handphone</p>
+                            <div class="flex items-center justify-between">
+                                <p x-text="form.phone || 'Belum diisi'"></p>
+                                <img src="{{ asset('assets/icons/Phones.svg') }}" alt="Phone">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {{-- Menu Aksi --}}
-            <div class="divide-y">
+            <div class="divide-y space-y-1">
                 <button @click="open = true"
                     class="flex justify-between items-center w-full p-4 hover:bg-gray-50 transition">
                     <div class="flex items-center space-x-3">
@@ -84,9 +114,10 @@
                     </svg>
                 </a>
 
-                <a href="#" class="flex justify-between items-center w-full p-4 hover:bg-gray-50 transition">
+                {{-- <a href="#" class="flex justify-between items-center w-full p-4 hover:bg-gray-50 transition">
                     <div class="flex items-center space-x-3">
-                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                         </svg>
@@ -95,7 +126,7 @@
                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
-                </a>
+                </a> --}}
             </div>
         </div>
 
@@ -115,6 +146,11 @@
                     <div>
                         <label class="text-sm font-medium text-gray-700">Nama Lengkap</label>
                         <input type="text" x-model="form.name" required
+                            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Username</label>
+                        <input type="text" x-model="form.username" required
                             class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
@@ -141,39 +177,36 @@
             </div>
         </div>
 
-        {{-- Notifikasi Berhasil
-        <div x-show="success" x-transition
-            class="fixed top-5 right-5 bg-green-50 border border-green-300 text-green-800 px-4 py-3 rounded-lg shadow">
-            <div class="flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clip-rule="evenodd" />
-                </svg>
-                <span class="font-medium">Perubahan Berhasil Disimpan</span>
-            </div>
-        </div>
-    </div> --}}
-        <!-- Toast Notifikasi -->
-        <div x-data="{ show: false, message: '' }"
-            class="toast fixed bottom-6 right-6 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg" x-show="show"
-            x-transition x-cloak x-text="message">
-        </div>
-
-
-        {{-- Alpine.js --}}
         <script>
             function editProfile() {
                 return {
                     open: false,
                     form: {
                         name: '{{ $user->name }}',
+                        username: '{{ $user->username }}',
                         email: '{{ $user->email }}',
                         alamat: '{{ $user->alamat ?? '' }}',
                         phone: '{{ $user->no_hp ?? '' }}'
                     },
 
+
+                    tampilkanPopup(pesan) {
+                        const popup = document.createElement('div');
+                        popup.innerHTML = `
+    <div class="fixed top-24 right-24 lg:top-24 lg:right-24 left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 w-[85%] max-w-xs lg:w-auto bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-4 py-2.5 lg:px-5 lg:py-3 rounded-xl shadow-2xl z-[9999] flex items-center gap-2 animate-popup font-medium text-sm lg:text-base">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span class="truncate">${pesan}</span>
+    </div>
+`;
+                        document.body.appendChild(popup);
+                        setTimeout(() => popup.remove(), 2200);
+                    },
+
                     submitForm() {
+                        const vm = this;
+
                         fetch('{{ route('customer.profile.update') }}', {
                                 method: 'POST',
                                 headers: {
@@ -186,22 +219,59 @@
                             .then(res => res.json())
                             .then(data => {
                                 if (data.success) {
+                                    // 1. Tutup modal
+                                    vm.open = false;
 
-                                    this.open = false; // Tutup modal
+                                    // 2. Update data di tampilan
+                                    document.querySelector('[x-text="form.name"]').textContent = vm.form.name;
+                                    document.querySelector('[x-text="form.email"]').textContent = vm.form.email;
+                                    document.querySelector('[x-text="form.alamat || \'Belum diisi\'"]').textContent = vm
+                                        .form.alamat || 'Belum diisi';
+                                    document.querySelector('[x-text="form.phone || \'Belum diisi\'"]').textContent = vm.form
+                                        .phone || 'Belum diisi';
 
-                                    const toast = document.querySelector('.toast');
-                                    toast.__x.$data.message = data.message;
-                                    toast.__x.$data.show = true;
+                                    const navbarName = document.querySelector('.navbar-user-name');
+                                    if (navbarName) {
+                                        navbarName.textContent = vm.form.name;
+                                    }
 
-                                    setTimeout(() => {
-                                        toast.__x.$data.show = false;
-                                    }, 3000);
+                                    // 3. TAMPILKAN POPUP JS MURNI
+                                    vm.tampilkanPopup(data.message);
                                 }
                             })
-                            .catch(err => console.error("JSON PARSE ERROR:", err));
+                            .catch(err => {
+                                console.error(err);
+                                vm.tampilkanPopup('Gagal memperbarui profil.');
+                            });
                     }
-
                 }
             }
         </script>
+        <style>
+            @keyframes popup {
+                0% {
+                    transform: translateY(-20px);
+                    opacity: 0;
+                }
+
+                10% {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+
+                90% {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+
+                100% {
+                    transform: translateY(-20px);
+                    opacity: 0;
+                }
+            }
+
+            .animate-popup {
+                animation: popup 2.2s ease-out forwards;
+            }
+        </style>
 </x-app-layout>

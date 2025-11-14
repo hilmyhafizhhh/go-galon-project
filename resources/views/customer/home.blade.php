@@ -264,7 +264,7 @@
                 function tampilkanPopup(nama) {
                     const popup = document.createElement('div');
                     popup.innerHTML = `
-                        <div class="fixed top-6 right-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-3 rounded-xl shadow-2xl z-[9999] flex items-center gap-2 animate-popup font-medium">
+                        <div class="fixed top-6 right-6 bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-5 py-3 rounded-xl shadow-2xl z-[9999] flex items-center gap-2 animate-popup font-medium">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
