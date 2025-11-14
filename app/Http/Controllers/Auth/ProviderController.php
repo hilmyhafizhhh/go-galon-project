@@ -53,7 +53,7 @@ class ProviderController extends Controller
         };
 
         if ($user->hasRole('admin')) {
-            return redirect()->route('admin');
+            return redirect()->route('admin.dashboard');
         } elseif ($user->hasRole('courier')) {
             return redirect()->route('courier.home');
         } else {

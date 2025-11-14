@@ -14,8 +14,8 @@
             <div class="w-full max-w-sm">
                 <div>
                     <x-input-label for="name" :value="__('Name')" />
-                    <x-text-input id="name" class="block mt-1 w-full" type="text" name="name"
-                        :value="old('name')" required autofocus autocomplete="name" />
+                    <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')"
+                        required autofocus autocomplete="name" />
                     <x-input-error :messages="$errors->get('name')" class="mt-2" />
                 </div>
 
@@ -30,8 +30,8 @@
                 <!-- Email Address -->
                 <div class="mt-4">
                     <x-input-label for="email" :value="__('Email')" />
-                    <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"
-                        :value="old('email')" required autocomplete="username" />
+                    <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')"
+                        required autocomplete="username" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 
@@ -61,16 +61,19 @@
                         {{ __('Already registered?') }}
                     </a>
 
+
                     <button
                         class="bg-gogalon-primary text-white rounded-lg px-4 py-2 font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center gap-2 ml-4">
                         {{ _('Register') }}
                     </button>
 
                     {{-- <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button> --}}
-                {{-- </div>
+                        {{ __('Register') }}
+                    </x-primary-button> --}}
+                    {{--
+                </div>
             </div>
         </div>
     </form> --}}
-{{-- </x-guest-layout> --}} 
+    {{--
+</x-guest-layout> --}}
