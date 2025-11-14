@@ -22,7 +22,7 @@
                         🧾 {{ __('Pesanan') }}
                     </x-nav-link>
                     
-                    <x-nav-link :href="route('admin.couriers')" :active="request()->routeIs('couriers.*')">
+                    <x-nav-link :href="route('admin.couriers.index')" :active="request()->routeIs('couriers.*')">
                         🚴 {{ __('Kurir') }}
                     </x-nav-link>
                     

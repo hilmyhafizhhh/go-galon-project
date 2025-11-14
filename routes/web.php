@@ -17,9 +17,9 @@ Route::get('/', function () {
 
 
 // // Dashboard
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 // // Pesanan
 // Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
@@ -72,10 +72,16 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
     Route::resource('couriers', CourierController::class);
 
         // 📦 Inventory
-    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
+    // Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
+    Route::resource('inventory', InventoryController::class)
+        ->names('inventory');
 
         // 📊 Laporan
     Route::get('/reports', [ReportController::class, 'index'])->name('reports');
+    Route::get('/reports/orders', [ReportController::class, 'orders'])->name('reports.orders');
+    Route::get('/reports/couriers', [ReportController::class, 'couriers'])->name('reports.couriers');
+    Route::get('/reports/inventory', [ReportController::class, 'inventory'])->name('reports.inventory');
+    
 
         // ⚙️ Pengaturan
     Route::get('/settings', [SettingController::class, 'index'])->name('settings');
