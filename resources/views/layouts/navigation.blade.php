@@ -13,7 +13,7 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden sm:flex sm:space-x-8 sm:ms-10">
-                    <x-nav-link :href="route('customer.home')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('customer.home')" :active="request()->routeIs('home')">
                         {{ __('Home') }}
                     </x-nav-link>
 
@@ -126,7 +126,7 @@
 
         <!-- Menu utama -->
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('customer.home')" :active="request()->routeIs('dashboard')">
+            <x-responsive-nav-link :href="route('customer.home')" :active="request()->routeIs('home')">
                 {{ __('Home') }}
             </x-responsive-nav-link>
 
