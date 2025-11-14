@@ -66,7 +66,7 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('customer.profile')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
@@ -137,7 +137,7 @@
             </x-responsive-nav-link> --}}
 
 
-            <x-responsive-nav-link :href="route('profile.edit')">
+            <x-responsive-nav-link :href="route('customer.profile')">
                 {{ __('Profile') }}
             </x-responsive-nav-link>
 

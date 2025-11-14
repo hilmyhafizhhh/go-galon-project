@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Auth\ProviderController;
+// use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileController;
+
 use App\Http\Controllers\CartController;
 
 use Illuminate\Support\Facades\Route;
@@ -39,13 +41,12 @@ Route::get('/chat', function () {
 //     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
-Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'profile'])->name('profile.profile');
-    Route::get('/profile/edit', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-});
 
-
+// Group route khusus customer
+// Route::middleware(['auth'])->prefix('customer')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'index'])->name('customer.profile');
+//     Route::post('/profile/update', [ProfileController::class, 'update'])->name('customer.profile.update');
+// });
 // Route Admin
 // Route::get('admin', function() {
 //     return view('admin.dashboard');
@@ -75,6 +76,9 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
         return view('customer.order');
     })->name('order');
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
+
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 // Route Google OAuth
