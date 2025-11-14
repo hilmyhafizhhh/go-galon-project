@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     // return view('welcome');
-    return redirect('/login');
+    return redirect()->route('login');
 });
 
 
@@ -17,21 +17,6 @@ Route::get('/', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
-// // Pesanan
-// Route::get('/pesanan', function () {
-//     return view('pesanan');
-// })->middleware(['auth'])->name('pesanan');
-
-
-// cart
-// Route::middleware(['auth'])->group(function () {
-//     Route::get('/cart', [CartController::class, 'index'])->name('cart');
-// });
-
-// Chat
-// Route::get('/chat', function () {
-//     return view('chat');
-// })->middleware(['auth'])->name('chat');
 
 // Profile routes
 Route::middleware('auth')->group(function () {
