@@ -7,31 +7,8 @@ use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    // return view('welcome');
     return redirect('/login');
-});
-
-
-// // Dashboard
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
-// // Pesanan
-// Route::get('/pesanan', function () {
-//     return view('pesanan');
-// })->middleware(['auth'])->name('pesanan');
-
-
-// cart
-// Route::middleware(['auth'])->group(function () {
-//     Route::get('/cart', [CartController::class, 'index'])->name('cart');
-// });
-
-// Chat
-// Route::get('/chat', function () {
-//     return view('chat');
-// })->middleware(['auth'])->name('chat');
+}); 
 
 // Profile routes
 Route::middleware('auth')->group(function () {
@@ -39,11 +16,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-// Route Admin
-// Route::get('admin', function() {
-//     return view('admin.dashboard');
-// })->middleware(['auth', 'verified', 'role:admin'])->name('admin');;
 
 // Route Admin
 Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('admin.')->group(function () {
@@ -69,14 +41,10 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
         return view('customer.order');
     })->name('order');
 
-    Route::get('/chat', function() {
-        return view('customer.chat');
-    })->name('chat');
-
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
-    
     Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
-    Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');;
+    Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
+
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
 });
 
