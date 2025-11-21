@@ -2,38 +2,66 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    public function index()
+    /**
+     * Display the user's profile form.
+     */
+    public function edit(Request $request): View
     {
-        $user = Auth::user();
-        return view('customer.profile.profile', compact('user'));
+        return view('profile.edit', [
+            'user' => $request->user(),
+        ]);
     }
 
-    public function update(Request $request)
+    /**
+     * Update the user's profile information.
+     */
+    public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $user = Auth::user();
+        $request->user()->fill($request->validated());
 
-        if ($user) {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'username' => 'required|string|max:255',
-                'email' => 'required|email',
-                'alamat' => 'nullable|string',
-                'no_hp' => 'nullable|string',
-            ]);
-
-            $user->update($request->only(['name', 'username', 'email', 'alamat', 'no_hp']));
-        } else {
-            // Tangani kasus ketika objek pengguna `null`
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Profil berhasil diperbarui.'
-        ]);
+        $request->user()->save();
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Delete the user's account.
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        // $request->validateWithBag('userDeletion', [
+        //     'password' => ['required', 'current_password'],
+        // ]);
+
+        $user = $request->user();
+        
+        // Validasi password hanya untuk user yang punya password
+        if (!is_null($user->password)) {
+            $request->validateWithBag('userDeletion', [
+                'password' => ['required', 'current_password'],
+            ]);
+        }
+
+        Auth::logout();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return Redirect::to('/');
     }
 }

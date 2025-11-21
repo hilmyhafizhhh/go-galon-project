@@ -21,7 +21,7 @@
         transform: scale(1.02);
     }
 </style> --}}
-{{-- 
+
 <section class="p-4 sm:p-6 lg:p-8 bg-white rounded-xl shadow-sm">
     <header>
         <h2 class="text-lg font-semibold text-gray-900">
@@ -38,9 +38,9 @@
     </form>
 
     {{-- ======================= FORM START ======================= --}}
-    {{-- <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-6 space-y-6">
         @csrf
-        @method('patch') --}}
+        @method('patch')
 
         {{-- ======== FOTO PROFIL ======== --}}
         {{-- <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8">
@@ -77,27 +77,27 @@
         </div> --}}
 
         {{-- ======== NAME ======== --}}
-        {{-- <div>
+        <div>
             <x-input-label for="name" :value="__('Full Name')" />
             <x-text-input id="name" name="name" type="text" 
                 class="mt-1 block w-full" 
                 :value="old('name', $user->name)" 
                 required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div> --}}
+        </div>
 
         {{-- ======== USERNAME ======== --}}
-        {{-- <div>
+        <div>
             <x-input-label for="username" :value="__('Username')" />
             <x-text-input id="username" name="username" type="text"
                 class="mt-1 block w-full"
                 :value="old('username', $user->username)" 
                 required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('username')" />
-        </div> --}}
+        </div>
 
         {{-- ======== EMAIL ======== --}}
-        {{-- <div>
+        <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" 
                 class="mt-1 block w-full" 
@@ -123,10 +123,10 @@
                     @endif
                 </div>
             @endif
-        </div> --}}
+        </div>
 
         {{-- ======== BUTTON SAVE ======== --}}
-        {{-- <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save Changes') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')
@@ -136,7 +136,7 @@
             @endif
         </div>
     </form>
-</section> --}}
+</section>
 
 {{-- Script Preview Foto --}}
 {{-- <script>
