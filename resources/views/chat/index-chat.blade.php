@@ -5,7 +5,7 @@
 
     <div class="max-w-3xl mx-auto mt-6 px-3">
 
-        @if($chats->isEmpty())
+        @if ($chats->isEmpty())
             <!-- EMPTY STATE -->
             <div
                 class="flex flex-col items-center justify-center bg-white rounded-2xl shadow-lg p-10 text-center border border-gray-100">
@@ -31,8 +31,11 @@
         @else
             <!-- CHAT LIST -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-100">
-                @foreach($chats as $chat)
-                    <a href="{{ route('customer.chat.show', $chat->receiver_id) }}"
+                @foreach ($chats as $chat)
+                    {{-- <a href="{{ route('customer.chat.show', $chat->receiver_id) }}" --}}
+                    <a href="{{ auth()->user()->hasRole('customer')
+                        ? route('customer.chat.show', $chat->other_user_id)
+                        : route('courier.chat.show', $chat->other_user_id) }}"
                         class="flex items-center gap-4 px-6 py-4 hover:bg-blue-50/50 transition-all duration-150">
                         <!-- Avatar -->
                         <div

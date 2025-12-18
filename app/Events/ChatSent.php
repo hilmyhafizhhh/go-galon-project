@@ -2,9 +2,9 @@
 
 namespace App\Events;
 
+use App\Models\Chat;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -14,42 +14,31 @@ class ChatSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * Create a new event instance.
-     */
+
     public $chat;
-    public function __construct($chat)
+
+    public function __construct(Chat $chat)
     {
-        $this->chat = $chat;
+        $this->chat = $chat->load('sender'); // biar nama pengirim langsung ikut
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
+    // Channel privat antar 2 orang (urutkan ID biar konsisten)
+    public function broadcastOn(): Channel
     {
-        return [
-            new Channel('chat.channel'),
-        ];
+        $id1 = $this->chat->sender_id;
+        $id2 = $this->chat->receiver_id;
+
+        // Urutkan: yang kecil dulu
+        if ($id1 > $id2) {
+            [$id1, $id2] = [$id2, $id1];
+        }
+
+        return new PrivateChannel("chat.{$id1}.{$id2}");
     }
 
-    public function broadcastAs() {
+    public function broadcastAs(): string
+    {
         return 'chat.sent';
     }
-
-    public function broadcastWith() {
-        return [
-            'chat' => [
-                'id' => $this->chat->id,
-                'sender_id' => $this->chat->sender_id,
-                'receiver_id' => $this->chat->receiver_id,
-                'message' => $this->chat->message,
-                // 'created_at' => $this->chat->created_at->format('H:i'),
-                'created_at' => $this->chat->created_at->setTimezone('Asia/Jakarta')->format('H:i'), // ← format di sini
-
-            ]
-        ];
-    }
+    
 }

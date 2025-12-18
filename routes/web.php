@@ -11,17 +11,20 @@ use App\Http\Controllers\CourierController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
+use App\Models\Task;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 Route::get('/', function () {
     return redirect('/login');
-}); 
+});
 
 // Profile routes
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
 
 // Route Admin
 Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('admin.')->group(function () {
@@ -29,26 +32,26 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
         return view('admin.dashboard');
     })->name('dashboard');
 
-     // 🧾 Pesanan
+    // 🧾 Pesanan
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
 
-        // 🚴 Kurir
+    // 🚴 Kurir
     // Route::get('/couriers', [CourierController::class, 'index'])->name('couriers');
     Route::resource('couriers', CourierController::class);
 
-        // 📦 Inventory
+    // 📦 Inventory
     // Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
     Route::resource('inventory', InventoryController::class)
         ->names('inventory');
 
-        // 📊 Laporan
+    // 📊 Laporan
     Route::get('/reports', [ReportController::class, 'index'])->name('reports');
     Route::get('/reports/orders', [ReportController::class, 'orders'])->name('reports.orders');
     Route::get('/reports/couriers', [ReportController::class, 'couriers'])->name('reports.couriers');
     Route::get('/reports/inventory', [ReportController::class, 'inventory'])->name('reports.inventory');
-    
 
-        // ⚙️ Pengaturan
+
+    // ⚙️ Pengaturan
     Route::get('/settings', [SettingController::class, 'index'])->name('settings');
 });
 
@@ -57,8 +60,37 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
 // Route Courier
 Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name('courier.')->group(function () {
     Route::get('/home', function () {
-        return view('courier.home');
+        $today = Carbon::today();
+
+        // Ambil tugas kurir yang login, hanya hari ini
+        $tasks = Task::with(['order.customer', 'customer'])
+            ->where('courier_id', Auth::id())
+            ->where(function ($query) use ($today) {
+                $query->whereDate('created_at', $today)
+                    ->orWhereDate('pickup_date', $today);
+            })
+            ->latest()
+            ->get();
+        // Hitung statistik
+        $todayTasks     = $tasks->count();
+        $completedToday = $tasks->where('status', 'completed')->count();
+        $pendingToday   = $tasks->whereIn('status', ['pending', 'picked_up'])->count();
+        return view('courier.home', compact(
+            'tasks',
+            'todayTasks',
+            'completedToday',
+            'pendingToday'
+        ));
     })->name('home');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat');
+    Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
+
+    Route::get('/profile', [ProfileController::class, 'show'])
+        ->name('profile');
+
+    Route::post('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
 });
 
 // Route Customer

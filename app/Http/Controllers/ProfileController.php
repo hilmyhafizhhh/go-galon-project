@@ -14,9 +14,9 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function show(Request $request): View
     {
-        return view('profile.edit', [
+        return view('courier.profile', [
             'user' => $request->user(),
         ]);
     }
@@ -34,7 +34,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('courier.profile')->with('status', 'profile-updated');
     }
 
     /**
@@ -47,7 +47,7 @@ class ProfileController extends Controller
         // ]);
 
         $user = $request->user();
-        
+
         // Validasi password hanya untuk user yang punya password
         if (!is_null($user->password)) {
             $request->validateWithBag('userDeletion', [
@@ -64,4 +64,8 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+
+
+    // lagi ngurus profile customer dan kurir belum jadi yaa ntar baru lanjut
 }
