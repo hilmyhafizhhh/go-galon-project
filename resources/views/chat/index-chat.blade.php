@@ -32,16 +32,16 @@
             <!-- CHAT LIST -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-100">
                 @foreach ($chats as $chat)
-                    {{-- <a href="{{ route('customer.chat.show', $chat->receiver_id) }}" --}}
-                    <a href="{{ auth()->user()->hasRole('customer')
-                        ? route('customer.chat.show', $chat->other_user_id)
-                        : route('courier.chat.show', $chat->other_user_id) }}"
+                    {{-- <a href="{{ route('customer.chat.show', $chat->receiver_id) }}" --}} <a href="{{ auth()->user()->hasRole('customer')
+                    ? route('customer.chat.show', ['receiver' => $chat->other_user_id])
+                    : route('courier.chat.show', $chat->other_user_id) }}"
                         class="flex items-center gap-4 px-6 py-4 hover:bg-blue-50/50 transition-all duration-150">
                         <!-- Avatar -->
                         <div
                             class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shadow-inner">
                             <span class="text-blue-700 font-semibold text-lg">
-                                {{ strtoupper(substr($chat->receiver->name ?? 'U', 0, 1)) }}
+                                {{-- {{ strtoupper(substr($chat->receiver->name ?? 'U', 0, 1)) }} --}}
+                                {{ strtoupper(substr($chat->other_user->name ?? 'U', 0, 1)) }}
                             </span>
                         </div>
 
@@ -49,7 +49,8 @@
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-center">
                                 <h4 class="font-semibold text-gray-800 truncate">
-                                    {{ $chat->receiver->name ?? 'Unknown User' }}
+                                    {{-- {{ $chat->receiver->name ?? 'Unknown User' }} --}}
+                                    {{ $chat->other_user->name ?? 'Unknown User' }}
                                 </h4>
                                 <span class="text-xs text-gray-400 whitespace-nowrap ml-2">
                                     {{ $chat->created_at->diffForHumans() }}

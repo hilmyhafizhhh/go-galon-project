@@ -1,156 +1,137 @@
 <x-app-layout>
     <div class=" w-full px-2 sm:px-4 md:px-6 lg:px-40 py-6">
 
-        <div class="mb-4 rounded-sm p-4 flex flex-wrap justify-center font-semibold items-center">
-            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gogalon-primary">Pesanan Saya</h1>
-        </div>
-
         @php
+            $activeTab = request('tab', 'riwayat');
+
+            $tabs = [
+                'riwayat' => 'Riwayat',
+                'dalam' => 'Dalam Pengantaran',
+                'draf' => 'Draf',
+                'batal' => 'Batal',
+            ];
+
             $orders = [
-                (object)[
+                (object) [
                     'id' => 124,
-                    'status' => 'Dalam Pengantaran 🛵',
-                    'statusColor' => 'orange-500',
-                    'statusLabel' => 'Aktif',
-                    'date' => '16 Oktober 2025',
-                    'time' => '14:30',
-                    'price' => 'Rp. 6.000',
-                    'kurir' => 'Budi',
-                    'nohp' => '0812-3902-1134',
-                    'eta' => '10 Menit',
+                    'toko' => 'Gogalon Maospat',
+                    'status' => 'dalam',
+                    'statusText' => 'Dalam pengantaran',
+                    'statusColor' => 'orange',
+                    'date' => '30 Okt, 18:41',
                     'barang' => '2 Galon Aqua',
+                    'price' => 'Rp28.000',
                 ],
-                (object)[
+                (object) [
                     'id' => 123,
-                    'status' => 'Selesai ✅',
-                    'statusColor' => 'gogalon-tiga',
-                    'statusLabel' => 'Selesai',
-                    'date' => '12 Oktober 2025',
-                    'time' => '09:30',
-                    'price' => 'Rp. 6.000',
-                    'kurir' => 'Andi',
-                    'nohp' => '0812-5555-8888',
-                    'eta' => '—',
+                    'toko' => 'Depot Air Salwa',
+                    'status' => 'riwayat',
+                    'statusText' => 'Pesanan selesai',
+                    'statusColor' => 'green',
+                    'date' => '29 Okt, 22:58',
                     'barang' => '1 Galon Aqua',
+                    'price' => 'Rp14.000',
                 ],
-                (object)[
+                (object) [
                     'id' => 122,
-                    'status' => 'Dibatalkan ❌',
-                    'statusColor' => 'gray-400',
-                    'statusLabel' => 'Dibatalkan',
-                    'date' => '10 Oktober 2025',
-                    'time' => '08:15',
-                    'price' => 'Rp. 12.000',
-                    'kurir' => 'Rudi',
-                    'nohp' => '0812-7777-3333',
-                    'eta' => '—',
+                    'toko' => 'Depot Air Mas Jaya',
+                    'status' => 'batal',
+                    'statusText' => 'Pesanan dibatalkan',
+                    'statusColor' => 'gray',
+                    'date' => '28 Okt, 21:15',
                     'barang' => '2 Galon Club',
+                    'price' => 'Rp28.000',
+                ],
+                (object) [
+                    'id' => 121,
+                    'toko' => 'Gogalon Express',
+                    'status' => 'draf',
+                    'statusText' => 'Draf',
+                    'statusColor' => 'gray',
+                    'date' => '—',
+                    'barang' => '1 Galon Aqua',
+                    'price' => 'Rp14.000',
                 ],
             ];
         @endphp
 
-        @foreach ($orders as $order)
-            <div class="bg-white w-full rounded-sm shadow-sm border-l-2 border-{{ $order->statusColor }} mb-2">
-                <div class="w-full flex justify-between items-center p-4">
-                    <p class="bg-{{ $order->statusColor }} text-white rounded-lg px-2">#{{ $order->id }}</p>
-                    <p class="text-{{ $order->statusColor }} font-semibold ml-2">{{ $order->status }}</p>
-                    <p class="text-white rounded-full bg-{{ $order->statusColor }}/70 px-2">{{ $order->statusLabel }}</p>
-                </div>
+        <div class="min-h-screen bg-gray-50">
 
-                <div class="w-full flex justify-start items-center gap-6 px-4 text-sm text-gray-600">
-                    <p>{{ $order->date }}</p>
-                    <p>{{ $order->time }}</p>
-                </div>
+            {{-- HEADER --}}
+            <div class="bg-white px-4 pt-4 pb-3 shadow-sm sticky top-0 z-40">
+                <h1 class="text-xl font-bold">Aktivitas</h1>
 
-                <div class="w-full flex justify-start items-center gap-6 px-4 text-sm text-gogalon-primary font-semibold border-t border-gray-300 pt-2">
-                    <p>{{ $order->price }}</p>
-                </div>
-
-                {{-- Tombol buka popup --}}
-                <div class="w-full flex justify-between items-center p-4 text-sm text-gogalon-primary font-semibold">
-                    <p>Detail Pesanan</p>
-                    <button class="openTracking" data-id="{{ $order->id }}">
-                        <img src="{{ asset('assets/icons/Arrow.svg') }}" alt="arrow" class="w-4 h-4">
-                    </button>
+                {{-- FILTER TAB --}}
+                <div class="flex gap-2 mt-3 overflow-x-auto">
+                    @foreach ($tabs as $key => $label)
+                                    <a href="?tab={{ $key }}" class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap
+                                                               {{ $activeTab === $key
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-100 text-gray-700' }}">
+                                        {{ $label }}
+                                    </a>
+                    @endforeach
                 </div>
             </div>
 
-            {{-- POPUP --}}
-            <div id="trackingCard-{{ $order->id }}" class="fixed inset-0 bg-black/40 hidden justify-center items-center z-50">
-                <div class="bg-white w-11/12 max-w-sm rounded-xl shadow-lg overflow-hidden">
-                    <div class="flex justify-between items-center bg-white text-gogalon-primary">
-                        <h2 class="font-semibold text-lg px-4 py-4">Tracking Pesanan #{{ $order->id }}</h2>
-                        <button class="closeTracking">
-                            <img src="{{ asset('assets/icons/Cancel.svg') }}" alt="cancel" class="px-4 py-4 w-16 h-16">
-                        </button>
-                    </div>
+            {{-- LIST PESANAN --}}
+            <div class="px-4 mt-4 space-y-3 pb-24">
 
-                    <div>
-                        <img src="{{ asset('assets/icons/map.png') }}" alt="map" class="w-full h-48 object-cover bg-gray-500">
-                    </div>
+                @forelse ($orders as $order)
+                    @if ($order->status === $activeTab)
 
-                    <div class="p-4 text-sm text-gray-400">
-                        <div class="flex justify-between items-center">
-                            <p><span class="font-semibold text-gogalon-primary">Kurir:</span> {{ $order->kurir }}<br>{{ $order->nohp }}</p>
-                            <span class="bg-gogalon-tiga/20 text-green-700 rounded-full text-xs px-2 py-1">Online</span>
+                        <div class="bg-white rounded-xl shadow-sm p-3 flex gap-3">
+
+                            {{-- ICON GALON --}}
+                            <div class="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                                <img src="{{ asset('assets/icons/galon.png') }}" alt="galon" class="w-10 h-10">
+                            </div>
+
+                            {{-- CONTENT --}}
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start">
+                                    <p class="font-semibold text-sm">{{ $order->toko }}</p>
+
+                                    <span class="text-xs px-2 py-1 rounded-full
+                                                    @if($order->statusColor === 'green') bg-green-100 text-green-700 @endif
+                                                    @if($order->statusColor === 'orange') bg-orange-100 text-orange-700 @endif
+                                                    @if($order->statusColor === 'gray') bg-gray-200 text-gray-600 @endif
+                                                ">
+                                        {{ $order->statusText }}
+                                    </span>
+                                </div>
+
+                                <p class="text-xs text-gray-500 mt-1">{{ $order->date }}</p>
+                                <p class="text-sm mt-1">{{ $order->barang }}</p>
+
+                                <div class="flex justify-between items-center mt-2">
+                                    <p class="font-semibold text-sm">{{ $order->price }}</p>
+
+                                    @if ($order->status === 'riwayat')
+                                        <button class="text-green-600 text-sm font-semibold">
+                                            Pesan lagi
+                                        </button>
+                                    @elseif ($order->status === 'dalam')
+                                        <button class="text-orange-600 text-sm font-semibold">
+                                            Lacak
+                                        </button>
+                                    @elseif ($order->status === 'draf')
+                                        <button class="text-blue-600 text-sm font-semibold">
+                                            Lanjutkan
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="flex justify-between">
-                            <p>Estimasi Tiba:</p>
-                            <p class="text-orange-500 font-semibold">{{ $order->eta }}</p>
-                        </div>
+                    @endif
+                @empty
+                    <p class="text-center text-gray-500 mt-10">
+                        Tidak ada pesanan
+                    </p>
+                @endforelse
 
-                        <div class="flex justify-between">
-                            <p>Status</p>
-                            <p class="text-orange-500 font-semibold">{{ $order->status }}</p>
-                        </div>
-
-                        <div class="flex justify-between">
-                            <p>Pesanan</p>
-                            <p class="text-gogalon-primary font-semibold">{{ $order->barang }}</p>
-                        </div>
-
-                        <div class="w-full bg-gray-200 rounded-full h-2 mt-4">
-                            <div class="bg-orange-500 h-2 rounded-full w-1/2"></div>
-                        </div>
-                    </div>
-
-                    <div class="w-full shadow-sm rounded-sm p-4 flex flex-wrap justify-center items-center gap-4">
-                        <button class="w-full bg-sky-400 flex justify-center items-center gap-2 px-4 py-2 rounded-md text-white font-semibold">
-                            <img src="{{ asset('assets/icons/Phone.svg') }}" alt="Phone">
-                            <p>Hubungi Kurir</p>
-                        </button>
-                        <button class="w-full bg-white flex justify-center items-center gap-2 px-4 py-2 rounded-md text-gogalon-secondary font-semibold shadow-sm border border-sky-500/50 mb-8">
-                            <img src="{{ asset('assets/icons/Maps.svg') }}" alt="Maps">
-                            <p>Lihat Rute</p>
-                        </button>
-                    </div>
-                </div>
             </div>
-        @endforeach
-
-        {{-- SCRIPT POPUP --}}
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const openButtons = document.querySelectorAll('.openTracking');
-                const closeButtons = document.querySelectorAll('.closeTracking');
-
-                openButtons.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const id = btn.dataset.id;
-                        const card = document.getElementById(`trackingCard-${id}`);
-                        card.classList.remove('hidden');
-                        card.classList.add('flex');
-                    });
-                });
-
-                closeButtons.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        btn.closest('.fixed').classList.add('hidden');
-                        btn.closest('.fixed').classList.remove('flex');
-                    });
-                });
-            });
-        </script>
+        </div>
     </div>
 </x-app-layout>

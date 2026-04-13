@@ -1,7 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-blue-100 flex items-center justify-center rounded-full font-semibold text-blue-600">
+            <div
+                class="w-10 h-10 bg-blue-100 flex items-center justify-center rounded-full font-semibold text-blue-600">
                 {{ strtoupper(substr($receiver->name, 0, 1)) }}
             </div>
             <h2 class="font-semibold text-xl text-gray-800">{{ $receiver->name }}</h2>
@@ -49,44 +50,84 @@
 </x-app-layout>
 
 <script>
-    window.onload = function() {
-            window.sendChat = function() {
-                const input = document.getElementById("messageInput");
-                const msg = input.value.trim();
-                if (!msg) return;
+    document.addEventListener('DOMContentLoaded', () => {
 
-                // axios.post('{{ route('customer.chat.send') }}',
-                axios.post(
-                    '{{ auth()->user()->hasRole('customer') ? route('customer.chat.send') : route('courier.chat.send') }}', {
-                            receiver_id: @json($receiver->id),
-                            receiver_role: @json($receiver->getRoleNames()->first()),
-                            message: msg
-                        }).then(res => {
-                        document.getElementById("chatBox").innerHTML += `
-                <div class="flex justify-end">
-                    <div class="bg-blue-600 text-white px-4 py-2.5 rounded-2xl rounded-br-sm max-w-xs shadow-sm">
-                        <p class="text-sm leading-relaxed">${res.data.chat.message}</p>
-                        <span class="text-[10px] text-white/70 block text-right mt-1">${res.data.chat.created_at}</span>
-                    </div>
-                </div>`;
-                        input.value = "";
-                        document.getElementById("chatBox").scrollTop = document.getElementById("chatBox")
-                            .scrollHeight;
-                    });
-                };
+        // const authId = Number(@json(auth()->id()));
+        // const receiverId = Number(@json($receiver->id));
 
-                window.Echo.channel("chat.channel")
-                    .listen(".chat.sent", (e) => {
-                        if (e.chat.receiver_id != @json(auth()->id())) return;
-                        document.getElementById("chatBox").innerHTML += `
-                <div class="flex justify-start">
-                    <div class="bg-gray-100 px-4 py-2.5 rounded-2xl rounded-bl-sm max-w-xs shadow-sm">
-                        <p class="text-sm leading-relaxed text-gray-800">${e.chat.message}</p>
-                        <span class="text-[10px] text-gray-500 block text-right mt-1">${e.chat.created_at}</span>
-                    </div>
-                </div>`;
-                        document.getElementById("chatBox").scrollTop = document.getElementById("chatBox")
-                            .scrollHeight;
-                    });
-            };
+        const authId = @json(auth()->id());
+        const receiverId = @json($receiver->id);
+
+        // const id1 = Math.min(authId, receiverId);
+        // const id2 = Math.max(authId, receiverId);
+
+        const [id1, id2] = [authId, receiverId].sort();
+
+        const chatBox = document.getElementById("chatBox");
+        const input = document.getElementById("messageInput");
+
+        // ===============================
+        // SEND CHAT
+        // ===============================
+        window.sendChat = function () {
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            axios.post(
+                '{{ auth()->user()->hasRole('customer') ? route('customer.chat.send') : route('courier.chat.send') }}',
+                {
+                    receiver_id: receiverId,
+                    message: msg
+                }
+            ).then(res => {
+                appendMessage(res.data.chat, true);
+                input.value = "";
+            }).catch(err => {
+                console.error("Send chat error:", err);
+            });
+        };
+
+        // ===============================
+        // REALTIME LISTENER
+        // ===============================
+        if (!window.Echo) {
+            console.error("Laravel Echo belum ada");
+            return;
+        }
+
+        window.Echo.private(`chat.${id1}.${id2}`)
+            .subscribed(() => {
+                console.log("✅ Subscribed to chat channel");
+            })
+            .error(err => {
+                console.error("❌ Channel auth error:", err);
+            })
+            .listen('.chat.sent', (e) => {
+                console.log("📩 Incoming chat:", e.chat);
+
+                // JANGAN filter sender di awal debugging
+                appendMessage(e.chat, e.chat.sender_id === authId);
+            });
+
+        // ===============================
+        // HELPER
+        // ===============================
+        function appendMessage(chat, isMine) {
+            chatBox.innerHTML += `
+                                    <div class="flex ${isMine ? 'justify-end' : 'justify-start'}">
+                                        <div class="${isMine ? 'bg-blue-600 text-white rounded-br-sm' : 'bg-gray-100 text-gray-800 rounded-bl-sm'}
+                                            px-4 py-2.5 rounded-2xl max-w-xs shadow-sm">
+                                            <p class="text-sm leading-relaxed">${chat.message}</p>
+                                            <span class="text-[10px] ${isMine ? 'text-white/70' : 'text-gray-500'} block text-right mt-1">
+                                                ${chat.created_at}
+                                            </span>
+                                        </div>
+                                    </div>
+                                `;
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+
+    });
 </script>
