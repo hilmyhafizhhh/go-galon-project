@@ -22,84 +22,28 @@
 
                     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-5 items-stretch">
                         {{-- Produk 1 --}}
-                        <div
-                            class="product-card bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition duration-700 opacity-0 translate-y-10 scroll-fade flex flex-col justify-between">
+                        @foreach ($products as $product)
                             <div
-                                class="bg-white dark:bg-blue-900/30 rounded-lg p-3 mb-2 text-center flex justify-center">
-                                <img src="{{ asset('assets/icons/aqua.png') }}" alt="Aqua"
-                                    class="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 object-contain transition-transform duration-500 ease-in-out hover:scale-125">
+                                class="product-card bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition duration-700 opacity-0 translate-y-10 scroll-fade flex flex-col justify-between">
+                                <div
+                                    class="bg-white dark:bg-blue-900/30 rounded-lg p-3 mb-2 text-center flex justify-center">
+                                    <img src="{{ asset('assets/icons/' . $product->image) }}" alt="{{ $product->name }}"
+                                        class="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 object-contain transition-transform duration-500 ease-in-out hover:scale-125">
+                                </div>
+                                <div class="text-center flex flex-col justify-between flex-1">
+                                    <h3 class="font-semibold text-sm sm:text-base mb-1 text-gray-800 dark:text-gray-100">
+                                        {{ $product->name }}
+                                    </h3>
+                                    <p class="text-blue-800 dark:text-blue-400 font-bold text-lg sm:text-xl mb-2">
+                                        Rp{{ number_format($product->price, 0, ',', '.') }}
+                                    </p>
+                                    <button onclick="splashToCart(this)" data-product="{{ $product->name }}"
+                                        class="btn-pesan w-full bg-blue-800 dark:bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-950 dark:hover:bg-blue-500 transition flex items-center justify-center gap-1 sm:gap-2">
+                                        Pesan
+                                    </button>
+                                </div>
                             </div>
-                            <div class="text-center flex flex-col justify-between flex-1">
-                                <h3 class="font-semibold text-sm sm:text-base mb-1 text-gray-800 dark:text-gray-100">
-                                    Aqua</h3>
-                                <p class="text-blue-800 dark:text-blue-400 font-bold text-lg sm:text-xl mb-2">Rp6.000
-                                </p>
-                                <button onclick="splashToCart(this)" data-product="Aqua"
-                                    class="btn-pesan w-full bg-blue-800 dark:bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-950 dark:hover:bg-blue-500 transition flex items-center justify-center gap-1 sm:gap-2">
-                                    Pesan
-                                </button>
-                            </div>
-                        </div>
-
-                        {{-- Produk 2 --}}
-                        <div
-                            class="product-card bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition duration-700 opacity-0 translate-y-10 scroll-fade flex flex-col justify-between">
-                            <div
-                                class="bg-white dark:bg-green-900/30 rounded-lg p-3 mb-2 text-center flex justify-center">
-                                <img src="{{ asset('assets/icons/minerale.png') }}" alt="Le Minerale"
-                                    class="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 object-contain transition-transform duration-500 ease-in-out hover:scale-125">
-                            </div>
-                            <div class="text-center flex flex-col justify-between flex-1">
-                                <h3 class="font-semibold text-sm sm:text-base mb-1 text-gray-800 dark:text-gray-100">Le
-                                    Minerale</h3>
-                                <p class="text-blue-800 dark:text-blue-400 font-bold text-lg sm:text-xl mb-2">Rp6.000
-                                </p>
-                                <button onclick="splashToCart(this)" data-product="Le Minerale"
-                                    class="btn-pesan w-full bg-blue-800 dark:bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-950 dark:hover:bg-blue-500 transition flex items-center justify-center gap-1 sm:gap-2">
-                                    Pesan
-                                </button>
-                            </div>
-                        </div>
-
-                        {{-- Produk 3 --}}
-                        <div
-                            class="product-card bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition duration-700 opacity-0 translate-y-10 scroll-fade flex flex-col justify-between">
-                            <div
-                                class="bg-white dark:bg-blue-900/30 rounded-lg p-3 mb-2 text-center flex justify-center">
-                                <img src="{{ asset('assets/icons/vit.png') }}" alt="Vite"
-                                    class="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 object-contain transition-transform duration-500 ease-in-out hover:scale-125">
-                            </div>
-                            <div class="text-center flex flex-col justify-between flex-1">
-                                <h3 class="font-semibold text-sm sm:text-base mb-1 text-gray-800 dark:text-gray-100">
-                                    Vite</h3>
-                                <p class="text-blue-800 dark:text-blue-400 font-bold text-lg sm:text-xl mb-2">Rp6.000
-                                </p>
-                                <button onclick="splashToCart(this)" data-product="Vite"
-                                    class="btn-pesan w-full bg-blue-800 dark:bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-950 dark:hover:bg-blue-500 transition flex items-center justify-center gap-1 sm:gap-2">
-                                    Pesan
-                                </button>
-                            </div>
-                        </div>
-
-                        {{-- Produk 4 --}}
-                        <div
-                            class="product-card bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition duration-700 opacity-0 translate-y-10 scroll-fade flex flex-col justify-between">
-                            <div
-                                class="bg-white dark:bg-green-900/30 rounded-lg p-3 mb-2 text-center flex justify-center">
-                                <img src="{{ asset('assets/icons/cleo.png') }}" alt="Cleo"
-                                    class="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 object-contain transition-transform duration-500 ease-in-out hover:scale-125">
-                            </div>
-                            <div class="text-center flex flex-col justify-between flex-1">
-                                <h3 class="font-semibold text-sm sm:text-base mb-1 text-gray-800 dark:text-gray-100">
-                                    Cleo</h3>
-                                <p class="text-blue-800 dark:text-blue-400 font-bold text-lg sm:text-xl mb-2">Rp6.000
-                                </p>
-                                <button onclick="splashToCart(this)" data-product="Cleo"
-                                    class="btn-pesan w-full bg-blue-800 dark:bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-950 dark:hover:bg-blue-500 transition flex items-center justify-center gap-1 sm:gap-2">
-                                    Pesan
-                                </button>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </section>
             </div>
@@ -167,7 +111,7 @@
         {{-- GSAP CDN + SCRIPT --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
         <script>
-            document.addEventListener("DOMContentLoaded", function() {
+            document.addEventListener("DOMContentLoaded", function () {
                 // Scroll Fade
                 const elements = document.querySelectorAll(".scroll-fade");
                 const observer = new IntersectionObserver((entries) => {
@@ -184,7 +128,7 @@
                 elements.forEach(el => observer.observe(el));
 
                 // === SPLASH TO CART (TUNGGU .cart-icon) ===
-                window.splashToCart = function(btn) {
+                window.splashToCart = function (btn) {
                     const productCard = btn.closest('.product-card');
                     const img = productCard?.querySelector('img');
                     const productName = btn.dataset.product || "Produk";

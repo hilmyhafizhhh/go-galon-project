@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $admin = User::create([
-            'id' => Str::uuid(),
+            // 'id' => Str::uuid(),
             'name' => 'Admin Go Galon',
             'username' => 'admin',
             'email' => 'admin@gmail.com',
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
         $admin->assignRole('admin');
 
         $courier = User::create([
-            'id' => Str::uuid(),
+            // 'id' => Str::uuid(),
             'name' => 'Courier Go Galon',
             'username' => 'courier',
             'email' => 'courier@gmail.com',
@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
         $courier->assignRole('courier');
 
         $customer = User::create([
-            'id' => Str::uuid(),
+            // 'id' => Str::uuid(),
             'name' => 'Customer Go Galon',
             'username' => 'customer',
             'email' => 'customer@gmail.com',

@@ -16,16 +16,16 @@ class Product extends Model
 
     protected $fillable = [
         'name',
-        'category',
-        'volume_ml',
+        'volume_l',
         'price',
         'stock',
         'status',
+        'image'
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
-        'volume_ml' => 'integer',
+        'volume_l' => 'decimal:2',
         'stock' => 'integer',
     ];
 

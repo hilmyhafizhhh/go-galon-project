@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CourierController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Models\Task;
@@ -98,9 +99,7 @@ Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name
 
 // Route Customer
 Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->name('customer.')->group(function () {
-    Route::get('/home', function () {
-        return view('customer.home');
-    })->name('home');
+    Route::get('/home', [ProductController::class, 'index'])->name('home');
 
     Route::get('/order', function () {
         return view('customer.order');
