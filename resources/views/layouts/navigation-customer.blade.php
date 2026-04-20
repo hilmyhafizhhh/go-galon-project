@@ -33,9 +33,11 @@
                 <a href="{{ route('customer.cart') }}"
                     class="relative hover:scale-105 transition-transform duration-200 cart-icon">
                     <img src="{{ asset('assets/icons/cart.svg') }}" alt="Cart" class="w-6 h-6">
-                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
-                        2
-                    </span>
+                    @if ($cartCount > 0)
+                        <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
+                            {{ $cartCount }}
+                        </span>
+                    @endif
                 </a>
 
                 <x-dropdown align="right" width="48">
@@ -73,9 +75,11 @@
                 <a href="{{ route('customer.cart') }}"
                     class="relative hover:scale-110 transition-transform duration-200 cart-icon">
                     <img src="{{ asset('assets/icons/cart.svg') }}" alt="Cart" class="w-6 h-6">
-                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
-                        2
-                    </span>
+                    @if ($cartCount > 0)
+                        <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
+                            {{ $cartCount }}
+                        </span>
+                    @endif
                 </a>
 
                 <button @click="open = ! open"

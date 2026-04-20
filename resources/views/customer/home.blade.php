@@ -37,7 +37,8 @@
                                     <p class="text-blue-800 dark:text-blue-400 font-bold text-lg sm:text-xl mb-2">
                                         Rp{{ number_format($product->price, 0, ',', '.') }}
                                     </p>
-                                    <button onclick="splashToCart(this)" data-product="{{ $product->name }}"
+                                    <button onclick="addToCart(this)" data-id="{{ $product->id }}"
+                                        data-product="{{ $product->name }}"
                                         class="btn-pesan w-full bg-blue-800 dark:bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-950 dark:hover:bg-blue-500 transition flex items-center justify-center gap-1 sm:gap-2">
                                         Pesan
                                     </button>
@@ -233,6 +234,33 @@
                         });
                     }
                 }
+
+                window.addToCart = function (btn) {
+                    const productId = btn.dataset.id;
+
+                    const formData = new FormData();
+                    formData.append('product_id', productId);
+                    formData.append('quantity', 1);
+
+                    fetch('/customer/cart/add', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: formData
+                    })
+                        .then(res => {
+                            if (!res.ok) throw new Error("Gagal add to cart");
+                            return res.json();
+                        })
+                        .then(data => {
+                            splashToCart(btn);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert("Gagal menambahkan ke keranjang");
+                        });
+                };
             });
         </script>
 

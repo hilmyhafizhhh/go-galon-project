@@ -14,6 +14,7 @@ class Order extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'id', // ⬅️ INI WAJIB
         'user_id',
         'order_code',
         'total_amount',
