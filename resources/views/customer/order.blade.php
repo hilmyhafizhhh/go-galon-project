@@ -93,7 +93,7 @@
                                     <p class="font-semibold text-sm">{{ $order->toko }}</p>
 
                                     <span class="text-xs px-2 py-1 rounded-full
-                                                    @if($order->statusColor === 'green') bg-green-100 text-green-700 @endif
+                                                    @if($order->statusColor === 'green') bg-green- 100 text-green-700 @endif
                                                     @if($order->statusColor === 'orange') bg-orange-100 text-orange-700 @endif
                                                     @if($order->statusColor === 'gray') bg-gray-200 text-gray-600 @endif
                                                 ">
