@@ -12,6 +12,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
+use App\Models\Order;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -115,6 +116,21 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+    // cart count untuk navbar
+    Route::get('/cart/count', function () {
+        $order = Order::where('user_id', auth()->id())
+            ->where('status', 'draft')
+            ->first();
+
+        $count = $order
+            ? $order->items()->sum('quantity')
+            : 0;
+
+        return response()->json([
+            'count' => $count
+        ]);
+    });
 });
 
 // Route Google OAuth

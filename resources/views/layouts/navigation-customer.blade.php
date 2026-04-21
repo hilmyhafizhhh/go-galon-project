@@ -34,7 +34,7 @@
                     class="relative hover:scale-105 transition-transform duration-200 cart-icon">
                     <img src="{{ asset('assets/icons/cart.svg') }}" alt="Cart" class="w-6 h-6">
                     @if ($cartCount > 0)
-                        <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
+                        <span class="cart-count absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
                             {{ $cartCount }}
                         </span>
                     @endif
@@ -76,7 +76,7 @@
                     class="relative hover:scale-110 transition-transform duration-200 cart-icon">
                     <img src="{{ asset('assets/icons/cart.svg') }}" alt="Cart" class="w-6 h-6">
                     @if ($cartCount > 0)
-                        <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
+                        <span class="cart-count absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">
                             {{ $cartCount }}
                         </span>
                     @endif

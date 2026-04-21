@@ -194,7 +194,6 @@
                                 ease: "elastic.out"
                             });
                             tampilkanPopup(productName);
-                            updateCartBadge();
                         }
                     });
 
@@ -221,39 +220,65 @@
                 }
 
                 function updateCartBadge() {
-                    const badge = document.querySelector('.cart-icon .bg-red-600');
-                    if (badge) {
-                        let count = parseInt(badge.textContent) || 0;
-                        badge.textContent = count + 1;
-                        gsap.fromTo(badge, {
-                            scale: 1.5
-                        }, {
-                            scale: 1,
-                            duration: 0.3,
-                            ease: "bounce.out"
+                    fetch('/customer/cart/count')
+                        .then(res => res.json())
+                        .then(data => {
+                            const cartIcons = document.querySelectorAll('.cart-icon');
+
+                            cartIcons.forEach(cartIcon => {
+                                let badge = cartIcon.querySelector('.cart-count');
+
+                                // 🔥 kalau belum ada → buat
+                                if (!badge && data.count > 0) {
+                                    badge = document.createElement('span');
+                                    badge.className = "cart-count absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1";
+                                    cartIcon.appendChild(badge);
+                                }
+
+                                // update isi
+                                if (badge) {
+                                    badge.textContent = data.count;
+
+                                    gsap.fromTo(badge, {
+                                        scale: 1.5
+                                    }, {
+                                        scale: 1,
+                                        duration: 0.3,
+                                        ease: "bounce.out"
+                                    });
+                                }
+
+                                // kalau count 0 → hapus
+                                if (data.count === 0 && badge) {
+                                    badge.remove();
+                                }
+                            });
                         });
-                    }
                 }
 
                 window.addToCart = function (btn) {
                     const productId = btn.dataset.id;
 
-                    const formData = new FormData();
-                    formData.append('product_id', productId);
-                    formData.append('quantity', 1);
-
                     fetch('/customer/cart/add', {
                         method: 'POST',
                         headers: {
+                            'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                         },
-                        body: formData
+                        body: JSON.stringify({
+                            product_id: productId,
+                            quantity: 1
+                        })
                     })
                         .then(res => {
                             if (!res.ok) throw new Error("Gagal add to cart");
                             return res.json();
                         })
                         .then(data => {
+                            // ✅ UPDATE DULU (data pasti fresh)
+                            updateCartBadge();
+
+                            // baru animasi
                             splashToCart(btn);
                         })
                         .catch(err => {
