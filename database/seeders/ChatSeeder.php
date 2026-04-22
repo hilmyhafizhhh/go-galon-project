@@ -14,8 +14,8 @@ class ChatSeeder extends Seeder
     public function run(): void
     {
         Chat::create([
-            'sender_id' => 'c58a267a-e305-40ef-bcbc-0caf75f3a9ce',
-            'receiver_id' => '41b9d1cc-2448-4e5a-99d6-6e4236292c84',
+            'sender_id' => '9ceaa66c-a368-41a2-b9f7-90e50efaa8e3',
+            'receiver_id' => '2eb1b3ec-c5fc-46b0-ab37-c0e8fde55282',
             'sender_role' => 'customer',
             'receiver_role' => 'courier',
             'message' => 'Halo, titik pengantaran sudah sesuai yaa!'

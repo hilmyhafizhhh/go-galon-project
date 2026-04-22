@@ -86,56 +86,7 @@
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
                         @endif
 
-                        <div class="bg-white rounded-xl shadow-sm p-3 flex gap-3">
-
-                            {{-- ICON GALON --}}
-                            <div class="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
-                                <img src="{{ asset('assets/icons/galon.png') }}" alt="galon" class="w-10 h-10">
-                            </div>
-
-                            {{-- CONTENT --}}
-                            <div class="flex-1">
-                                <div class="flex justify-between items-start">
-                                    <p class="font-semibold text-sm">{{ $order->toko }}</p>
-
-                                    <span class="text-xs px-2 py-1 rounded-full
-                                                    @if($order->statusColor === 'green') bg-green- 100 text-green-700 @endif
-                                                    @if($order->statusColor === 'orange') bg-orange-100 text-orange-700 @endif
-                                                    @if($order->statusColor === 'gray') bg-gray-200 text-gray-600 @endif
-                                                ">
-                                        {{ $order->statusText }}
-                                    </span>
-                                </div>
-
-                                <p class="text-xs text-gray-500 mt-1">{{ $order->date }}</p>
-                                <p class="text-sm mt-1">{{ $order->barang }}</p>
-
-                                <div class="flex justify-between items-center mt-2">
-                                    <p class="font-semibold text-sm">{{ $order->price }}</p>
-
-                                    @if ($order->status === 'riwayat')
-                                        <button class="text-green-600 text-sm font-semibold">
-                                            Pesan lagi
-                                        </button>
-                                    @elseif ($order->status === 'dalam')
-                                        <button class="text-orange-600 text-sm font-semibold">
-                                            Lacak
-                                        </button>
-                                    @elseif ($order->status === 'draf')
-                                        <button class="text-blue-600 text-sm font-semibold">
-                                            Lanjutkan
-                                        </button>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                    @endif
-                @empty
-                    <p class="text-center text-gray-500 mt-10">
-                        Tidak ada pesanan
-                    </p>
-                @endforelse
+                        {{ $tab['label'] }}
 
                         @if (!empty($countByTab[$key]))
                             <span class="ef-tab__count {{ $activeTab === $key ? 'ef-tab__count--active' : '' }}">
