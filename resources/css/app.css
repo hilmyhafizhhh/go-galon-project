@@ -1,3 +1,7 @@
+@import "./pages/home-customer.css";
+@import "./pages/order-customer.css";
+@import "./navigations/navigation-customer.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

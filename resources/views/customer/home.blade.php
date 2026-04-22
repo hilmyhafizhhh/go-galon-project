@@ -1,263 +1,337 @@
 <x-app-layout>
-    {{-- Main Content --}}
-    <main class="bg-gray-50 dark:bg-gray-950 min-h-screen transition-colors duration-300">
-        <div
-            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6 transition-all duration-300">
+    <main class="ef-root">
 
-            {{-- Kiri: Banner & Produk --}}
-            <div class="lg:col-span-2 space-y-6">
-                {{-- Banner Promosi --}}
-                <div
-                    class="rounded-xl overflow-hidden shadow-lg opacity-0 translate-y-10 transition-all duration-700 scroll-fade">
-                    <img src="{{ asset('assets/icons/luas.png') }}" alt="Banner Promosi"
-                        class="w-full h-48 sm:h-52 md:h-64 lg:h-96 object-cover bg-blue-500">
+        {{-- ============================================================
+        NOISE TEXTURE OVERLAY
+        ============================================================ --}}
+        <div class="ef-noise" aria-hidden="true"></div>
+
+        <div class="ef-wrap">
+
+            {{-- ============================================================
+            LEFT COLUMN
+            ============================================================ --}}
+            <div class="ef-left">
+
+                {{-- ── HERO BANNER ── --}}
+                <div class="ef-hero" data-reveal>
+                    <div class="ef-hero__inner">
+                        <img src="{{ asset('assets/icons/luas.png') }}" alt="Banner Promosi" class="ef-hero__img">
+                        <div class="ef-hero__overlay">
+                            <span class="ef-hero__eyebrow">Promo Hari Ini</span>
+                            <h1 class="ef-hero__title">Air Bersih,<br>Langsung ke Pintu Anda</h1>
+                            <p class="ef-hero__sub">Galon premium Efata — segar, higienis, cepat sampai.</p>
+                        </div>
+                        <div class="ef-hero__badge">🔥 Gratis Ongkir</div>
+                    </div>
                 </div>
 
-                {{-- Produk Populer --}}
-                <section>
-                    <h2
-                        class="text-base sm:text-lg font-bold mb-4 flex items-center gap-1 text-gray-800 dark:text-gray-100 transition duration-700 opacity-0 translate-y-10 scroll-fade">
-                        Produk Galon Efata
-                    </h2>
+                {{-- ── REKOMENDASI ── --}}
+                <section class="ef-section" data-reveal>
+                    <div class="ef-section__head">
+                        <div class="ef-section__label">
+                            <span class="ef-section__dot"></span>
+                            Rekomendasi untuk Anda
+                        </div>
+                        <span class="ef-section__hint">Berdasarkan preferensi Anda</span>
+                    </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-5 items-stretch">
-                        {{-- Produk 1 --}}
-                        @foreach ($products as $product)
-                            <div
-                                class="product-card bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition duration-700 opacity-0 translate-y-10 scroll-fade flex flex-col justify-between">
-                                <div
-                                    class="bg-white dark:bg-blue-900/30 rounded-lg p-3 mb-2 text-center flex justify-center">
-                                    <img src="{{ asset('assets/icons/' . $product->image) }}" alt="{{ $product->name }}"
-                                        class="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 object-contain transition-transform duration-500 ease-in-out hover:scale-125">
+                    <div class="ef-grid ef-grid--3">
+                        @for ($i = 0; $i < 3; $i++)
+                            <article class="ef-card ef-card--featured" data-reveal data-delay="{{ $i * 80 }}">
+                                <div class="ef-card__badges">
+                                    <span class="ef-badge ef-badge--primary">⭐ Rekomendasi</span>
+                                    <span class="ef-badge ef-badge--hot">Paling Laris 🔥</span>
                                 </div>
-                                <div class="text-center flex flex-col justify-between flex-1">
-                                    <h3 class="font-semibold text-sm sm:text-base mb-1 text-gray-800 dark:text-gray-100">
-                                        {{ $product->name }}
-                                    </h3>
-                                    <p class="text-blue-800 dark:text-blue-400 font-bold text-lg sm:text-xl mb-2">
-                                        Rp{{ number_format($product->price, 0, ',', '.') }}
-                                    </p>
-                                    <button onclick="addToCart(this)" data-id="{{ $product->id }}"
-                                        data-product="{{ $product->name }}"
-                                        class="btn-pesan w-full bg-blue-800 dark:bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-950 dark:hover:bg-blue-500 transition flex items-center justify-center gap-1 sm:gap-2">
+                                <div class="ef-card__img-wrap">
+                                    <img src="{{ asset('assets/icons/aqua-removebg-preview.png') }}" alt="Aqua Galon 19L"
+                                        class="ef-card__img">
+                                    <div class="ef-card__img-glow"></div>
+                                </div>
+                                <div class="ef-card__body">
+                                    <h3 class="ef-card__name">Aqua Galon 19L</h3>
+                                    <p class="ef-card__price">Rp9.000</p>
+                                    <button class="ef-btn ef-btn--primary" onclick="addToCart(this)" data-id="1"
+                                        data-product="Aqua Galon 19L">
+                                        Pesan Sekarang
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2.5">
+                                            <path d="M5 12h14M12 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </article>
+                        @endfor
+                    </div>
+                </section>
+
+                {{-- ── SEMUA PRODUK ── --}}
+                <section class="ef-section" data-reveal>
+                    <div class="ef-section__head">
+                        <div class="ef-section__label">
+                            <span class="ef-section__dot ef-section__dot--gray"></span>
+                            Produk Galon Efata
+                        </div>
+                    </div>
+
+                    <div class="ef-grid ef-grid--3">
+                        @foreach ($products as $i => $product)
+                            <article class="ef-card" data-reveal data-delay="{{ $i * 60 }}">
+                                <div class="ef-card__img-wrap">
+                                    <img src="{{ asset('assets/icons/' . $product->image) }}" alt="{{ $product->name }}"
+                                        class="ef-card__img">
+                                </div>
+                                <div class="ef-card__body">
+                                    <h3 class="ef-card__name">{{ $product->name }}</h3>
+                                    <p class="ef-card__price">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
+                                    <button class="ef-btn ef-btn--outline" onclick="addToCart(this)"
+                                        data-id="{{ $product->id }}" data-product="{{ $product->name }}">
                                         Pesan
                                     </button>
                                 </div>
-                            </div>
+                            </article>
                         @endforeach
                     </div>
                 </section>
             </div>
 
-            {{-- Kanan: Info & Status Pesanan --}}
-            <aside class="space-y-6">
-                {{-- Info Singkat --}}
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-md border border-gray-100 dark:border-gray-700 transition duration-700 opacity-0 translate-y-10 scroll-fade">
-                    <div class="flex justify-between items-center mb-4">
-                        <div>
-                            <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Lokasi Pengantaran</p>
-                            <p class="font-semibold text-sm sm:text-base text-gray-800 dark:text-gray-100">Jl. Soekarno
-                                No.88</p>
+            {{-- ============================================================
+            RIGHT SIDEBAR
+            ============================================================ --}}
+            <aside class="ef-sidebar">
+
+                {{-- ── INFO CARD ── --}}
+                <div class="ef-panel" data-reveal>
+                    <div class="ef-panel__title">Ringkasan</div>
+
+                    <div class="ef-inforow">
+                        <div class="ef-inforow__icon ef-inforow__icon--blue">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg>
                         </div>
-                        <img src="{{ asset('assets/icons/Maps.svg') }}" alt="Lokasi" class="w-6 h-6 sm:w-8 sm:h-8">
+                        <div>
+                            <p class="ef-inforow__label">Lokasi Pengantaran</p>
+                            <p class="ef-inforow__value">Jl. Soekarno No.88</p>
+                        </div>
                     </div>
 
-                    <div class="flex justify-between items-center mb-4">
-                        <div>
-                            <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Pesanan Aktif</p>
-                            <p class="font-semibold text-blue-800 dark:text-blue-400 text-sm sm:text-base">2 Galon</p>
+                    <div class="ef-divider"></div>
+
+                    <div class="ef-inforow">
+                        <div class="ef-inforow__icon ef-inforow__icon--teal">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="9" cy="21" r="1" />
+                                <circle cx="20" cy="21" r="1" />
+                                <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6" />
+                            </svg>
                         </div>
-                        <img src="{{ asset('assets/icons/Shopping Cart.svg') }}" alt="Keranjang"
-                            class="w-6 h-6 sm:w-8 sm:h-8">
+                        <div>
+                            <p class="ef-inforow__label">Pesanan Aktif</p>
+                            <p class="ef-inforow__value ef-inforow__value--accent">2 Galon</p>
+                        </div>
                     </div>
 
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Status</p>
-                            <p class="font-semibold text-orange-500 text-sm sm:text-base">Sedang Dalam Pengantaran</p>
+                    <div class="ef-divider"></div>
+
+                    <div class="ef-inforow">
+                        <div class="ef-inforow__icon ef-inforow__icon--orange">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="1" y="3" width="15" height="13" />
+                                <path d="M16 8h4l3 3v5h-7V8zM5.5 21a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                                <circle cx="18.5" cy="21" r="1.5" />
+                            </svg>
                         </div>
-                        <img src="{{ asset('assets/icons/Delivery Scooter.svg') }}" alt="Pengantaran"
-                            class="w-6 h-6 sm:w-8 sm:h-8 animate-pulse">
+                        <div>
+                            <p class="ef-inforow__label">Status</p>
+                            <p class="ef-inforow__value ef-inforow__value--orange">Dalam Pengantaran</p>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Status Pesanan --}}
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-md border border-gray-100 dark:border-gray-700 transition duration-700 opacity-0 translate-y-10 scroll-fade">
-                    <h2
-                        class="text-base sm:text-lg font-bold mb-3 flex items-center text-orange-500 dark:text-gray-100">
-                        Status Pesanan</h2>
-                    <div class="border-l-4 border-orange-500 pl-4">
-                        <div class="flex justify-between items-start mb-2">
+                {{-- ── STATUS PESANAN ── --}}
+                <div class="ef-panel ef-panel--order" data-reveal>
+                    <div class="ef-panel__title">Status Pesanan</div>
+
+                    <div class="ef-order">
+                        <div class="ef-order__header">
                             <div>
-                                <p class="font-semibold text-sm sm:text-base text-gray-800 dark:text-gray-100">#00123
-                                </p>
-                                <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Dalam Pengantaran</p>
+                                <span class="ef-order__id">#00123</span>
+                                <span class="ef-badge ef-badge--active">Aktif</span>
                             </div>
-                            <span
-                                class="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-400 px-2 py-1 rounded-full text-[10px] sm:text-xs">Aktif</span>
+                            <p class="ef-order__status">Dalam Pengantaran</p>
                         </div>
-                        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3">Kurir: Budi</p>
-                        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4">Estimasi: 10 menit</p>
-                        <button
-                            class="w-full bg-orange-500 dark:bg-orange-600 text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-orange-600 dark:hover:bg-orange-500 transition flex items-center justify-center gap-2">
+
+                        <div class="ef-order__track">
+                            <div class="ef-track__step ef-track__step--done">
+                                <div class="ef-track__dot"></div>
+                                <span>Pesanan Dikonfirmasi</span>
+                            </div>
+                            <div class="ef-track__line ef-track__line--done"></div>
+                            <div class="ef-track__step ef-track__step--done">
+                                <div class="ef-track__dot"></div>
+                                <span>Sedang Dikemas</span>
+                            </div>
+                            <div class="ef-track__line ef-track__line--active"></div>
+                            <div class="ef-track__step ef-track__step--active">
+                                <div class="ef-track__dot ef-track__dot--pulse"></div>
+                                <span>Di Perjalanan</span>
+                            </div>
+                            <div class="ef-track__line"></div>
+                            <div class="ef-track__step">
+                                <div class="ef-track__dot ef-track__dot--empty"></div>
+                                <span>Tiba</span>
+                            </div>
+                        </div>
+
+                        <div class="ef-order__meta">
+                            <div class="ef-order__meta-item">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                                Kurir: <strong>Budi</strong>
+                            </div>
+                            <div class="ef-order__meta-item">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 6v6l4 2" />
+                                </svg>
+                                Estimasi: <strong>~10 mnt</strong>
+                            </div>
+                        </div>
+
+                        <button class="ef-btn ef-btn--track">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg>
                             Lacak Sekarang
                         </button>
                     </div>
                 </div>
+
+                {{-- ── QUICK TIPS ── --}}
+                <div class="ef-panel ef-panel--tip" data-reveal>
+                    <div class="ef-tip__icon">💧</div>
+                    <p class="ef-tip__text">Minum 8 gelas air per hari untuk tubuh yang sehat & prima.</p>
+                </div>
+
             </aside>
         </div>
 
-        {{-- GSAP CDN + SCRIPT --}}
+        {{-- ============================================================
+        TOAST CONTAINER
+        ============================================================ --}}
+        <div id="ef-toast-container" aria-live="polite"></div>
+
+        {{-- ============================================================
+        SCRIPTS
+        ============================================================ --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                // Scroll Fade
-                const elements = document.querySelectorAll(".scroll-fade");
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add("opacity-100", "translate-y-0");
-                            entry.target.classList.remove("opacity-0", "translate-y-10");
-                            observer.unobserve(entry.target);
-                        }
+            document.addEventListener('DOMContentLoaded', () => {
+
+                // ── Scroll Reveal ──────────────────────────────────────────
+                const revealEls = document.querySelectorAll('[data-reveal]');
+                const ro = new IntersectionObserver((entries) => {
+                    entries.forEach(e => {
+                        if (!e.isIntersecting) return;
+                        const delay = parseInt(e.target.dataset.delay || 0);
+                        setTimeout(() => e.target.classList.add('ef-revealed'), delay);
+                        ro.unobserve(e.target);
                     });
-                }, {
-                    threshold: 0.2
-                });
-                elements.forEach(el => observer.observe(el));
+                }, { threshold: 0.12 });
+                revealEls.forEach(el => ro.observe(el));
 
-                // === SPLASH TO CART (TUNGGU .cart-icon) ===
-                window.splashToCart = function (btn) {
-                    const productCard = btn.closest('.product-card');
-                    const img = productCard?.querySelector('img');
-                    const productName = btn.dataset.product || "Produk";
-
-                    if (!img) return;
-
-                    let cart = document.querySelector('.cart-icon');
-                    if (!cart) {
-                        const startTime = Date.now();
-                        const wait = setInterval(() => {
-                            cart = document.querySelector('.cart-icon');
-                            if (cart || Date.now() - startTime > 3000) {
-                                clearInterval(wait);
-                                if (cart) runSplash(img, cart, productName);
-                            }
-                        }, 50);
-                    } else {
-                        runSplash(img, cart, productName);
-                    }
-                };
-
-                function runSplash(img, cart, productName) {
-                    const rectStart = img.getBoundingClientRect();
-                    const rectEnd = cart.getBoundingClientRect();
-
-                    const startX = rectStart.left + rectStart.width / 2;
-                    const startY = rectStart.top + rectStart.height / 2;
-                    const endX = rectEnd.left + rectEnd.width / 2;
-                    const endY = rectEnd.top + rectEnd.height / 2;
-
-                    const splash = document.createElement('div');
-                    splash.className = 'fixed pointer-events-none z-[99999]';
-                    splash.innerHTML = `
-                        <div class="absolute w-32 h-32 -ml-16 -mt-16">
-                            <div class="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-80"></div>
-                            <div class="absolute inset-2 bg-cyan-400 rounded-full animate-ping delay-100 opacity-70"></div>
-                            <div class="absolute inset-4 bg-white rounded-full animate-pulse"></div>
-                        </div>
-                    `;
-                    document.body.appendChild(splash);
-
-                    gsap.set(splash, {
-                        x: startX,
-                        y: startY,
-                        scale: 0.4,
-                        opacity: 1
-                    });
-
-                    gsap.to(splash, {
-                        duration: 0.9,
-                        x: endX,
-                        y: endY,
-                        scale: 0.15,
-                        ease: "power2.in",
-                        onComplete: () => {
-                            splash.remove();
-                            gsap.to(cart, {
-                                scale: 1.3,
-                                duration: 0.15,
-                                yoyo: true,
-                                repeat: 1,
-                                ease: "elastic.out"
-                            });
-                            tampilkanPopup(productName);
-                        }
-                    });
-
-                    gsap.to(img, {
-                        scale: 0.9,
-                        duration: 0.15,
-                        yoyo: true,
-                        repeat: 1
-                    });
-                }
-
-                function tampilkanPopup(nama) {
-                    const popup = document.createElement('div');
-                    popup.innerHTML = `
-                        <div class="fixed top-6 right-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-3 rounded-xl shadow-2xl z-[9999] flex items-center gap-2 animate-popup font-medium">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span>${nama} ditambahkan!</span>
-                        </div>
-                    `;
-                    document.body.appendChild(popup);
-                    setTimeout(() => popup.remove(), 2200);
-                }
-
+                // ── Cart Badge ─────────────────────────────────────────────
                 function updateCartBadge() {
                     fetch('/customer/cart/count')
-                        .then(res => res.json())
+                        .then(r => r.json())
                         .then(data => {
-                            const cartIcons = document.querySelectorAll('.cart-icon');
-
-                            cartIcons.forEach(cartIcon => {
-                                let badge = cartIcon.querySelector('.cart-count');
-
-                                // 🔥 kalau belum ada → buat
+                            document.querySelectorAll('.cart-icon').forEach(icon => {
+                                let badge = icon.querySelector('.cart-count');
                                 if (!badge && data.count > 0) {
                                     badge = document.createElement('span');
-                                    badge.className = "cart-count absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1";
-                                    cartIcon.appendChild(badge);
+                                    badge.className = 'cart-count';
+                                    icon.appendChild(badge);
                                 }
-
-                                // update isi
                                 if (badge) {
                                     badge.textContent = data.count;
-
-                                    gsap.fromTo(badge, {
-                                        scale: 1.5
-                                    }, {
-                                        scale: 1,
-                                        duration: 0.3,
-                                        ease: "bounce.out"
-                                    });
-                                }
-
-                                // kalau count 0 → hapus
-                                if (data.count === 0 && badge) {
-                                    badge.remove();
+                                    gsap.fromTo(badge, { scale: 1.6 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
+                                    if (data.count === 0) badge.remove();
                                 }
                             });
                         });
                 }
 
+                // ── Splash Animation ───────────────────────────────────────
+                function splashToCart(btn) {
+                    const img = btn.closest('.ef-card')?.querySelector('.ef-card__img');
+                    if (!img) return;
+
+                    const tryRun = () => {
+                        const cart = document.querySelector('.cart-icon');
+                        if (cart) runSplash(img, cart);
+                        else setTimeout(tryRun, 60);
+                    };
+                    tryRun();
+                }
+
+                function runSplash(img, cart) {
+                    const rs = img.getBoundingClientRect();
+                    const re = cart.getBoundingClientRect();
+                    const sx = rs.left + rs.width / 2, sy = rs.top + rs.height / 2;
+                    const ex = re.left + re.width / 2, ey = re.top + re.height / 2;
+
+                    const dot = document.createElement('div');
+                    dot.className = 'ef-splash';
+                    document.body.appendChild(dot);
+
+                    gsap.set(dot, { x: sx, y: sy, scale: 0.5, opacity: 1 });
+                    gsap.to(dot, {
+                        duration: 0.75, x: ex, y: ey, scale: 0.1, ease: 'power3.in',
+                        onComplete: () => {
+                            dot.remove();
+                            gsap.fromTo(cart, { scale: 1 }, { scale: 1.35, yoyo: true, repeat: 1, duration: 0.12, ease: 'power2.out' });
+                        }
+                    });
+                    gsap.to(img, { scale: 0.88, duration: 0.12, yoyo: true, repeat: 1 });
+                }
+
+                // ── Toast ──────────────────────────────────────────────────
+                function showToast(name) {
+                    const container = document.getElementById('ef-toast-container');
+                    const t = document.createElement('div');
+                    t.className = 'ef-toast';
+                    t.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                <span>${name} ditambahkan ke keranjang</span>
+            `;
+                    container.prepend(t);
+                    requestAnimationFrame(() => t.classList.add('ef-toast--show'));
+                    setTimeout(() => {
+                        t.classList.remove('ef-toast--show');
+                        setTimeout(() => t.remove(), 400);
+                    }, 2500);
+                }
+
+                // ── Add to Cart ────────────────────────────────────────────
                 window.addToCart = function (btn) {
-                    const productId = btn.dataset.id;
+                    const id = btn.dataset.id;
+                    const name = btn.dataset.product;
+
+                    btn.disabled = true;
+                    btn.classList.add('ef-btn--loading');
 
                     fetch('/customer/cart/add', {
                         method: 'POST',
@@ -265,71 +339,27 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                         },
-                        body: JSON.stringify({
-                            product_id: productId,
-                            quantity: 1
-                        })
+                        body: JSON.stringify({ product_id: id, quantity: 1 })
                     })
-                        .then(res => {
-                            if (!res.ok) throw new Error("Gagal add to cart");
-                            return res.json();
-                        })
-                        .then(data => {
-                            // ✅ UPDATE DULU (data pasti fresh)
+                        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                        .then(() => {
                             updateCartBadge();
-
-                            // baru animasi
                             splashToCart(btn);
+                            showToast(name);
                         })
-                        .catch(err => {
-                            console.error(err);
-                            alert("Gagal menambahkan ke keranjang");
+                        .catch(() => alert('Gagal menambahkan ke keranjang'))
+                        .finally(() => {
+                            btn.disabled = false;
+                            btn.classList.remove('ef-btn--loading');
                         });
                 };
             });
         </script>
 
-        <style>
-            @keyframes ping {
-                0% {
-                    transform: scale(1);
-                    opacity: 0.8;
-                }
+        {{-- ============================================================
+        STYLES
+        ============================================================ --}}
 
-                75%,
-                100% {
-                    transform: scale(2.5);
-                    opacity: 0;
-                }
-            }
 
-            .animate-ping {
-                animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-            }
-
-            .delay-100 {
-                animation-delay: 0.1s;
-            }
-
-            @keyframes popup {
-                0% {
-                    transform: translateX(100%) scale(0.8);
-                    opacity: 0;
-                }
-
-                60% {
-                    transform: translateX(-10px) scale(1.05);
-                }
-
-                100% {
-                    transform: translateX(0) scale(1);
-                    opacity: 1;
-                }
-            }
-
-            .animate-popup {
-                animation: popup 0.5s ease-out forwards;
-            }
-        </style>
     </main>
 </x-app-layout>
