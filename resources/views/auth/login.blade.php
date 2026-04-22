@@ -177,5 +177,564 @@
         </div>
     </div>
 
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap");
 
+        /* ── Root ──────────────────────────────────────────────────── */
+        .ef-login {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            background: #f0f6ff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark .ef-login {
+            background: #0b1120;
+        }
+
+        /* ── Background blobs ──────────────────────────────────────── */
+        .ef-login__bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .ef-login__blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.55;
+        }
+
+        .ef-login__blob--1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #bfdbfe, transparent);
+            top: -120px;
+            left: -100px;
+        }
+
+        .ef-login__blob--2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #a5f3fc, transparent);
+            bottom: -80px;
+            right: -80px;
+            opacity: 0.4;
+        }
+
+        .ef-login__blob--3 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #ddd6fe, transparent);
+            top: 50%;
+            right: 20%;
+            opacity: 0.25;
+        }
+
+        .dark .ef-login__blob--1 {
+            opacity: 0.12;
+        }
+
+        .dark .ef-login__blob--2 {
+            opacity: 0.08;
+        }
+
+        .dark .ef-login__blob--3 {
+            opacity: 0.06;
+        }
+
+        /* ── Wrap ──────────────────────────────────────────────────── */
+        .ef-login__wrap {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 960px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+            align-items: center;
+        }
+
+        @media (min-width: 900px) {
+            .ef-login__wrap {
+                grid-template-columns: 1fr 1fr;
+                gap: 48px;
+            }
+        }
+
+        /* ── Left Panel ────────────────────────────────────────────── */
+        .ef-login__left {
+            display: none;
+            flex-direction: column;
+            gap: 32px;
+            padding: 8px 0;
+        }
+
+        @media (min-width: 900px) {
+            .ef-login__left {
+                display: flex;
+            }
+        }
+
+        .ef-login__brand {
+            display: inline-block;
+        }
+
+        .ef-login__brand-img {
+            height: 200px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 24px rgba(37, 99, 235, 0.2));
+        }
+
+        .ef-login__left-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ef-login__left-title {
+            font-family: "Instrument Serif", serif;
+            font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+            font-weight: 400;
+            font-style: normal;
+            color: #1e3a5f;
+            line-height: 1.2;
+        }
+
+        .dark .ef-login__left-title {
+            color: #e2e8f0;
+        }
+
+        .ef-login__left-title em {
+            font-style: italic;
+            color: #2563eb;
+        }
+
+        .dark .ef-login__left-title em {
+            color: #60a5fa;
+        }
+
+        .ef-login__left-sub {
+            font-size: 0.88rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .dark .ef-login__left-sub {
+            color: #94a3b8;
+        }
+
+        .ef-login__features {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ef-login__feat {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.83rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .dark .ef-login__feat {
+            color: #94a3b8;
+        }
+
+        .ef-login__feat-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 1px solid rgba(37, 99, 235, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            flex-shrink: 0;
+        }
+
+        .dark .ef-login__feat-icon {
+            background: rgba(37, 99, 235, 0.15);
+            border-color: rgba(37, 99, 235, 0.25);
+            color: #60a5fa;
+        }
+
+        /* ── Card ──────────────────────────────────────────────────── */
+        .ef-login__right {
+            display: flex;
+            justify-content: center;
+        }
+
+        .ef-login__card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            border-radius: 24px;
+            padding: 32px 28px;
+            box-shadow:
+                0 8px 40px rgba(37, 99, 235, 0.1),
+                0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .dark .ef-login__card {
+            background: rgba(17, 24, 39, 0.9);
+            border-color: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (min-width: 640px) {
+            .ef-login__card {
+                padding: 36px 32px;
+            }
+        }
+
+        /* ── Mobile logo ───────────────────────────────────────────── */
+        .ef-login__mobile-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 900px) {
+            .ef-login__mobile-logo {
+                display: none;
+            }
+        }
+
+        .ef-login__mobile-logo-img {
+            height: 72px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 12px rgba(37, 99, 235, 0.2));
+        }
+
+        /* ── Card Header ───────────────────────────────────────────── */
+        .ef-login__card-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .ef-login__card-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .dark .ef-login__card-title {
+            color: #f1f5f9;
+        }
+
+        .ef-login__card-sub {
+            font-size: 0.82rem;
+            color: #94a3b8;
+        }
+
+        /* ── Form ──────────────────────────────────────────────────── */
+        .ef-login__form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* ── Field ─────────────────────────────────────────────────── */
+        .ef-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .ef-field__label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #475569;
+            letter-spacing: 0.02em;
+        }
+
+        .dark .ef-field__label {
+            color: #94a3b8;
+        }
+
+        .ef-field__wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .ef-field__icon {
+            position: absolute;
+            left: 14px;
+            color: #94a3b8;
+            pointer-events: none;
+            flex-shrink: 0;
+        }
+
+        .ef-field__input {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border-radius: 12px;
+            border: 1.5px solid rgba(37, 99, 235, 0.15);
+            background: #f8fafc;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 0.88rem;
+            color: #1e293b;
+            outline: none;
+            transition:
+                border-color 0.18s,
+                box-shadow 0.18s,
+                background 0.18s;
+        }
+
+        .dark .ef-field__input {
+            background: #1e293b;
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #f1f5f9;
+        }
+
+        .ef-field__input::placeholder {
+            color: #cbd5e1;
+        }
+
+        .dark .ef-field__input::placeholder {
+            color: #475569;
+        }
+
+        .ef-field__input:focus {
+            border-color: #2563eb;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .dark .ef-field__input:focus {
+            border-color: #60a5fa;
+            background: #111827;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+        }
+
+        .ef-field__input--pw {
+            padding-right: 44px;
+        }
+
+        .ef-field__eye {
+            position: absolute;
+            right: 12px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: #94a3b8;
+            display: flex;
+            transition: color 0.15s;
+        }
+
+        .ef-field__eye:hover {
+            color: #2563eb;
+        }
+
+        .ef-field__error {
+            font-size: 0.75rem;
+            color: #ef4444;
+            margin-top: 2px;
+        }
+
+        /* ── Meta row ──────────────────────────────────────────────── */
+        .ef-login__meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: -4px;
+        }
+
+        .ef-login__remember {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.8rem;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .dark .ef-login__remember {
+            color: #94a3b8;
+        }
+
+        .ef-login__checkbox {
+            width: 15px;
+            height: 15px;
+            accent-color: #2563eb;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .ef-login__forgot {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .ef-login__forgot:hover {
+            color: #1d4ed8;
+        }
+
+        .dark .ef-login__forgot {
+            color: #60a5fa;
+        }
+
+        /* ── Submit ────────────────────────────────────────────────── */
+        .ef-login__submit {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 13px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+            transition:
+                box-shadow 0.2s,
+                transform 0.2s;
+            margin-top: 4px;
+        }
+
+        .ef-login__submit:hover {
+            box-shadow: 0 6px 22px rgba(37, 99, 235, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .ef-login__submit:active {
+            transform: scale(0.98);
+        }
+
+        /* ── Divider ───────────────────────────────────────────────── */
+        .ef-login__divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #cbd5e1;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .dark .ef-login__divider {
+            color: #334155;
+        }
+
+        .ef-login__divider::before,
+        .ef-login__divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .dark .ef-login__divider::before,
+        .dark .ef-login__divider::after {
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        /* ── Google ────────────────────────────────────────────────── */
+        .ef-login__google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 11px;
+            border-radius: 12px;
+            border: 1.5px solid rgba(37, 99, 235, 0.15);
+            background: #ffffff;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: #334155;
+            text-decoration: none;
+            transition:
+                background 0.18s,
+                border-color 0.18s,
+                box-shadow 0.18s;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .ef-login__google:hover {
+            background: #f8fafc;
+            border-color: rgba(37, 99, 235, 0.3);
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.1);
+        }
+
+        .dark .ef-login__google {
+            background: #1e293b;
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+
+        .dark .ef-login__google:hover {
+            background: #273449;
+            border-color: rgba(96, 165, 250, 0.25);
+        }
+
+        /* ── Register link ─────────────────────────────────────────── */
+        .ef-login__register {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .ef-login__register a {
+            color: #2563eb;
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .ef-login__register a:hover {
+            color: #1d4ed8;
+        }
+
+        .dark .ef-login__register a {
+            color: #60a5fa;
+        }
+
+        /* ── Status message ────────────────────────────────────────── */
+        .ef-login__status {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 999px;
+            box-shadow: 0 4px 16px rgba(22, 163, 74, 0.15);
+        }
+    </style>
 </x-guest-layout>
