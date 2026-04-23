@@ -258,15 +258,15 @@
                         .then(data => {
                             document.querySelectorAll('.cart-icon').forEach(icon => {
                                 let badge = icon.querySelector('.cart-count');
-                                if (!badge && data.count > 0) {
-                                    badge = document.createElement('span');
-                                    badge.className = 'cart-count';
-                                    icon.appendChild(badge);
-                                }
+
                                 if (badge) {
                                     badge.textContent = data.count;
-                                    gsap.fromTo(badge, { scale: 1.6 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
-                                    if (data.count === 0) badge.remove();
+                                    badge.dataset.count = data.count; // 🔥 INI YANG PENTING
+
+                                    gsap.fromTo(badge,
+                                        { scale: 1.6 },
+                                        { scale: 1, duration: 0.3, ease: 'back.out(2)' }
+                                    );
                                 }
                             });
                         });

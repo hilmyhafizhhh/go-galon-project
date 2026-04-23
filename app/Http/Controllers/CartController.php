@@ -69,4 +69,26 @@ class CartController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function removeBulk(Request $request)
+    {
+        $ids = $request->input('item_ids', []);
+
+        if (empty($ids)) {
+            return response()->json(['message' => 'Tidak ada item dipilih'], 422);
+        }
+
+        // Pastikan item milik user yang login
+        $order = Order::where('user_id', auth()->id())
+            ->where('status', 'draft')
+            ->first();
+
+        if (!$order) {
+            return response()->json(['message' => 'Order tidak ditemukan'], 404);
+        }
+
+        $order->items()->whereIn('id', $ids)->delete();
+
+        return response()->json(['message' => 'Item berhasil dihapus']);
+    }
 }

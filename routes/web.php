@@ -131,6 +131,9 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
             'count' => $count
         ]);
     });
+
+    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/remove', [CartController::class, 'removeBulk'])->name('cart.remove.bulk'); // ← tambah ini
 });
 
 // Route Google OAuth

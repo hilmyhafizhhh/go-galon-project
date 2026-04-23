@@ -49,7 +49,7 @@
             {{-- ════ RIGHT: Cart + User (Desktop) ════ --}}
             <div class="ef-nav__right">
 
-                {{-- Cart --}}
+                {{-- Cart — badge selalu ada di DOM, disembunyikan via CSS kalau 0 --}}
                 <a href="{{ route('customer.cart') }}" class="ef-nav__cart cart-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -57,9 +57,9 @@
                         <circle cx="20" cy="21" r="1" />
                         <path d="M1 1h4l2.68 13.39A2 2 0 009.66 16h9.72a2 2 0 001.99-1.61L23 6H6" />
                     </svg>
-                    @if ($cartCount > 0)
-                        <span class="cart-count ef-nav__cart-badge">{{ $cartCount }}</span>
-                    @endif
+                    <span
+                        class="cart-count ef-nav__cart-badge {{ $cartCount > 0 ? 'ef-nav__cart-badge--visible' : '' }}"
+                        data-count="{{ $cartCount }}">{{ $cartCount > 0 ? $cartCount : '' }}</span>
                 </a>
 
                 {{-- User Dropdown --}}
@@ -98,6 +98,7 @@
             {{-- ════ MOBILE: Cart + Hamburger ════ --}}
             <div class="ef-nav__mobile-actions">
 
+                {{-- Cart — badge selalu ada di DOM, disembunyikan via CSS kalau 0 --}}
                 <a href="{{ route('customer.cart') }}" class="ef-nav__cart cart-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -105,9 +106,9 @@
                         <circle cx="20" cy="21" r="1" />
                         <path d="M1 1h4l2.68 13.39A2 2 0 009.66 16h9.72a2 2 0 001.99-1.61L23 6H6" />
                     </svg>
-                    @if ($cartCount > 0)
-                        <span class="cart-count ef-nav__cart-badge">{{ $cartCount }}</span>
-                    @endif
+                    <span
+                        class="cart-count ef-nav__cart-badge {{ $cartCount > 0 ? 'ef-nav__cart-badge--visible' : '' }}"
+                        data-count="{{ $cartCount }}">{{ $cartCount > 0 ? $cartCount : '' }}</span>
                 </a>
 
                 <button @click="open = !open" class="ef-nav__hamburger" :aria-expanded="open.toString()">

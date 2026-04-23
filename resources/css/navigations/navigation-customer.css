@@ -202,7 +202,12 @@
     padding: 0 4px;
     border: 2px solid white;
     line-height: 1;
+    opacity: 0;
 }
+.ef-nav__cart-badge[data-count]:not([data-count="0"]) {
+    opacity: 1;
+}
+
 .dark .ef-nav__cart-badge {
     border-color: #0b1120;
 }
