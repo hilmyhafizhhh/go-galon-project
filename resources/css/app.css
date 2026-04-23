@@ -1,3 +1,11 @@
+/* @import "./pages/register.css"; */
+/* @import "./pages/login.css"; */
+@import "./pages/home-customer.css";
+@import "./pages/order-customer.css";
+@import "./pages/index-chat.css";
+@import "./pages/show-chat.css";
+@import "./navigations/navigation-customer.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

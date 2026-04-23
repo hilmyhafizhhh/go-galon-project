@@ -1,0 +1,354 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+
+/* ── Root ──────────────────────────────────────────────────── */
+.ef-chat {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background: #f0f6ff;
+    /* Isi sisa viewport tanpa overflow */
+    height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.dark .ef-chat {
+    background: #0b1120;
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.ef-chat__header {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-bottom: 1px solid rgba(37, 99, 235, 0.1);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.06);
+    padding: 20px 0 18px;
+}
+.dark .ef-chat__header {
+    background: rgba(15, 23, 42, 0.92);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.ef-chat__header-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+@media (min-width: 640px) {
+    .ef-chat__header-inner {
+        padding: 0 24px;
+    }
+}
+
+.ef-chat__title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1;
+}
+.dark .ef-chat__title {
+    color: #f1f5f9;
+}
+
+.ef-chat__subtitle {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 3px;
+    font-weight: 500;
+}
+
+.ef-chat__header-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #eff6ff;
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563eb;
+}
+.dark .ef-chat__header-icon {
+    background: rgba(37, 99, 235, 0.12);
+    border-color: rgba(37, 99, 235, 0.25);
+    color: #60a5fa;
+}
+
+/* ── Body ──────────────────────────────────────────────────── */
+.ef-chat__body {
+    max-width: 680px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px 16px;
+    /* Tumbuh mengisi sisa ruang — empty state jadi centered, list bisa scroll */
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+@media (min-width: 640px) {
+    .ef-chat__body {
+        padding: 24px 24px;
+    }
+}
+
+/* ── Reveal ────────────────────────────────────────────────── */
+[data-reveal] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+        opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-reveal].ef-revealed {
+    opacity: 1;
+    transform: none;
+}
+
+/* ── Empty State ───────────────────────────────────────────── */
+.ef-chat__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    /* Isi sisa ruang di body agar empty state tepat di tengah */
+    flex: 1;
+    justify-content: center;
+    padding: 24px;
+    gap: 12px;
+}
+
+.ef-chat__empty-visual {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.ef-chat__empty-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px solid rgba(37, 99, 235, 0.15);
+}
+.ef-chat__empty-ring--outer {
+    inset: 0;
+    animation: efRingPulse 3s ease-in-out infinite;
+}
+.ef-chat__empty-ring--inner {
+    inset: 12px;
+    animation: efRingPulse 3s ease-in-out infinite 0.5s;
+}
+@keyframes efRingPulse {
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.2;
+        transform: scale(1.04);
+    }
+}
+
+.ef-chat__empty-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3b82f6;
+    position: relative;
+    z-index: 1;
+}
+.dark .ef-chat__empty-icon {
+    background: rgba(37, 99, 235, 0.12);
+    border-color: rgba(37, 99, 235, 0.25);
+    color: #60a5fa;
+}
+
+.ef-chat__empty-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+.dark .ef-chat__empty-title {
+    color: #f1f5f9;
+}
+
+.ef-chat__empty-sub {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    max-width: 280px;
+    line-height: 1.6;
+}
+
+.ef-chat__empty-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 10px 22px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 12px;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    transition:
+        box-shadow 0.2s,
+        transform 0.2s;
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
+.ef-chat__empty-btn:hover {
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+    transform: translateY(-1px);
+}
+
+/* ── Chat List ─────────────────────────────────────────────── */
+.ef-chat__list {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(37, 99, 235, 0.09);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow:
+        0 2px 16px rgba(37, 99, 235, 0.06),
+        0 1px 3px rgba(0, 0, 0, 0.04);
+}
+.dark .ef-chat__list {
+    background: rgba(17, 24, 39, 0.9);
+    border-color: rgba(255, 255, 255, 0.07);
+}
+
+/* ── Chat Item ─────────────────────────────────────────────── */
+.ef-chat__item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(37, 99, 235, 0.06);
+    transition: background 0.15s;
+    position: relative;
+}
+.dark .ef-chat__item {
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+.ef-chat__item:last-child {
+    border-bottom: none;
+}
+.ef-chat__item:hover {
+    background: #f5f9ff;
+}
+.dark .ef-chat__item:hover {
+    background: rgba(37, 99, 235, 0.07);
+}
+
+/* ── Avatar ────────────────────────────────────────────────── */
+.ef-chat__avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #06b6d4);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+    letter-spacing: 0;
+}
+
+/* Online dot (uncomment avatar-dot in blade to enable) */
+.ef-chat__avatar-dot {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 11px;
+    height: 11px;
+    background: #22c55e;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+.dark .ef-chat__avatar-dot {
+    border-color: #111827;
+}
+
+/* ── Info ──────────────────────────────────────────────────── */
+.ef-chat__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.ef-chat__info-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.ef-chat__name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dark .ef-chat__name {
+    color: #f1f5f9;
+}
+
+.ef-chat__time {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-weight: 500;
+}
+
+.ef-chat__preview {
+    font-size: 0.8rem;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 400;
+}
+.dark .ef-chat__preview {
+    color: #64748b;
+}
+
+/* ── Chevron ───────────────────────────────────────────────── */
+.ef-chat__chevron {
+    color: #cbd5e1;
+    flex-shrink: 0;
+    transition:
+        color 0.15s,
+        transform 0.15s;
+}
+.ef-chat__item:hover .ef-chat__chevron {
+    color: #2563eb;
+    transform: translateX(2px);
+}
+.dark .ef-chat__chevron {
+    color: #334155;
+}
+.dark .ef-chat__item:hover .ef-chat__chevron {
+    color: #60a5fa;
+}

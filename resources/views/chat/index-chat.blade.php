@@ -1,69 +1,112 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800">Pesan</h2>
-    </x-slot>
+<div class="ef-chat">
 
-    <div class="max-w-3xl mx-auto mt-6 px-3">
+    {{-- ── Header ── --}}
+    <div class="ef-chat__header">
+        <div class="ef-chat__header-inner">
+            <div>
+                <h1 class="ef-chat__title">Pesan</h1>
+                <p class="ef-chat__subtitle">Percakapan dengan kurir & toko</p>
+            </div>
+            <div class="ef-chat__header-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    {{-- ── Content ── --}}
+    <div class="ef-chat__body">
 
         @if ($chats->isEmpty())
-            <!-- EMPTY STATE -->
-            <div
-                class="flex flex-col items-center justify-center bg-white rounded-2xl shadow-lg p-10 text-center border border-gray-100">
-                <div
-                    class="w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center rounded-full shadow-inner">
-                    <svg class="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" stroke-width="2"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
+
+            {{-- ── Empty State ── --}}
+            <div class="ef-chat__empty" data-reveal>
+                <div class="ef-chat__empty-visual">
+                    <div class="ef-chat__empty-ring ef-chat__empty-ring--outer"></div>
+                    <div class="ef-chat__empty-ring ef-chat__empty-ring--inner"></div>
+                    <div class="ef-chat__empty-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        </svg>
+                    </div>
                 </div>
-
-                <h3 class="mt-6 text-lg font-semibold text-gray-800">Belum ada percakapan</h3>
-                <p class="text-gray-500 text-sm mt-1">
-                    Kamu belum memiliki riwayat chat saat ini.
-                </p>
-
-                <a href="/"
-                    class="mt-6 px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-full shadow-md hover:bg-blue-700 transition-all duration-200">
+                <h3 class="ef-chat__empty-title">Belum ada percakapan</h3>
+                <p class="ef-chat__empty-sub">Pesan dari kurir atau toko akan muncul di sini setelah kamu melakukan order.</p>
+                <a href="{{ route('customer.home') }}" class="ef-chat__empty-btn">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39A2 2 0 009.66 16h9.72a2 2 0 001.99-1.61L23 6H6"/>
+                    </svg>
                     Mulai Order
                 </a>
             </div>
+
         @else
-            <!-- CHAT LIST -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-100">
+
+            {{-- ── Chat List ── --}}
+            <div class="ef-chat__list">
                 @foreach ($chats as $chat)
-                    {{-- <a href="{{ route('customer.chat.show', $chat->receiver_id) }}" --}} <a href="{{ auth()->user()->hasRole('customer')
-                    ? route('customer.chat.show', ['receiver' => $chat->other_user_id])
-                    : route('courier.chat.show', $chat->other_user_id) }}"
-                        class="flex items-center gap-4 px-6 py-4 hover:bg-blue-50/50 transition-all duration-150">
-                        <!-- Avatar -->
-                        <div
-                            class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shadow-inner">
-                            <span class="text-blue-700 font-semibold text-lg">
-                                {{-- {{ strtoupper(substr($chat->receiver->name ?? 'U', 0, 1)) }} --}}
-                                {{ strtoupper(substr($chat->other_user->name ?? 'U', 0, 1)) }}
-                            </span>
+                    <a href="{{ auth()->user()->hasRole('customer')
+                        ? route('customer.chat.show', ['receiver' => $chat->other_user_id])
+                        : route('courier.chat.show', $chat->other_user_id) }}"
+                       class="ef-chat__item" data-reveal data-delay="{{ $loop->index * 50 }}">
+
+                        {{-- Avatar --}}
+                        <div class="ef-chat__avatar">
+                            {{ strtoupper(substr($chat->other_user->name ?? 'U', 0, 1)) }}
+                            {{-- Online dot — opsional, bisa dihapus kalau tidak ada data online status --}}
+                            {{-- <span class="ef-chat__avatar-dot"></span> --}}
                         </div>
 
-                        <!-- Chat Info -->
-                        <div class="flex-1 min-w-0">
-                            <div class="flex justify-between items-center">
-                                <h4 class="font-semibold text-gray-800 truncate">
-                                    {{-- {{ $chat->receiver->name ?? 'Unknown User' }} --}}
+                        {{-- Info --}}
+                        <div class="ef-chat__info">
+                            <div class="ef-chat__info-top">
+                                <span class="ef-chat__name">
                                     {{ $chat->other_user->name ?? 'Unknown User' }}
-                                </h4>
-                                <span class="text-xs text-gray-400 whitespace-nowrap ml-2">
+                                </span>
+                                <span class="ef-chat__time">
                                     {{ $chat->created_at->diffForHumans() }}
                                 </span>
                             </div>
-                            <p class="text-sm text-gray-500 truncate mt-0.5">
+                            <p class="ef-chat__preview">
                                 {{ $chat->message }}
                             </p>
                         </div>
+
+                        {{-- Chevron --}}
+                        <svg class="ef-chat__chevron" width="14" height="14" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2.5"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+
                     </a>
                 @endforeach
             </div>
+
         @endif
 
     </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const els = document.querySelectorAll('[data-reveal]');
+    const ro = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            const delay = parseInt(e.target.dataset.delay || 0);
+            setTimeout(() => e.target.classList.add('ef-revealed'), delay);
+            ro.unobserve(e.target);
+        });
+    }, { threshold: 0.08 });
+    els.forEach(el => ro.observe(el));
+});
+</script>
+
 </x-app-layout>
