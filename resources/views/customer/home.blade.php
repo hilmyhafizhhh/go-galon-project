@@ -44,8 +44,8 @@
                                     <span class="ef-badge ef-badge--hot">Paling Laris 🔥</span>
                                 </div>
                                 <div class="ef-card__img-wrap">
-                                    <img src="{{ asset('assets/icons/aqua-removebg-preview.png') }}" alt="Aqua Galon 19L"
-                                        class="ef-card__img">
+                                    <img src="{{ asset('assets/icons/aqua-removebg-preview.png') }}"
+                                        alt="Aqua Galon 19L" class="ef-card__img">
                                     <div class="ef-card__img-glow"></div>
                                 </div>
                                 <div class="ef-card__body">
@@ -54,8 +54,8 @@
                                     <button class="ef-btn ef-btn--primary" onclick="addToCart(this)" data-id="1"
                                         data-product="Aqua Galon 19L">
                                         Pesan Sekarang
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2.5">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.5">
                                             <path d="M5 12h14M12 5l7 7-7 7" />
                                         </svg>
                                     </button>
@@ -190,16 +190,16 @@
 
                         <div class="ef-order__meta">
                             <div class="ef-order__meta-item">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
                                     <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
                                     <circle cx="12" cy="7" r="4" />
                                 </svg>
                                 Kurir: <strong>Budi</strong>
                             </div>
                             <div class="ef-order__meta-item">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M12 6v6l4 2" />
                                 </svg>
@@ -208,8 +208,8 @@
                         </div>
 
                         <button class="ef-btn ef-btn--track">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
                                 <circle cx="12" cy="10" r="3" />
                             </svg>
@@ -248,117 +248,12 @@
                         setTimeout(() => e.target.classList.add('ef-revealed'), delay);
                         ro.unobserve(e.target);
                     });
-                }, { threshold: 0.12 });
+                }, {
+                    threshold: 0.12
+                });
                 revealEls.forEach(el => ro.observe(el));
 
                 // ── Cart Badge ─────────────────────────────────────────────
-            document.addEventListener("DOMContentLoaded", function () {
-                // Scroll Fade
-                const elements = document.querySelectorAll(".scroll-fade");
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add("opacity-100", "translate-y-0");
-                            entry.target.classList.remove("opacity-0", "translate-y-10");
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                }, {
-                    threshold: 0.2
-                });
-                elements.forEach(el => observer.observe(el));
-
-                // === SPLASH TO CART (TUNGGU .cart-icon) ===
-                window.splashToCart = function (btn) {
-                    const productCard = btn.closest('.product-card');
-                    const img = productCard?.querySelector('img');
-                    const productName = btn.dataset.product || "Produk";
-
-                    if (!img) return;
-
-                    let cart = document.querySelector('.cart-icon');
-                    if (!cart) {
-                        const startTime = Date.now();
-                        const wait = setInterval(() => {
-                            cart = document.querySelector('.cart-icon');
-                            if (cart || Date.now() - startTime > 3000) {
-                                clearInterval(wait);
-                                if (cart) runSplash(img, cart, productName);
-                            }
-                        }, 50);
-                    } else {
-                        runSplash(img, cart, productName);
-                    }
-                };
-
-                function runSplash(img, cart, productName) {
-                    const rectStart = img.getBoundingClientRect();
-                    const rectEnd = cart.getBoundingClientRect();
-
-                    const startX = rectStart.left + rectStart.width / 2;
-                    const startY = rectStart.top + rectStart.height / 2;
-                    const endX = rectEnd.left + rectEnd.width / 2;
-                    const endY = rectEnd.top + rectEnd.height / 2;
-
-                    const splash = document.createElement('div');
-                    splash.className = 'fixed pointer-events-none z-[99999]';
-                    splash.innerHTML = `
-                        <div class="absolute w-32 h-32 -ml-16 -mt-16">
-                            <div class="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-80"></div>
-                            <div class="absolute inset-2 bg-cyan-400 rounded-full animate-ping delay-100 opacity-70"></div>
-                            <div class="absolute inset-4 bg-white rounded-full animate-pulse"></div>
-                        </div>
-                    `;
-                    document.body.appendChild(splash);
-
-                    gsap.set(splash, {
-                        x: startX,
-                        y: startY,
-                        scale: 0.4,
-                        opacity: 1
-                    });
-
-                    gsap.to(splash, {
-                        duration: 0.9,
-                        x: endX,
-                        y: endY,
-                        scale: 0.15,
-                        ease: "power2.in",
-                        onComplete: () => {
-                            splash.remove();
-                            gsap.to(cart, {
-                                scale: 1.3,
-                                duration: 0.15,
-                                yoyo: true,
-                                repeat: 1,
-                                ease: "elastic.out"
-                            });
-                            tampilkanPopup(productName);
-                        }
-                    });
-
-                    gsap.to(img, {
-                        scale: 0.9,
-                        duration: 0.15,
-                        yoyo: true,
-                        repeat: 1
-                    });
-                }
-
-                function tampilkanPopup(nama) {
-                    const popup = document.createElement('div');
-                    popup.innerHTML = `
-                        <div class="fixed top-6 right-6 bg-gradient-to-r from-blue-500 to-blue-300 text-white px-5 py-3 rounded-xl shadow-2xl z-[9999] flex items-center gap-2 animate-popup font-medium">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span>${nama} ditambahkan!</span>
-                        </div>
-                    `;
-                    document.body.appendChild(popup);
-                    setTimeout(() => popup.remove(), 2200);
-                }
-
                 function updateCartBadge() {
                     fetch('/customer/cart/count')
                         .then(r => r.json())
@@ -372,7 +267,13 @@
                                 }
                                 if (badge) {
                                     badge.textContent = data.count;
-                                    gsap.fromTo(badge, { scale: 1.6 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
+                                    gsap.fromTo(badge, {
+                                        scale: 1.6
+                                    }, {
+                                        scale: 1,
+                                        duration: 0.3,
+                                        ease: 'back.out(2)'
+                                    });
                                     if (data.count === 0) badge.remove();
                                 }
                             });
@@ -395,22 +296,46 @@
                 function runSplash(img, cart) {
                     const rs = img.getBoundingClientRect();
                     const re = cart.getBoundingClientRect();
-                    const sx = rs.left + rs.width / 2, sy = rs.top + rs.height / 2;
-                    const ex = re.left + re.width / 2, ey = re.top + re.height / 2;
+                    const sx = rs.left + rs.width / 2,
+                        sy = rs.top + rs.height / 2;
+                    const ex = re.left + re.width / 2,
+                        ey = re.top + re.height / 2;
 
                     const dot = document.createElement('div');
                     dot.className = 'ef-splash';
                     document.body.appendChild(dot);
 
-                    gsap.set(dot, { x: sx, y: sy, scale: 0.5, opacity: 1 });
+                    gsap.set(dot, {
+                        x: sx,
+                        y: sy,
+                        scale: 0.5,
+                        opacity: 1
+                    });
                     gsap.to(dot, {
-                        duration: 0.75, x: ex, y: ey, scale: 0.1, ease: 'power3.in',
+                        duration: 0.75,
+                        x: ex,
+                        y: ey,
+                        scale: 0.1,
+                        ease: 'power3.in',
                         onComplete: () => {
                             dot.remove();
-                            gsap.fromTo(cart, { scale: 1 }, { scale: 1.35, yoyo: true, repeat: 1, duration: 0.12, ease: 'power2.out' });
+                            gsap.fromTo(cart, {
+                                scale: 1
+                            }, {
+                                scale: 1.35,
+                                yoyo: true,
+                                repeat: 1,
+                                duration: 0.12,
+                                ease: 'power2.out'
+                            });
                         }
                     });
-                    gsap.to(img, { scale: 0.88, duration: 0.12, yoyo: true, repeat: 1 });
+                    gsap.to(img, {
+                        scale: 0.88,
+                        duration: 0.12,
+                        yoyo: true,
+                        repeat: 1
+                    });
                 }
 
                 // ── Toast ──────────────────────────────────────────────────
@@ -433,7 +358,7 @@
                 }
 
                 // ── Add to Cart ────────────────────────────────────────────
-                window.addToCart = function (btn) {
+                window.addToCart = function(btn) {
                     const id = btn.dataset.id;
                     const name = btn.dataset.product;
 
@@ -441,14 +366,20 @@
                     btn.classList.add('ef-btn--loading');
 
                     fetch('/customer/cart/add', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({ product_id: id, quantity: 1 })
-                    })
-                        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                product_id: id,
+                                quantity: 1
+                            })
+                        })
+                        .then(r => {
+                            if (!r.ok) throw new Error();
+                            return r.json();
+                        })
                         .then(() => {
                             updateCartBadge();
                             splashToCart(btn);
