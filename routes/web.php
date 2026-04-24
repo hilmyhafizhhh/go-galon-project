@@ -5,7 +5,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
+// use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CourierController;
 use App\Http\Controllers\InventoryController;
@@ -56,6 +56,10 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
 
     // ⚙️ Pengaturan
     Route::get('/settings', [SettingController::class, 'index'])->name('settings');
+
+    // ── Profile ──
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 
@@ -92,11 +96,8 @@ Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name
     Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
 
 
-    Route::get('/profile', [ProfileController::class, 'show'])
-        ->name('profile');
-
-    Route::post('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 // Route Customer
@@ -139,6 +140,13 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
             'count' => $count
         ]);
     });
+
+    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/remove', [CartController::class, 'removeBulk'])->name('cart.remove.bulk'); 
+
+    // ── Profile ──
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 
