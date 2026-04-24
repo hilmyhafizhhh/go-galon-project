@@ -258,14 +258,33 @@
                         .then(data => {
                             document.querySelectorAll('.cart-icon').forEach(icon => {
                                 let badge = icon.querySelector('.cart-count');
+
+                                // Kalau belum ada → buat
                                 if (!badge && data.count > 0) {
                                     badge = document.createElement('span');
-                                    badge.className = 'cart-count';
+                                    badge.className = 'cart-count ef-nav__cart-badge';
                                     icon.appendChild(badge);
                                 }
+
                                 if (badge) {
                                     badge.textContent = data.count;
-                                    gsap.fromTo(badge, { scale: 1.6 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
+                                    badge.setAttribute('data-count', data.count);
+
+                                    // 👉 INI YANG PENTING
+                                    if (data.count > 0) {
+                                        badge.classList.add('ef-nav__cart-badge--visible');
+                                    } else {
+                                        badge.classList.remove('ef-nav__cart-badge--visible');
+                                    }
+
+                                    // animasi
+                                    gsap.fromTo(badge, { scale: 1.6 }, {
+                                        scale: 1,
+                                        duration: 0.3,
+                                        ease: 'back.out(2)'
+                                    });
+
+                                    // optional: hapus kalau 0
                                     if (data.count === 0) badge.remove();
                                 }
                             });
@@ -306,7 +325,7 @@
                     gsap.to(img, { scale: 0.88, duration: 0.12, yoyo: true, repeat: 1 });
                 }
 
-                // ── Toast ──────────────────────────────────────────────────
+                // ── Toast Success──────────────────────────────────────────────────
                 function showToast(name) {
                     const container = document.getElementById('ef-toast-container');
                     const t = document.createElement('div');
@@ -323,6 +342,30 @@
                         t.classList.remove('ef-toast--show');
                         setTimeout(() => t.remove(), 400);
                     }, 2500);
+                }
+
+
+                // Toast Error
+                function showErrorToast(message = 'Gagal menambahkan ke keranjang') {
+                    const container = document.getElementById('ef-toast-container');
+                    const t = document.createElement('div');
+                    t.className = 'ef-toast ef-toast--error';
+                    t.innerHTML = `
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="15" y1="9" x2="9" y2="15"/>
+                                        <line x1="9" y1="9" x2="15" y2="15"/>
+                                    </svg>
+                                    <span>${message}</span>
+                                `;
+                    container.prepend(t);
+
+                    requestAnimationFrame(() => t.classList.add('ef-toast--show'));
+
+                    setTimeout(() => {
+                        t.classList.remove('ef-toast--show');
+                        setTimeout(() => t.remove(), 400);
+                    }, 3000);
                 }
 
                 // ── Add to Cart ────────────────────────────────────────────
@@ -347,7 +390,7 @@
                             splashToCart(btn);
                             showToast(name);
                         })
-                        .catch(() => alert('Gagal menambahkan ke keranjang'))
+                        .catch(() => showErrorToast('Produk gagal ditambahkan'))
                         .finally(() => {
                             btn.disabled = false;
                             btn.classList.remove('ef-btn--loading');
