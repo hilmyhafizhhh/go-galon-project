@@ -17,8 +17,12 @@
                      <div class="flex items-center bg-white rounded-xl shadow-sm p-3 border">
 
                          {{-- chexbox --}}
-                         <input type="checkbox" class="item-checkbox rounded-md mr-3 w-5 h-5"
-                             data-price="{{ $item->product->price }}" data-qty="{{ $item->quantity }}">
+                         {{-- <input type="checkbox" class="item-checkbox rounded-md mr-3 w-5 h-5"
+                             data-price="{{ $item->product->price }}" data-qty="{{ $item->quantity }}" --}}
+                         {{-- data-id="{{ $item->id }}"> --}}
+                         <input type="checkbox" class="item-checkbox" data-id="{{ $item->id }}"
+                             data-price="{{ $item->product->price }}" data-qty="{{ $item->quantity }}"
+                             {{ $item->is_selected ? 'checked' : '' }}>
 
                          {{-- Gambar --}}
                          <img src="{{ asset('assets/icons/' . $item->product->image) }}"
@@ -70,6 +74,7 @@
                      class="bg-blue-800 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-900">
                      Checkout (0)
                  </button>
+
              </div>
 
          @endif
@@ -80,6 +85,9 @@
 
  <script>
      const checkAll = document.getElementById('checkAll');
+     window.addEventListener('load', function() {
+         updateCart();
+     });
 
      if (checkAll) {
          const itemCheckboxes = document.querySelectorAll('.item-checkbox');
@@ -106,17 +114,50 @@
 
          // Select All
          checkAll.addEventListener('change', function() {
-             itemCheckboxes.forEach(cb => cb.checked = this.checked);
+             itemCheckboxes.forEach(cb => {
+                 cb.checked = this.checked;
+
+                 // 🔥 kirim ke backend juga
+                 fetch('/customer/cart/select-item', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                     },
+                     body: JSON.stringify({
+                         item_id: cb.dataset.id,
+                         selected: this.checked
+                     })
+                 });
+             });
+
              updateCart();
          });
 
          // Per item
          itemCheckboxes.forEach(cb => {
              cb.addEventListener('change', function() {
+
+                 // 🔥 kirim ke backend
+                 fetch('/customer/cart/select-item', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                     },
+                     body: JSON.stringify({
+                         item_id: this.dataset.id,
+                         selected: this.checked
+                     })
+                 });
                  const allChecked = [...itemCheckboxes].every(i => i.checked);
                  checkAll.checked = allChecked;
                  updateCart();
              });
+         });
+
+         checkoutBtn.addEventListener('click', function() {
+             window.location.href = "/customer/checkout";
          });
      }
  </script>

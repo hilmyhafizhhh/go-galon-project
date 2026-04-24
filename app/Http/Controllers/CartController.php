@@ -20,7 +20,7 @@ class CartController extends Controller
 
         return view('customer.cart.index', compact('order'));
     }
-    
+
 
     public function add(Request $request)
     {
@@ -28,7 +28,7 @@ class CartController extends Controller
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1'
         ]);
-        
+
         $userId = Auth::id();
 
         // 1. cari cart (draft)
@@ -54,7 +54,7 @@ class CartController extends Controller
             $item->quantity += $request->quantity;
             $item->subtotal = $item->quantity * $item->unit_price;
             $item->save();
-        }else {
+        } else {
             // insert baru
             $product = Product::findOrFail($request->product_id);
 
@@ -68,5 +68,29 @@ class CartController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    public function selectItem(Request $request)
+    {
+        try {
+
+            $item = OrderItem::find($request->item_id);
+
+            if (!$item) {
+                return response()->json(['error' => 'Item tidak ditemukan'], 404);
+            }
+
+            $item->update([
+                'is_selected' => filter_var($request->selected, FILTER_VALIDATE_BOOLEAN)
+            ]);
+
+            return response()->json([
+                'success' => true
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
