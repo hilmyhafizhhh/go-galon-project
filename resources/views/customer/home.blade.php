@@ -44,8 +44,8 @@
                                     <span class="ef-badge ef-badge--hot">Paling Laris 🔥</span>
                                 </div>
                                 <div class="ef-card__img-wrap">
-                                    <img src="{{ asset('assets/icons/aqua-removebg-preview.png') }}"
-                                        alt="Aqua Galon 19L" class="ef-card__img">
+                                    <img src="{{ asset('assets/icons/aqua-removebg-preview.png') }}" alt="Aqua Galon 19L"
+                                        class="ef-card__img">
                                     <div class="ef-card__img-glow"></div>
                                 </div>
                                 <div class="ef-card__body">
@@ -54,8 +54,8 @@
                                     <button class="ef-btn ef-btn--primary" onclick="addToCart(this)" data-id="1"
                                         data-product="Aqua Galon 19L">
                                         Pesan Sekarang
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2.5">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2.5">
                                             <path d="M5 12h14M12 5l7 7-7 7" />
                                         </svg>
                                     </button>
@@ -190,16 +190,16 @@
 
                         <div class="ef-order__meta">
                             <div class="ef-order__meta-item">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
                                     <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
                                     <circle cx="12" cy="7" r="4" />
                                 </svg>
                                 Kurir: <strong>Budi</strong>
                             </div>
                             <div class="ef-order__meta-item">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M12 6v6l4 2" />
                                 </svg>
@@ -208,8 +208,8 @@
                         </div>
 
                         <button class="ef-btn ef-btn--track">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
                                 <circle cx="12" cy="10" r="3" />
                             </svg>
@@ -248,9 +248,7 @@
                         setTimeout(() => e.target.classList.add('ef-revealed'), delay);
                         ro.unobserve(e.target);
                     });
-                }, {
-                    threshold: 0.12
-                });
+                }, { threshold: 0.12 });
                 revealEls.forEach(el => ro.observe(el));
 
                 // ── Cart Badge ─────────────────────────────────────────────
@@ -260,26 +258,15 @@
                         .then(data => {
                             document.querySelectorAll('.cart-icon').forEach(icon => {
                                 let badge = icon.querySelector('.cart-count');
-
+                                if (!badge && data.count > 0) {
+                                    badge = document.createElement('span');
+                                    badge.className = 'cart-count';
+                                    icon.appendChild(badge);
+                                }
                                 if (badge) {
                                     badge.textContent = data.count;
-<<<<<<< HEAD
-                                    badge.dataset.count = data.count; // 🔥 INI YANG PENTING
-
-                                    gsap.fromTo(badge,
-                                        { scale: 1.6 },
-                                        { scale: 1, duration: 0.3, ease: 'back.out(2)' }
-                                    );
-=======
-                                    gsap.fromTo(badge, {
-                                        scale: 1.6
-                                    }, {
-                                        scale: 1,
-                                        duration: 0.3,
-                                        ease: 'back.out(2)'
-                                    });
+                                    gsap.fromTo(badge, { scale: 1.6 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
                                     if (data.count === 0) badge.remove();
->>>>>>> a3f30400305f5ecfae0155697b68c60e36b20dab
                                 }
                             });
                         });
@@ -301,46 +288,22 @@
                 function runSplash(img, cart) {
                     const rs = img.getBoundingClientRect();
                     const re = cart.getBoundingClientRect();
-                    const sx = rs.left + rs.width / 2,
-                        sy = rs.top + rs.height / 2;
-                    const ex = re.left + re.width / 2,
-                        ey = re.top + re.height / 2;
+                    const sx = rs.left + rs.width / 2, sy = rs.top + rs.height / 2;
+                    const ex = re.left + re.width / 2, ey = re.top + re.height / 2;
 
                     const dot = document.createElement('div');
                     dot.className = 'ef-splash';
                     document.body.appendChild(dot);
 
-                    gsap.set(dot, {
-                        x: sx,
-                        y: sy,
-                        scale: 0.5,
-                        opacity: 1
-                    });
+                    gsap.set(dot, { x: sx, y: sy, scale: 0.5, opacity: 1 });
                     gsap.to(dot, {
-                        duration: 0.75,
-                        x: ex,
-                        y: ey,
-                        scale: 0.1,
-                        ease: 'power3.in',
+                        duration: 0.75, x: ex, y: ey, scale: 0.1, ease: 'power3.in',
                         onComplete: () => {
                             dot.remove();
-                            gsap.fromTo(cart, {
-                                scale: 1
-                            }, {
-                                scale: 1.35,
-                                yoyo: true,
-                                repeat: 1,
-                                duration: 0.12,
-                                ease: 'power2.out'
-                            });
+                            gsap.fromTo(cart, { scale: 1 }, { scale: 1.35, yoyo: true, repeat: 1, duration: 0.12, ease: 'power2.out' });
                         }
                     });
-                    gsap.to(img, {
-                        scale: 0.88,
-                        duration: 0.12,
-                        yoyo: true,
-                        repeat: 1
-                    });
+                    gsap.to(img, { scale: 0.88, duration: 0.12, yoyo: true, repeat: 1 });
                 }
 
                 // ── Toast ──────────────────────────────────────────────────
@@ -363,7 +326,7 @@
                 }
 
                 // ── Add to Cart ────────────────────────────────────────────
-                window.addToCart = function(btn) {
+                window.addToCart = function (btn) {
                     const id = btn.dataset.id;
                     const name = btn.dataset.product;
 
@@ -371,20 +334,14 @@
                     btn.classList.add('ef-btn--loading');
 
                     fetch('/customer/cart/add', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                            },
-                            body: JSON.stringify({
-                                product_id: id,
-                                quantity: 1
-                            })
-                        })
-                        .then(r => {
-                            if (!r.ok) throw new Error();
-                            return r.json();
-                        })
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({ product_id: id, quantity: 1 })
+                    })
+                        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
                         .then(() => {
                             updateCartBadge();
                             splashToCart(btn);
