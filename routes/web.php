@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Auth\ProviderController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
@@ -139,6 +140,12 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     // ── Profile ──
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Alamat
+    Route::post('/address',              [AddressController::class, 'store'])->name('address.store');
+    Route::put('/address/{address}',     [AddressController::class, 'update'])->name('address.update');
+    Route::patch('/address/{address}/default', [AddressController::class, 'setDefault'])->name('address.default');
+    Route::delete('/address/{address}',  [AddressController::class, 'destroy'])->name('address.destroy');
 });
 
 // Route Google OAuth

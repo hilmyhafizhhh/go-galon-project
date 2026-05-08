@@ -34,17 +34,16 @@ class ProfileController extends Controller
      */
     public function show(Request $request): View
     {
-        // return view('profile.show', [
-        //     'user' => $request->user(),
-        // ]);
+        $user = $request->user();
+        $addresses = $user->addresses()->get(); // ambil alamat
 
-        // Kalau nanti mau view berbeda per role:
         $view = match($this->rolePrefix()) {
             'admin'   => 'admin.profile.show',
             'courier' => 'courier.profile.show',
             default   => 'customer.profile.show',
         };
-        return view($view, ['user' => $request->user()]);
+
+        return view($view, compact('user', 'addresses'));
     }
 
     /**

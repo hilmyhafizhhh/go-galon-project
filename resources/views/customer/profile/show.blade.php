@@ -37,16 +37,16 @@
         <div class="ef-profile__body">
 
             {{-- Alerts --}}
-            @if(session('success'))
-                <div class="ef-profile__alert ef-profile__alert--success" data-reveal>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                        <polyline points="22 4 12 14.01 9 11.01" />
-                    </svg>
-                    {{ session('success') }}
-                </div>
-            @endif
+            {{-- @if(session('success'))
+            <div class="ef-profile__alert ef-profile__alert--success" data-reveal>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                {{ session('success') }}
+            </div>
+            @endif --}}
 
             @if($errors->any())
                 <div class="ef-profile__alert ef-profile__alert--error" data-reveal>
@@ -61,6 +61,7 @@
                     </div>
                 </div>
             @endif
+
 
             {{-- Avatar card --}}
             <div class="ef-profile__avatar-card" data-reveal>
