@@ -92,6 +92,7 @@ class CartController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
     public function removeBulk(Request $request)
     {
         $ids = $request->input('item_ids', []);

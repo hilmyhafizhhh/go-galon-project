@@ -13,6 +13,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\AddressController;
 use App\Models\Order;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
@@ -121,10 +122,17 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
 
+    // addres
+    Route::get('/address/create', [AddressController::class, 'create'])->name('address.create');
+    Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
+
+
     // route untuk chechout
 
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])
+        ->name('checkout.success');
 
     // cart count untuk navbar
     Route::get('/cart/count', function () {

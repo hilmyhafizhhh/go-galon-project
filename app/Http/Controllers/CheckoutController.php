@@ -37,20 +37,19 @@ class CheckoutController extends Controller
             'payment_method' => 'required'
         ]);
 
-        $order = Order::with('items')
+        $order = Order::with('items.product')
             ->where('user_id', auth()->id())
             ->where('status', 'draft')
             ->first();
-
-        if (!$order) {
-            return redirect()->route('customer.cart');
-        }
 
         $items = $order->items->where('is_selected', true);
 
         if ($items->isEmpty()) {
             return back()->with('error', 'Tidak ada item dipilih');
         }
+
+        // 🔥 hapus item yang tidak dipilih
+        $order->items()->where('is_selected', false)->delete();
 
         $total = $items->sum('subtotal');
 
@@ -61,6 +60,6 @@ class CheckoutController extends Controller
             'payment_method' => $request->payment_method
         ]);
 
-        return redirect('/checkout/success');
+        return redirect()->route('customer.checkout.success', $order->id);
     }
 }

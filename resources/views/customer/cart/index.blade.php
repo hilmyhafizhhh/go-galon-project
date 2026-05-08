@@ -29,13 +29,6 @@
                     </div>
                 </div>
 
-                         {{-- chexbox --}}
-                         {{-- <input type="checkbox" class="item-checkbox rounded-md mr-3 w-5 h-5"
-                             data-price="{{ $item->product->price }}" data-qty="{{ $item->quantity }}" --}}
-                         {{-- data-id="{{ $item->id }}"> --}}
-                         <input type="checkbox" class="item-checkbox" data-id="{{ $item->id }}"
-                             data-price="{{ $item->product->price }}" data-qty="{{ $item->quantity }}"
-                             {{ $item->is_selected ? 'checked' : '' }}>
                 {{-- Selection / delete mode --}}
                 <div class="ef-cart__header-select" id="headerSelect" style="display:none">
                     <button class="ef-cart__cancel-btn" id="cancelSelectBtn">
@@ -84,32 +77,25 @@
                     <h3 class="ef-cart__empty-title">Keranjang masih kosong</h3>
                     <p class="ef-cart__empty-sub">Tambahkan produk galon favoritmu ke keranjang.</p>
                     <a href="{{ route('customer.home') }}" class="ef-cart__empty-btn">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" />
                             <path d="M9 21V12h6v9" />
                         </svg>
                         Lihat Produk
                     </a>
                 </div>
-
             @else
-
                 <div class="ef-cart__list" id="cartList">
                     @foreach ($order->items as $item)
                         <div class="ef-cart__item" data-reveal data-delay="{{ $loop->index * 55 }}"
                             data-item-id="{{ $item->id }}">
 
-                 <button id="checkoutBtn"
-                     class="bg-blue-800 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-900">
-                     Checkout (0)
-                 </button>
-
-             </div>
-                            {{-- Checkbox --}}
+                            {{-- Checkbox — state dari DB via $item->is_selected --}}
                             <label class="ef-cart__check-wrap">
-                                <input type="checkbox" class="item-checkbox ef-cart__checkbox" data-id="{{ $item->id }}"
-                                    data-price="{{ $item->product->price }}" data-qty="{{ $item->quantity }}">
+                                <input type="checkbox" class="item-checkbox ef-cart__checkbox"
+                                    data-id="{{ $item->id }}" data-price="{{ $item->product->price }}"
+                                    data-qty="{{ $item->quantity }}" {{ $item->is_selected ? 'checked' : '' }}>
                                 <span class="ef-cart__checkmark">
                                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white"
                                         stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
@@ -120,8 +106,8 @@
 
                             {{-- Image --}}
                             <div class="ef-cart__img-wrap">
-                                <img src="{{ asset('assets/icons/' . $item->product->image) }}" alt="{{ $item->product->name }}"
-                                    class="ef-cart__img">
+                                <img src="{{ asset('assets/icons/' . $item->product->image) }}"
+                                    alt="{{ $item->product->name }}" class="ef-cart__img">
                             </div>
 
                             {{-- Info --}}
@@ -138,19 +124,32 @@
                                 <div class="ef-cart__qty" data-item-id="{{ $item->id }}"
                                     data-price="{{ $item->product->price }}">
                                     <button class="ef-cart__qty-btn ef-cart__qty-btn--minus" aria-label="Kurangi">
-                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2.5" stroke-linecap="round">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                                             <path d="M5 12h14" />
                                         </svg>
                                     </button>
                                     <span class="ef-cart__qty-val">{{ $item->quantity }}</span>
                                     <button class="ef-cart__qty-btn ef-cart__qty-btn--plus" aria-label="Tambah">
-                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2.5" stroke-linecap="round">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                                             <path d="M12 5v14M5 12h14" />
                                         </svg>
                                     </button>
                                 </div>
+
+                                {{-- Tombol hapus per item
+                                <button class="ef-cart__item-del" data-item-id="{{ $item->id }}"
+                                    data-name="{{ $item->product->name }}" aria-label="Hapus item">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6" />
+                                        <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                                        <path d="M10 11v6M14 11v6" />
+                                        <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+                                    </svg>
+                                </button> --}}
                             </div>
 
                         </div>
@@ -171,8 +170,8 @@
                     <label class="ef-cart__check-wrap ef-cart__check-wrap--footer">
                         <input type="checkbox" id="checkAll" class="ef-cart__checkbox">
                         <span class="ef-cart__checkmark">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"
-                                stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white"
+                                stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 6L9 17l-5-5" />
                             </svg>
                         </span>
@@ -201,8 +200,8 @@
         <div class="ef-dialog__backdrop" id="dialogBackdrop"></div>
         <div class="ef-dialog__box">
             <div class="ef-dialog__icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6" />
                     <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
                     <path d="M10 11v6M14 11v6" />
@@ -214,8 +213,8 @@
             <div class="ef-dialog__actions">
                 <button class="ef-dialog__btn ef-dialog__btn--cancel" id="dialogCancel">Batal</button>
                 <button class="ef-dialog__btn ef-dialog__btn--confirm" id="dialogConfirm">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="3 6 5 6 21 6" />
                         <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
                     </svg>
@@ -238,10 +237,13 @@
             const revealObs = new IntersectionObserver((entries) => {
                 entries.forEach(e => {
                     if (!e.isIntersecting) return;
-                    setTimeout(() => e.target.classList.add('ef-revealed'), parseInt(e.target.dataset.delay || 0));
+                    setTimeout(() => e.target.classList.add('ef-revealed'),
+                        parseInt(e.target.dataset.delay || 0));
                     revealObs.unobserve(e.target);
                 });
-            }, { threshold: 0.06 });
+            }, {
+                threshold: 0.06
+            });
             document.querySelectorAll('[data-reveal]').forEach(el => revealObs.observe(el));
 
             // ── DOM refs ───────────────────────────────────────────────
@@ -265,13 +267,14 @@
             const dialogBdrop = document.getElementById('dialogBackdrop');
             const toastEl = document.getElementById('ef-toast-container');
 
-            // ── Getters ────────────────────────────────────────────────
             const getItemCBs = () => [...document.querySelectorAll('.item-checkbox')];
 
             // ── Update cart state ──────────────────────────────────────
             function updateCart() {
                 const cbs = getItemCBs();
-                let total = 0, countQty = 0, countChecked = 0;
+                let total = 0,
+                    countQty = 0,
+                    countChecked = 0;
 
                 cbs.forEach(cb => {
                     if (cb.checked) {
@@ -281,7 +284,6 @@
                     }
                 });
 
-                // Footer
                 totalPriceEl.textContent = 'Rp' + total.toLocaleString('id-ID');
                 checkoutCount.textContent = countQty;
                 checkoutBtn.disabled = countQty === 0;
@@ -304,20 +306,47 @@
                 checkAll.indeterminate = someChecked && !allChecked;
             }
 
-            // ── Checkbox events ────────────────────────────────────────
-            checkAll.addEventListener('change', function () {
-                getItemCBs().forEach(cb => cb.checked = this.checked);
+            // ── Sync satu item ke backend ──────────────────────────────
+            // Logic dari kode pertama: tiap perubahan checkbox dikirim ke /customer/cart/select-item
+            function syncSelectItem(itemId, selected) {
+                fetch('/customer/cart/select-item', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        item_id: itemId,
+                        selected: selected
+                    })
+                });
+            }
+
+            // ── Select All — sync semua item ke backend ────────────────
+            // Logic dari kode pertama: loop semua checkbox dan kirim masing-masing
+            checkAll.addEventListener('change', function() {
+                getItemCBs().forEach(cb => {
+                    cb.checked = this.checked;
+                    syncSelectItem(cb.dataset.id, this.checked);
+                });
                 updateCart();
             });
 
+            // ── Per item checkbox ──────────────────────────────────────
+            // Logic dari kode pertama: kirim ke backend saat satu item diubah
             cartList.addEventListener('change', e => {
                 if (!e.target.classList.contains('item-checkbox')) return;
+                syncSelectItem(e.target.dataset.id, e.target.checked);
                 updateCart();
             });
 
             // ── Cancel selection ───────────────────────────────────────
             cancelSelBtn.addEventListener('click', () => {
-                getItemCBs().forEach(cb => cb.checked = false);
+                getItemCBs().forEach(cb => {
+                    // Sync ke backend juga saat batal (uncheck semua)
+                    if (cb.checked) syncSelectItem(cb.dataset.id, false);
+                    cb.checked = false;
+                });
                 checkAll.checked = false;
                 updateCart();
             });
@@ -326,13 +355,13 @@
             function showToast(msg, type = 'success') {
                 const t = document.createElement('div');
                 t.className = `ef-toast ef-toast--${type}`;
-                const svgPath = type === 'success'
-                    ? '<path d="M20 6L9 17l-5-5"/>'
-                    : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
+                const svgPath = type === 'success' ?
+                    '<path d="M20 6L9 17l-5-5"/>' :
+                    '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
                 t.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg>
-            <span>${msg}</span>`;
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg>
+                    <span>${msg}</span>`;
                 toastEl.prepend(t);
                 requestAnimationFrame(() => t.classList.add('ef-toast--show'));
                 setTimeout(() => {
@@ -353,8 +382,17 @@
                     dialogCancel.removeEventListener('click', handleCancel);
                     dialogBdrop.removeEventListener('click', handleCancel);
                 }
-                function handleConfirm() { cleanup(); closeDialog(); onConfirm(); }
-                function handleCancel() { cleanup(); closeDialog(); }
+
+                function handleConfirm() {
+                    cleanup();
+                    closeDialog();
+                    onConfirm();
+                }
+
+                function handleCancel() {
+                    cleanup();
+                    closeDialog();
+                }
 
                 dialogConfirm.addEventListener('click', handleConfirm);
                 dialogCancel.addEventListener('click', handleCancel);
@@ -363,18 +401,24 @@
 
             function closeDialog() {
                 dialog.classList.remove('ef-dialog--open');
-                setTimeout(() => { dialog.style.display = 'none'; }, 280);
+                setTimeout(() => {
+                    dialog.style.display = 'none';
+                }, 280);
             }
 
             // ── Animate item out ───────────────────────────────────────
             function animateOut(el, done) {
                 el.classList.add('ef-cart__item--removing');
-                el.addEventListener('transitionend', () => { el.remove(); done && done(); }, { once: true });
+                el.addEventListener('transitionend', () => {
+                    el.remove();
+                    done && done();
+                }, {
+                    once: true
+                });
             }
 
             // ── Delete via API ─────────────────────────────────────────
             function deleteItems(ids, els, successMsg) {
-                // Optimistic: animate items out immediately
                 let removed = 0;
                 els.forEach(el => animateOut(el, () => {
                     removed++;
@@ -388,14 +432,19 @@
                 }));
 
                 fetch('/customer/cart/remove', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({ item_ids: ids })
-                })
-                    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            item_ids: ids
+                        })
+                    })
+                    .then(r => {
+                        if (!r.ok) throw new Error();
+                        return r.json();
+                    })
                     .then(() => showToast(successMsg))
                     .catch(() => {
                         showToast('Gagal menghapus. Halaman akan dimuat ulang.', 'error');
@@ -403,20 +452,20 @@
                     });
             }
 
-            // ── Single delete ──────────────────────────────────────────
-            cartList.addEventListener('click', e => {
-                const btn = e.target.closest('.ef-cart__item-del');
-                if (!btn) return;
-                const id = btn.dataset.itemId;
-                const name = btn.dataset.name;
-                const el = btn.closest('.ef-cart__item');
+            // // ── Single delete (tombol hapus per item) ──────────────────
+            // cartList.addEventListener('click', e => {
+            //     const btn = e.target.closest('.ef-cart__item-del');
+            //     if (!btn) return;
+            //     const id = btn.dataset.itemId;
+            //     const name = btn.dataset.name;
+            //     const el = btn.closest('.ef-cart__item');
 
-                openDialog(
-                    'Hapus dari keranjang?',
-                    `"${name}" akan dihapus dari keranjangmu.`,
-                    () => deleteItems([id], [el], `${name} dihapus`)
-                );
-            });
+            //     openDialog(
+            //         'Hapus dari keranjang?',
+            //         `"${name}" akan dihapus dari keranjangmu.`,
+            //         () => deleteItems([id], [el], `${name} dihapus`)
+            //     );
+            // });
 
             // ── Bulk delete ────────────────────────────────────────────
             deleteSelBtn.addEventListener('click', () => {
@@ -456,86 +505,15 @@
                 updateCart();
             });
 
+            // ── Checkout ───────────────────────────────────────────────
+            checkoutBtn.addEventListener('click', function() {
+                if (!this.disabled) window.location.href = '/customer/checkout';
+            });
+
+            // ── Init: jalankan updateCart saat halaman load ────────────
+            // Logic dari kode pertama: window load → updateCart()
             updateCart();
         });
     </script>
 
-
- <script>
-     const checkAll = document.getElementById('checkAll');
-     window.addEventListener('load', function() {
-         updateCart();
-     });
-
-     if (checkAll) {
-         const itemCheckboxes = document.querySelectorAll('.item-checkbox');
-         const totalPriceEl = document.getElementById('totalPrice');
-         const checkoutBtn = document.getElementById('checkoutBtn');
-
-         function updateCart() {
-             let total = 0;
-             let count = 0;
-
-             itemCheckboxes.forEach(cb => {
-                 if (cb.checked) {
-                     const price = parseInt(cb.dataset.price);
-                     const qty = parseInt(cb.dataset.qty);
-
-                     total += price * qty;
-                     count += qty; // 🔥 pakai qty
-                 }
-             });
-
-             totalPriceEl.innerText = 'Rp' + total.toLocaleString('id-ID');
-             checkoutBtn.innerText = `Checkout (${count})`;
-         }
-
-         // Select All
-         checkAll.addEventListener('change', function() {
-             itemCheckboxes.forEach(cb => {
-                 cb.checked = this.checked;
-
-                 // 🔥 kirim ke backend juga
-                 fetch('/customer/cart/select-item', {
-                     method: 'POST',
-                     headers: {
-                         'Content-Type': 'application/json',
-                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                     },
-                     body: JSON.stringify({
-                         item_id: cb.dataset.id,
-                         selected: this.checked
-                     })
-                 });
-             });
-
-             updateCart();
-         });
-
-         // Per item
-         itemCheckboxes.forEach(cb => {
-             cb.addEventListener('change', function() {
-
-                 // 🔥 kirim ke backend
-                 fetch('/customer/cart/select-item', {
-                     method: 'POST',
-                     headers: {
-                         'Content-Type': 'application/json',
-                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                     },
-                     body: JSON.stringify({
-                         item_id: this.dataset.id,
-                         selected: this.checked
-                     })
-                 });
-                 const allChecked = [...itemCheckboxes].every(i => i.checked);
-                 checkAll.checked = allChecked;
-                 updateCart();
-             });
-         });
-
-         checkoutBtn.addEventListener('click', function() {
-             window.location.href = "/customer/checkout";
-         });
-     }
- </script>
+</x-app-layout>
