@@ -13,6 +13,8 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\AddressController;
 use App\Models\Order;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
@@ -116,8 +118,22 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/select-item',[CartController::class, 'selectItem']);
     Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+
+    // addres
+    Route::get('/address/create', [AddressController::class, 'create'])->name('address.create');
+    Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
+
+
+    // route untuk chechout
+
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])
+        ->name('checkout.success');
 
     // cart count untuk navbar
     Route::get('/cart/count', function () {
@@ -147,6 +163,7 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     Route::patch('/address/{address}/default', [AddressController::class, 'setDefault'])->name('address.default');
     Route::delete('/address/{address}',  [AddressController::class, 'destroy'])->name('address.destroy');
 });
+
 
 // Route Google OAuth
 Route::get('/auth/google/redirect', [ProviderController::class, 'redirect']);

@@ -5,6 +5,7 @@
 @import "./pages/index-chat.css";
 @import "./pages/show-chat.css";
 @import "./pages/index.cart.css";
+@import "./pages/checkout.css";
 @import "./navigations/navigation-customer.css";
 
 @tailwind base;
