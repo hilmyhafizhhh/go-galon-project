@@ -487,23 +487,35 @@
             });
 
             // ── Qty stepper ────────────────────────────────────────────
-            cartList.addEventListener('click', e => {
-                const minus = e.target.closest('.ef-cart__qty-btn--minus');
-                const plus = e.target.closest('.ef-cart__qty-btn--plus');
-                if (!minus && !plus) return;
+            // ── Qty stepper ────────────────────────────────────────────
+cartList.addEventListener('click', e => {
+    const minus = e.target.closest('.ef-cart__qty-btn--minus');
+    const plus  = e.target.closest('.ef-cart__qty-btn--plus');
+    if (!minus && !plus) return;
 
-                const qtyWrap = e.target.closest('.ef-cart__qty');
-                const valEl = qtyWrap.querySelector('.ef-cart__qty-val');
-                const cb = qtyWrap.closest('.ef-cart__item').querySelector('.item-checkbox');
-                let val = parseInt(valEl.textContent);
+    const qtyWrap = e.target.closest('.ef-cart__qty');
+    const valEl   = qtyWrap.querySelector('.ef-cart__qty-val');
+    const cb      = qtyWrap.closest('.ef-cart__item').querySelector('.item-checkbox');
+    const itemId  = qtyWrap.dataset.itemId;
+    let val = parseInt(valEl.textContent);
 
-                if (minus) val = Math.max(1, val - 1);
-                if (plus) val = val + 1;
+    if (minus) val = Math.max(1, val - 1);
+    if (plus)  val = val + 1;
 
-                valEl.textContent = val;
-                cb.dataset.qty = val;
-                updateCart();
-            });
+    valEl.textContent  = val;
+    cb.dataset.qty     = val;
+    updateCart();
+
+    // ← Sync ke backend
+    fetch('/customer/cart/update-qty', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ item_id: itemId, quantity: val })
+    }).catch(() => showToast('Gagal menyimpan perubahan qty', 'error'));
+});
 
             // ── Checkout ───────────────────────────────────────────────
             checkoutBtn.addEventListener('click', function() {

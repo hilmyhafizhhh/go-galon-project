@@ -114,4 +114,33 @@ class CartController extends Controller
 
         return response()->json(['message' => 'Item berhasil dihapus']);
     }
+
+    public function updateQty(Request $request)
+    {
+        $request->validate([
+            'item_id' => 'required',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $order = Order::where('user_id', auth()->id())
+            ->where('status', 'draft')
+            ->first();
+
+        if (!$order) {
+            return response()->json(['error' => 'Order tidak ditemukan'], 404);
+        }
+
+        $item = $order->items()->find($request->item_id);
+
+        if (!$item) {
+            return response()->json(['error' => 'Item tidak ditemukan'], 404);
+        }
+
+        $item->update([
+            'quantity' => $request->quantity,
+            'subtotal' => $item->unit_price * $request->quantity,
+        ]);
+
+        return response()->json(['success' => true]);
+    }
 }
