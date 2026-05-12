@@ -7,6 +7,7 @@
 @import "./pages/index.cart.css";
 @import "./pages/checkout.css";
 @import "./navigations/navigation-customer.css";
+@import "./pages/homeCourir.css";
 
 @tailwind base;
 @tailwind components;
