@@ -125,6 +125,7 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
 
     // addres
     Route::get('/address/create', [AddressController::class, 'create'])->name('address.create');
+    Route::get('/address/edit', [AddressController::class, 'edit'])->name('address.edit');
     Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
 
 
