@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Auth\ProviderController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
@@ -13,7 +14,6 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\AddressController;
 use App\Models\Order;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
@@ -118,12 +118,14 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/select-item',[CartController::class, 'selectItem']);
+    Route::post('/cart/update-qty', [CartController::class, 'updateQty'])->name('cart.update-qty');
     Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
 
     // addres
     Route::get('/address/create', [AddressController::class, 'create'])->name('address.create');
+    Route::get('/address/edit', [AddressController::class, 'edit'])->name('address.edit');
     Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
 
 
@@ -155,6 +157,12 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     // ── Profile ──
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Alamat
+    Route::post('/address',              [AddressController::class, 'store'])->name('address.store');
+    Route::put('/address/{address}',     [AddressController::class, 'update'])->name('address.update');
+    Route::patch('/address/{address}/default', [AddressController::class, 'setDefault'])->name('address.default');
+    Route::delete('/address/{address}',  [AddressController::class, 'destroy'])->name('address.destroy');
 });
 
 

@@ -883,6 +883,12 @@
     transform: none;
 }
 
+.ef-toast--error {
+    background: #ffe5e5;
+    color: #b00020;
+    border: 1px solid #ffb3b3;
+}
+
 .ef-toast--success {
     background: #1e293b;
     color: #f1f5f9;
