@@ -163,6 +163,7 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     Route::put('/address/{address}',     [AddressController::class, 'update'])->name('address.update');
     Route::patch('/address/{address}/default', [AddressController::class, 'setDefault'])->name('address.default');
     Route::delete('/address/{address}',  [AddressController::class, 'destroy'])->name('address.destroy');
+    Route::get('/address/select', [AddressController::class, 'select'])->name('address.select');
 });
 
 
