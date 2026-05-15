@@ -130,9 +130,10 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
 
 
     // route untuk chechout
-
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/address-picker', [CheckoutController::class, 'addressPicker'])
+    ->name('checkout.address-picker');
     Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])
         ->name('checkout.success');
 
@@ -158,11 +159,13 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    // Alamat
-    Route::post('/address',              [AddressController::class, 'store'])->name('address.store');
-    Route::put('/address/{address}',     [AddressController::class, 'update'])->name('address.update');
+    // ── Alamat ──────────────────────────────────────────────────────────────
+    Route::get('/address/create',              [AddressController::class, 'create'])->name('address.create');
+    Route::post('/address',                    [AddressController::class, 'store'])->name('address.store');
+    Route::get('/address/{address}/edit',      [AddressController::class, 'edit'])->name('address.edit');
+    Route::put('/address/{address}',           [AddressController::class, 'update'])->name('address.update');
     Route::patch('/address/{address}/default', [AddressController::class, 'setDefault'])->name('address.default');
-    Route::delete('/address/{address}',  [AddressController::class, 'destroy'])->name('address.destroy');
+    Route::delete('/address/{address}',        [AddressController::class, 'destroy'])->name('address.destroy');
 });
 
 

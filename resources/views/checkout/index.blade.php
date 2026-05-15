@@ -63,47 +63,62 @@
                         <span class="co-section-label__text">Alamat Pengiriman</span>
                     </div>
 
-                    <div class="co-select-list" id="addressList">
-                        @foreach ($addresses as $index => $address)
-                            <label class="co-select-item {{ $index >= 2 ? 'addr-hidden' : '' }}"
-                                style="{{ $index >= 2 ? 'display:none' : '' }}">
-                                <input type="radio" name="address_id" value="{{ $address->id }}" {{ $address->is_default ? 'checked' : '' }}>
-                                <div class="co-radio">
-                                    <div class="co-radio__dot"></div>
+                    {{-- Hidden radio inputs — bawa data-* agar JS bisa update tampilan --}}
+                    @php $defaultAddress = $addresses->firstWhere('is_default', true) ?? $addresses->first(); @endphp
+                    @foreach ($addresses as $address)
+                        <input type="radio" name="address_id" id="addr_{{ $address->id }}" value="{{ $address->id }}"
+                            data-label="{{ $address->label }}" data-address="{{ $address->address }}"
+                            data-is-default="{{ $address->is_default ? '1' : '0' }}" {{ $address->id == $defaultAddress?->id ? 'checked' : '' }} style="display:none">
+                    @endforeach
+
+                    {{-- Address row — sama padding dengan .co-select-list --}}
+                    <div class="co-select-list" style="padding-bottom: 14px">
+                        @if ($defaultAddress)
+                            <a href="{{ route('customer.checkout.address-picker') }}" class="co-addr-row" id="addrRow">
+                                <div class="co-addr-row__icon">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path
+                                            d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
                                 </div>
-                                <div class="co-select-content">
-                                    <div class="co-select-content__top">
-                                        <p class="co-select-label">{{ $address->label }}</p>
-                                        @if ($address->is_default)
-                                            <span class="co-badge co-badge--red">Utama</span>
-                                        @endif
+                                <div class="co-addr-row__body">
+                                    <div class="co-addr-row__top">
+                                        <span class="co-addr-row__label" id="addrLabel">{{ $defaultAddress->label }}</span>
+                                        <span class="co-badge co-badge--blue co-addr-row__badge" id="addrBadge"
+                                            style="{{ $defaultAddress->is_default ? '' : 'display:none' }}">Utama</span>
                                     </div>
-                                    <p class="co-select-sub">{{ $address->address }}</p>
+                                    <p class="co-addr-row__detail" id="addrDetail">{{ $defaultAddress->address }}</p>
                                 </div>
-                            </label>
-                        @endforeach
-                    </div>
-
-                    @if ($addresses->count() > 2)
-                        <button type="button" class="co-show-more" id="toggleAddressBtn">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M6 9l6 6 6-6" />
-                            </svg>
-                            Lihat {{ $addresses->count() - 2 }} alamat lainnya
-                        </button>
-                    @endif
-
-                    <div class="co-card-footer">
-                        <a href="{{ route('customer.address.create') }}" class="co-addr-add">
-                            <div class="co-addr-add__icon">
-                                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"
-                                    stroke-linecap="round" viewBox="0 0 24 24">
-                                    <path d="M12 5v14M5 12h14" />
+                                <div class="co-addr-row__chevron">
+                                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"
+                                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path d="M9 18l6-6-6-6" />
+                                    </svg>
+                                </div>
+                            </a>
+                        @else
+                            {{-- No address yet --}}
+                            <a href="{{ route('customer.address.create') }}" class="co-addr-empty">
+                                <div class="co-addr-empty__icon">
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                        <path
+                                            d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <div class="co-addr-empty__text">
+                                    <span class="co-addr-empty__title">Belum ada alamat</span>
+                                    <span class="co-addr-empty__sub">Tambah alamat pengiriman</span>
+                                </div>
+                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"
+                                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M9 18l6-6-6-6" />
                                 </svg>
-                            </div>
-                            Tambah alamat baru
-                        </a>
+                            </a>
+                        @endif
                     </div>
                 </div>
 
@@ -309,15 +324,7 @@
                     </div>
                 </div>
 
-                @if (session('success'))
-                    <div class="co-alert co-alert--success">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                        {{ session('success') }}
-                    </div>
-                @endif
+                <x-flash-toast />
 
             </div>
         </div>
@@ -344,23 +351,87 @@
     </form>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // ── Constants ────────────────────────────────────────────────────────────
+        const CHECKOUT_STATE_KEY = 'checkout_state';
 
-            const payRadios = document.querySelectorAll('input[name="payment_method"]');
-            const transferDetail = document.getElementById('transferDetail');
+        // ── Helpers ──────────────────────────────────────────────────────────────
 
-            function toggleTransfer() {
-                const selected = document.querySelector('input[name="payment_method"]:checked');
-                transferDetail.classList.toggle('visible', selected?.value === 'transfer');
+        function toggleTransfer() {
+            const selected = document.querySelector('input[name="payment_method"]:checked');
+            document.getElementById('transferDetail')
+                .classList.toggle('visible', selected?.value === 'transfer');
+        }
+
+        function saveCheckoutState() {
+            const state = {
+                address_id: document.querySelector('input[name="address_id"]:checked')?.value ?? null,
+                payment_method: document.querySelector('input[name="payment_method"]:checked')?.value ?? 'cod',
+                saved_at: Date.now(),
+            };
+            localStorage.setItem(CHECKOUT_STATE_KEY, JSON.stringify(state));
+        }
+
+        function restoreCheckoutState() {
+            const raw = localStorage.getItem(CHECKOUT_STATE_KEY);
+            if (!raw) return;
+
+            let state;
+            try { state = JSON.parse(raw); } catch { return; }
+
+            // Expired setelah 30 menit
+            if (Date.now() - (state.saved_at ?? 0) > 30 * 60 * 1000) {
+                localStorage.removeItem(CHECKOUT_STATE_KEY);
+                return;
             }
 
-            payRadios.forEach(r => r.addEventListener('change', toggleTransfer));
+            if (state.address_id) {
+                const r = document.querySelector(`input[name="address_id"][value="${state.address_id}"]`);
+                if (r) r.checked = true;
+            }
+
+            if (state.payment_method) {
+                const r = document.querySelector(`input[name="payment_method"][value="${state.payment_method}"]`);
+                if (r) { r.checked = true; toggleTransfer(); }
+            }
+
+            localStorage.removeItem(CHECKOUT_STATE_KEY);
+        }
+
+        // ── Main ─────────────────────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // 1. Restore alamat yang dipilih dari halaman address-picker
+            const chosenId = sessionStorage.getItem('chosen_address_id');
+            if (chosenId) {
+                sessionStorage.removeItem('chosen_address_id');
+
+                const radio = document.getElementById('addr_' + chosenId);
+                if (radio) {
+                    document.querySelectorAll('input[name="address_id"]').forEach(r => r.checked = false);
+                    radio.checked = true;
+
+                    const elLabel = document.getElementById('addrLabel');
+                    const elDetail = document.getElementById('addrDetail');
+                    const elBadge = document.getElementById('addrBadge');
+
+                    if (elLabel) elLabel.textContent = radio.dataset.label;
+                    if (elDetail) elDetail.textContent = radio.dataset.address;
+                    if (elBadge) elBadge.style.display = radio.dataset.isDefault === '1' ? '' : 'none';
+                }
+            }
+
+            // 2. Restore payment method + address dari localStorage (navigasi tambah alamat)
+            restoreCheckoutState();
+
+            // 3. Toggle detail rekening transfer
+            document.querySelectorAll('input[name="payment_method"]')
+                .forEach(r => r.addEventListener('change', toggleTransfer));
             toggleTransfer();
 
+            // 4. Copy nomor rekening
             document.querySelectorAll('.co-copy-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const num = btn.dataset.num;
-                    navigator.clipboard.writeText(num).then(() => {
+                    navigator.clipboard.writeText(btn.dataset.num).then(() => {
                         btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Tersalin`;
                         btn.classList.add('copied');
                         setTimeout(() => {
@@ -371,92 +442,16 @@
                 });
             });
 
-            const toggleBtn = document.getElementById('toggleAddressBtn');
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', () => {
-                    const hidden = document.querySelectorAll('.addr-hidden');
-                    const isExpanded = toggleBtn.classList.contains('expanded');
-
-                    hidden.forEach(el => el.style.display = isExpanded ? 'none' : '');
-                    toggleBtn.classList.toggle('expanded', !isExpanded);
-
-                    const remaining = {{ $addresses->count() - 2 }};
-                    toggleBtn.innerHTML = isExpanded
-                        ? `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg> Lihat ${remaining} alamat lainnya`
-                        : `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg> Sembunyikan`;
-                });
-            }
-
-            // Submit button loading state
+            // 5. Submit — loading state
             document.getElementById('checkoutForm').addEventListener('submit', function () {
                 const btn = this.querySelector('.co-footer__btn');
                 btn.disabled = true;
                 btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" class="co-spin"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Memproses...`;
             });
 
-            // Tambahkan di paling bawah:
+            // 6. Simpan state sebelum navigasi ke halaman tambah alamat
             document.querySelector('.co-addr-add')?.addEventListener('click', saveCheckoutState);
-            restoreCheckoutState();
 
         });
-
-
-        // ── Simpan & restore state checkout via localStorage ──
-
-        const CHECKOUT_STATE_KEY = 'checkout_state';
-
-        // Simpan state sebelum navigasi ke halaman lain
-        function saveCheckoutState() {
-            const addressSelected = document.querySelector('input[name="address_id"]:checked');
-            const paymentSelected = document.querySelector('input[name="payment_method"]:checked');
-
-            const state = {
-                address_id: addressSelected?.value ?? null,
-                payment_method: paymentSelected?.value ?? 'cod',
-                saved_at: Date.now(),
-            };
-
-            localStorage.setItem(CHECKOUT_STATE_KEY, JSON.stringify(state));
-        }
-
-        // Restore state saat halaman dimuat
-        function restoreCheckoutState() {
-            const raw = localStorage.getItem(CHECKOUT_STATE_KEY);
-            if (!raw) return;
-
-            let state;
-            try { state = JSON.parse(raw); } catch { return; }
-
-            // Expired setelah 30 menit — jangan restore state lama
-            if (Date.now() - (state.saved_at ?? 0) > 30 * 60 * 1000) {
-                localStorage.removeItem(CHECKOUT_STATE_KEY);
-                return;
-            }
-
-            // Restore alamat
-            if (state.address_id) {
-                const addrRadio = document.querySelector(`input[name="address_id"][value="${state.address_id}"]`);
-                if (addrRadio) addrRadio.checked = true;
-            }
-
-            // Restore metode bayar
-            if (state.payment_method) {
-                const payRadio = document.querySelector(`input[name="payment_method"][value="${state.payment_method}"]`);
-                if (payRadio) {
-                    payRadio.checked = true;
-                    toggleTransfer(); // panggil ulang agar detail rekening muncul/sembunyi sesuai pilihan
-                }
-            }
-
-            // Hapus setelah di-restore — bersih
-            localStorage.removeItem(CHECKOUT_STATE_KEY);
-        }
-
-        // Pasang listener ke link "Tambah alamat baru"
-        document.querySelector('.co-addr-add')?.addEventListener('click', saveCheckoutState);
-
-        // Jalankan restore saat DOM ready (sudah di dalam DOMContentLoaded, jadi langsung panggil)
-        restoreCheckoutState();
-
     </script>
 </x-app-layout>

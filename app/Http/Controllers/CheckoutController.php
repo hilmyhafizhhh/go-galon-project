@@ -62,4 +62,43 @@ class CheckoutController extends Controller
 
         return redirect()->route('customer.checkout.success', $order->id);
     }
+
+    public function addressPicker()
+    {
+        $addresses = Address::where('user_id', auth()->id())
+            ->orderByDesc('is_default')->get();
+        return view('checkout.address-picker', compact('addresses'));
+    }
+
+    public function edit(Address $address)
+    {
+        // Pastikan alamat milik user yang login
+        abort_if($address->user_id !== auth()->id(), 403);
+        return view('customer.address.edit', compact('address'));
+    }
+
+    public function update(Request $request, Address $address)
+    {
+        abort_if($address->user_id !== auth()->id(), 403);
+        $request->validate([
+            'label'   => 'required|string|max:100',
+            'address' => 'required|string',
+        ]);
+        if ($request->boolean('is_default')) {
+            Address::where('user_id', auth()->id())->update(['is_default' => false]);
+        }
+        $address->update([
+            'label'      => $request->label,
+            'address'    => $request->address,
+            'is_default' => $request->boolean('is_default'),
+        ]);
+        return redirect()->back()->with('success', 'Alamat berhasil diperbarui');
+    }
+
+    public function destroy(Address $address)
+    {
+        abort_if($address->user_id !== auth()->id(), 403);
+        $address->delete();
+        return redirect()->route('customer.checkout.address-picker');
+    }
 }
