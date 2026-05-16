@@ -350,11 +350,50 @@
 
     </form>
 
+    {{-- ── Leave Page Confirmation Sheet ── --}}
+    <div class="ef-sheet-overlay" id="leaveSheet" role="dialog" aria-modal="true">
+        <div class="ef-sheet" id="leaveSheetBox">
+            <div class="ef-sheet__pill"></div>
+            <div class="ef-sheet__icon" style="background:#fffbeb;border-color:rgba(217,119,6,.18);color:#d97706">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+            </div>
+            <h3 class="ef-sheet__title">Tinggalkan halaman ini?</h3>
+            <p class="ef-sheet__body">Perubahan yang belum disimpan akan hilang.</p>
+            <div class="ef-sheet__actions">
+                <button class="ef-sheet__btn-cancel" id="leaveStay"
+                    style="background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-weight:800;box-shadow:0 4px 14px rgba(37,99,235,.35)">
+                    Tetap di Halaman Ini
+                </button>
+                <button class="ef-sheet__btn-cancel" id="leaveConfirm" style="color:#e11d48">
+                    Ya, Tinggalkan
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // ── Constants ────────────────────────────────────────────────────────────
+        // ─────────────────────────────────────────────────────────────
+        // CONSTANTS
+        // ─────────────────────────────────────────────────────────────
         const CHECKOUT_STATE_KEY = 'checkout_state';
 
-        // ── Helpers ──────────────────────────────────────────────────────────────
+        const CHECKOUT_FLOW_PATHS = [
+            '/customer/checkout/address-picker',
+            '/customer/address/create',
+        ];
+
+        // ─────────────────────────────────────────────────────────────
+        // HELPERS
+        // ─────────────────────────────────────────────────────────────
+        function isCheckoutFlow(href) {
+            if (!href) return false;
+            return CHECKOUT_FLOW_PATHS.some(path => href.includes(path));
+        }
 
         function toggleTransfer() {
             const selected = document.querySelector('input[name="payment_method"]:checked');
@@ -374,83 +413,164 @@
         function restoreCheckoutState() {
             const raw = localStorage.getItem(CHECKOUT_STATE_KEY);
             if (!raw) return;
-
             let state;
             try { state = JSON.parse(raw); } catch { return; }
-
-            // Expired setelah 30 menit
             if (Date.now() - (state.saved_at ?? 0) > 30 * 60 * 1000) {
                 localStorage.removeItem(CHECKOUT_STATE_KEY);
                 return;
             }
-
             if (state.address_id) {
                 const r = document.querySelector(`input[name="address_id"][value="${state.address_id}"]`);
                 if (r) r.checked = true;
             }
-
             if (state.payment_method) {
                 const r = document.querySelector(`input[name="payment_method"][value="${state.payment_method}"]`);
                 if (r) { r.checked = true; toggleTransfer(); }
             }
-
             localStorage.removeItem(CHECKOUT_STATE_KEY);
         }
 
-        // ── Main ─────────────────────────────────────────────────────────────────
+        // ─────────────────────────────────────────────────────────────
+        // LEAVE GUARD STATE — di luar DOMContentLoaded agar konsisten
+        // ─────────────────────────────────────────────────────────────
+        let pendingNav = null;
+        let formDirty = false;
+        let isSubmitting = false;
+
+        // ─────────────────────────────────────────────────────────────
+        // MAIN
+        // ─────────────────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
 
-            // 1. Restore alamat yang dipilih dari halaman address-picker
+            // Bersihkan address-picker dari history stack
+            if (document.referrer.includes('/checkout/address-picker')) {
+                history.replaceState(null, '', window.location.href);
+            }
+
+            // ── Restore alamat dari address-picker (sessionStorage) ───
             const chosenId = sessionStorage.getItem('chosen_address_id');
             if (chosenId) {
                 sessionStorage.removeItem('chosen_address_id');
-
                 const radio = document.getElementById('addr_' + chosenId);
                 if (radio) {
                     document.querySelectorAll('input[name="address_id"]').forEach(r => r.checked = false);
                     radio.checked = true;
-
                     const elLabel = document.getElementById('addrLabel');
                     const elDetail = document.getElementById('addrDetail');
                     const elBadge = document.getElementById('addrBadge');
-
                     if (elLabel) elLabel.textContent = radio.dataset.label;
                     if (elDetail) elDetail.textContent = radio.dataset.address;
                     if (elBadge) elBadge.style.display = radio.dataset.isDefault === '1' ? '' : 'none';
+
+                    formDirty = true; // ← user sudah pilih alamat berbeda
+
                 }
             }
 
-            // 2. Restore payment method + address dari localStorage (navigasi tambah alamat)
+            // Restore dari localStorage (kembali dari tambah alamat)
             restoreCheckoutState();
 
-            // 3. Toggle detail rekening transfer
+            // ── Payment method ────────────────────────────────────────
             document.querySelectorAll('input[name="payment_method"]')
                 .forEach(r => r.addEventListener('change', toggleTransfer));
             toggleTransfer();
 
-            // 4. Copy nomor rekening
+            // ── Copy nomor rekening ───────────────────────────────────
             document.querySelectorAll('.co-copy-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     navigator.clipboard.writeText(btn.dataset.num).then(() => {
-                        btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Tersalin`;
+                        const original = btn.innerHTML;
+                        btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M20 6L9 17l-5-5"/></svg> Tersalin`;
                         btn.classList.add('copied');
-                        setTimeout(() => {
-                            btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Salin`;
-                            btn.classList.remove('copied');
-                        }, 2000);
+                        setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
                     });
                 });
             });
 
-            // 5. Submit — loading state
+            // ── Submit — loading state ────────────────────────────────
             document.getElementById('checkoutForm').addEventListener('submit', function () {
+                isSubmitting = true;
                 const btn = this.querySelector('.co-footer__btn');
                 btn.disabled = true;
-                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" class="co-spin"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Memproses...`;
+                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.2" stroke-linecap="round" class="co-spin">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83
+                         M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+            </svg> Memproses...`;
             });
 
-            // 6. Simpan state sebelum navigasi ke halaman tambah alamat
+            // Simpan state sebelum navigasi ke tambah alamat
             document.querySelector('.co-addr-add')?.addEventListener('click', saveCheckoutState);
+
+            // ── Leave Guard ───────────────────────────────────────────
+            const leaveSheet = document.getElementById('leaveSheet');
+            const leaveSheetBox = document.getElementById('leaveSheetBox');
+            const leaveStay = document.getElementById('leaveStay');
+            const leaveConfirm = document.getElementById('leaveConfirm');
+
+            // Tandai dirty saat user mengubah pilihan
+            document.querySelectorAll('input[name="payment_method"], input[name="address_id"]')
+                .forEach(el => el.addEventListener('change', () => { formDirty = true; }));
+
+            function openLeaveSheet(nav) {
+                pendingNav = nav;
+                leaveSheet.classList.add('open');
+            }
+
+            function closeLeaveSheet(callback) {
+                leaveSheetBox.style.animation = 'efSheetDown .22s cubic-bezier(.4,0,1,1) forwards';
+                setTimeout(() => {
+                    leaveSheet.classList.remove('open');
+                    leaveSheetBox.style.animation = '';
+                    callback?.();
+                }, 220);
+            }
+
+            function doNavigate(nav) {
+                isSubmitting = true;
+                if (!nav || nav === '__back__') history.back();
+                else window.location.href = nav;
+            }
+
+            leaveStay.addEventListener('click', () => closeLeaveSheet());
+            leaveConfirm.addEventListener('click', () => closeLeaveSheet(() => doNavigate(pendingNav)));
+
+            // ── Khusus tombol back — href="javascript:..." ────────────
+            // Tidak bisa diintercept via href check, harus listener sendiri
+            document.querySelector('.co-header__back')?.addEventListener('click', e => {
+                if (isSubmitting || !formDirty) return;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                openLeaveSheet('__back__');
+            });
+
+            // ── Intercept link <a> biasa (navbar, dll) ────────────────
+            document.addEventListener('click', e => {
+                if (isSubmitting || !formDirty) return;
+
+                const link = e.target.closest('a[href]');
+                if (!link) return;
+
+                // Skip tombol back — sudah dihandle di atas
+                if (link.classList.contains('co-header__back')) return;
+
+                const href = link.getAttribute('href');
+                if (!href) return;
+
+                // Skip: anchor, javascript:, target blank, flow checkout
+                if (
+                    href.startsWith('#') ||
+                    href.startsWith('javascript') ||
+                    link.target === '_blank' ||
+                    isCheckoutFlow(href)
+                ) return;
+
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                openLeaveSheet(href);
+            });
 
         });
     </script>

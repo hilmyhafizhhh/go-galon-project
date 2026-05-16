@@ -63,7 +63,7 @@
                         <p class="ef-reg__card-sub">Isi formulir di bawah untuk mendaftar</p>
                     </div>
 
-                    <form method="POST" action="{{ route('register') }}" class="ef-reg__form">
+                    <form method="POST" action="{{ route('register') }}" class="ef-reg__form" id="registerForm">
                         @csrf
 
                         {{-- Row: Nama + Username --}}
@@ -181,8 +181,38 @@
                             </div>
                         </div>
 
+                        {{-- ── Terms & Conditions ── --}}
+                        <div class="ef-terms">
+                            <label class="ef-terms__label">
+                                <div class="ef-terms__check-wrap">
+                                    <input type="checkbox" name="agree_terms" id="agreeTerms" class="ef-terms__input"
+                                        required {{ old('agree_terms') ? 'checked' : '' }}>
+                                    <span class="ef-terms__checkmark">
+                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white"
+                                            stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 6L9 17l-5-5" />
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="ef-terms__text">
+                                    Saya menyetujui
+                                    <button type="button" class="ef-terms__link" id="openTerms">
+                                        Syarat & Ketentuan
+                                    </button>
+                                    serta
+                                    <button type="button" class="ef-terms__link" id="openPrivacy">
+                                        Kebijakan Privasi
+                                    </button>
+                                    Efata Galon
+                                </span>
+                            </label>
+                            @error('agree_terms')
+                                <p class="ef-terms__error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         {{-- Submit --}}
-                        <button type="submit" class="ef-reg__submit">
+                        <button type="submit" class="ef-reg__submit" id="submitBtn">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
@@ -206,8 +236,152 @@
         </div>
     </div>
 
+    {{-- ── Terms Modal ── --}}
+    <div class="ef-modal-overlay" id="termsModal" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+        <div class="ef-modal">
+            <div class="ef-modal__pill"></div>
+            <div class="ef-modal__header">
+                <div class="ef-modal__header-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                </div>
+                <h2 class="ef-modal__title" id="termsTitle">Syarat & Ketentuan</h2>
+                <button class="ef-modal__close" id="closeTerms" aria-label="Tutup">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="ef-modal__body">
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">1. Layanan</h3>
+                    <p>Efata Galon menyediakan layanan pemesanan dan pengiriman air galon premium ke alamat pelanggan di
+                        wilayah layanan kami. Kami berhak mengubah, menangguhkan, atau menghentikan layanan
+                        sewaktu-waktu dengan pemberitahuan sebelumnya.</p>
+                </div>
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">2. Akun Pengguna</h3>
+                    <p>Anda bertanggung jawab menjaga kerahasiaan akun dan kata sandi Anda. Informasi yang diberikan
+                        saat pendaftaran harus akurat dan terkini. Kami berhak menangguhkan akun yang melanggar
+                        ketentuan ini.</p>
+                </div>
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">3. Pemesanan & Pembayaran</h3>
+                    <p>Setiap pesanan yang telah dikonfirmasi bersifat mengikat. Pembayaran dapat dilakukan secara tunai
+                        (COD) saat barang diterima atau melalui transfer bank. Harga dapat berubah sewaktu-waktu tanpa
+                        pemberitahuan sebelumnya.</p>
+                </div>
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">4. Pengiriman</h3>
+                    <p>Pengiriman dilakukan pada hari yang sama atau sesuai jadwal yang disepakati. Estimasi waktu
+                        pengiriman bersifat perkiraan dan dapat berubah tergantung kondisi di lapangan. Kami tidak
+                        bertanggung jawab atas keterlambatan akibat faktor di luar kendali kami.</p>
+                </div>
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">5. Pengembalian & Pembatalan</h3>
+                    <p>Pembatalan pesanan dapat dilakukan sebelum kurir berangkat. Pengembalian produk hanya diterima
+                        jika terdapat kerusakan atau cacat yang terbukti disebabkan oleh pihak kami. Galon kosong yang
+                        dipinjam wajib dikembalikan dalam kondisi baik.</p>
+                </div>
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">6. Perubahan Ketentuan</h3>
+                    <p>Kami berhak memperbarui Syarat & Ketentuan ini sewaktu-waktu. Perubahan akan berlaku sejak
+                        dipublikasikan. Penggunaan layanan secara berkelanjutan dianggap sebagai persetujuan atas
+                        perubahan tersebut.</p>
+                </div>
+            </div>
+            <div class="ef-modal__footer">
+                <button class="ef-modal__agree-btn" id="agreeFromTerms">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    Saya Setuju
+                </button>
+                <button class="ef-modal__cancel-btn" id="closeTerms2">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- ── Privacy Modal ── --}}
+    <div class="ef-modal-overlay" id="privacyModal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+        <div class="ef-modal">
+            <div class="ef-modal__pill"></div>
+            <div class="ef-modal__header">
+                <div class="ef-modal__header-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                </div>
+                <h2 class="ef-modal__title" id="privacyTitle">Kebijakan Privasi</h2>
+                <button class="ef-modal__close" id="closePrivacy" aria-label="Tutup">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="ef-modal__body">
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">1. Data yang Kami Kumpulkan</h3>
+                    <p>Kami mengumpulkan informasi yang Anda berikan saat mendaftar, yaitu: nama lengkap, username,
+                        alamat email, nomor telepon, dan alamat pengiriman. Data ini digunakan semata-mata untuk
+                        keperluan operasional layanan.</p>
+                </div>
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">2. Penggunaan Data</h3>
+                    <p>Data Anda digunakan untuk memproses pesanan, mengirimkan konfirmasi, menghubungi Anda terkait
+                        layanan, serta meningkatkan kualitas layanan kami. Kami tidak menggunakan data Anda untuk
+                        keperluan iklan pihak ketiga.</p>
+                </div>
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">3. Keamanan Data</h3>
+                    <p>Kami menerapkan langkah-langkah keamanan teknis dan organisasional untuk melindungi data pribadi
+                        Anda dari akses, pengungkapan, perubahan, atau penghancuran yang tidak sah.</p>
+                </div>
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">4. Berbagi Data</h3>
+                    <p>Kami tidak menjual, menyewakan, atau membagikan data pribadi Anda kepada pihak ketiga tanpa
+                        persetujuan Anda, kecuali diwajibkan oleh hukum yang berlaku di Indonesia.</p>
+                </div>
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">5. Hak Pengguna</h3>
+                    <p>Anda berhak mengakses, memperbarui, atau menghapus data pribadi Anda kapan saja melalui
+                        pengaturan akun atau dengan menghubungi kami langsung. Penghapusan akun akan menghapus semua
+                        data terkait dari sistem kami.</p>
+                </div>
+                <div class="ef-modal__section">
+                    <h3 class="ef-modal__section-title">6. Cookie</h3>
+                    <p>Kami menggunakan cookie untuk menjaga sesi login dan meningkatkan pengalaman pengguna. Anda dapat
+                        menonaktifkan cookie melalui pengaturan browser, namun beberapa fitur layanan mungkin tidak
+                        berfungsi optimal.</p>
+                </div>
+            </div>
+            <div class="ef-modal__footer">
+                <button class="ef-modal__agree-btn" id="agreeFromPrivacy">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    Saya Mengerti
+                </button>
+                <button class="ef-modal__cancel-btn" id="closePrivacy2">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap");
+
+        /* ── (semua CSS lama tetap sama) ── */
 
         /* ── Root ──────────────────────────────────────────────────── */
         .ef-reg {
@@ -226,7 +400,6 @@
             background: #0b1120;
         }
 
-        /* ── Blobs ─────────────────────────────────────────────────── */
         .ef-reg__bg {
             position: fixed;
             inset: 0;
@@ -280,7 +453,6 @@
             opacity: 0.05;
         }
 
-        /* ── Wrap ──────────────────────────────────────────────────── */
         .ef-reg__wrap {
             position: relative;
             z-index: 1;
@@ -300,7 +472,6 @@
             }
         }
 
-        /* ── Left Panel ────────────────────────────────────────────── */
         .ef-reg__left {
             display: none;
             flex-direction: column;
@@ -362,7 +533,6 @@
             color: #94a3b8;
         }
 
-        /* ── Steps ─────────────────────────────────────────────────── */
         .ef-reg__steps {
             display: flex;
             flex-direction: column;
@@ -415,12 +585,9 @@
         }
 
         .dark .ef-reg__step-line {
-            background: linear-gradient(to bottom,
-                    rgba(37, 99, 235, 0.3),
-                    rgba(6, 182, 212, 0.2));
+            background: linear-gradient(to bottom, rgba(37, 99, 235, 0.3), rgba(6, 182, 212, 0.2));
         }
 
-        /* ── Card ──────────────────────────────────────────────────── */
         .ef-reg__right {
             display: flex;
             justify-content: center;
@@ -435,9 +602,7 @@
             border: 1px solid rgba(37, 99, 235, 0.1);
             border-radius: 24px;
             padding: 28px 24px;
-            box-shadow:
-                0 8px 40px rgba(37, 99, 235, 0.1),
-                0 2px 8px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 8px 40px rgba(37, 99, 235, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .dark .ef-reg__card {
@@ -452,7 +617,6 @@
             }
         }
 
-        /* ── Mobile logo ───────────────────────────────────────────── */
         .ef-reg__mobile-logo {
             display: flex;
             justify-content: center;
@@ -472,7 +636,6 @@
             filter: drop-shadow(0 4px 12px rgba(37, 99, 235, 0.2));
         }
 
-        /* ── Card Header ───────────────────────────────────────────── */
         .ef-reg__card-header {
             text-align: center;
             margin-bottom: 24px;
@@ -495,14 +658,12 @@
             color: #94a3b8;
         }
 
-        /* ── Form ──────────────────────────────────────────────────── */
         .ef-reg__form {
             display: flex;
             flex-direction: column;
             gap: 14px;
         }
 
-        /* ── 2-col row ─────────────────────────────────────────────── */
         .ef-reg__row {
             display: grid;
             grid-template-columns: 1fr;
@@ -515,7 +676,6 @@
             }
         }
 
-        /* ── Field (shared with login) ─────────────────────────────── */
         .ef-field {
             display: flex;
             flex-direction: column;
@@ -558,11 +718,7 @@
             font-size: 0.85rem;
             color: #1e293b;
             outline: none;
-            transition:
-                border-color 0.18s,
-                box-shadow 0.18s,
-                background 0.18s;
-            /* Prevent shrink in grid */
+            transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
             min-width: 0;
         }
 
@@ -618,7 +774,6 @@
             margin-top: 1px;
         }
 
-        /* ── Submit ────────────────────────────────────────────────── */
         .ef-reg__submit {
             display: flex;
             align-items: center;
@@ -635,13 +790,11 @@
             font-weight: 700;
             cursor: pointer;
             box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
-            transition:
-                box-shadow 0.2s,
-                transform 0.2s;
+            transition: box-shadow 0.2s, transform 0.2s, opacity 0.2s;
             margin-top: 6px;
         }
 
-        .ef-reg__submit:hover {
+        .ef-reg__submit:hover:not(:disabled) {
             box-shadow: 0 6px 22px rgba(37, 99, 235, 0.45);
             transform: translateY(-1px);
         }
@@ -650,7 +803,12 @@
             transform: scale(0.98);
         }
 
-        /* ── Login link ────────────────────────────────────────────── */
+        .ef-reg__submit:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .ef-reg__login-link {
             text-align: center;
             font-size: 0.8rem;
@@ -672,6 +830,434 @@
         .dark .ef-reg__login-link a {
             color: #60a5fa;
         }
+
+        /* ── Terms Checkbox ────────────────────────────────────────── */
+        .ef-terms {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .ef-terms__label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .ef-terms__check-wrap {
+            position: relative;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .ef-terms__input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .ef-terms__checkmark {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid rgba(37, 99, 235, 0.3);
+            background: #f8fafc;
+            transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
+        }
+
+        .ef-terms__checkmark svg {
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .ef-terms__input:checked~.ef-terms__checkmark {
+            background: #2563eb;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .ef-terms__input:checked~.ef-terms__checkmark svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .ef-terms__text {
+            font-size: 0.78rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .dark .ef-terms__text {
+            color: #94a3b8;
+        }
+
+        .ef-terms__link {
+            background: none;
+            border: none;
+            padding: 0;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #2563eb;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            transition: color 0.15s;
+        }
+
+        .ef-terms__link:hover {
+            color: #1d4ed8;
+        }
+
+        .dark .ef-terms__link {
+            color: #60a5fa;
+        }
+
+        .ef-terms__error {
+            font-size: 0.73rem;
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        /* ── Modal ─────────────────────────────────────────────────── */
+        .ef-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .ef-modal-overlay.open {
+            display: flex;
+        }
+
+        .ef-modal {
+            width: 100%;
+            max-width: 560px;
+            background: #fff;
+            border-radius: 24px 24px 0 0;
+            display: flex;
+            flex-direction: column;
+            max-height: 85vh;
+            box-shadow: 0 -8px 40px rgba(15, 23, 42, 0.2);
+            animation: efModalUp .3s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        .dark .ef-modal {
+            background: #0f172a;
+        }
+
+        @keyframes efModalUp {
+            from {
+                transform: translateY(60px);
+                opacity: 0;
+            }
+
+            to {
+                transform: none;
+                opacity: 1;
+            }
+        }
+
+        .ef-modal__pill {
+            width: 36px;
+            height: 4px;
+            border-radius: 99px;
+            background: #e2e8f0;
+            margin: 14px auto 0;
+            flex-shrink: 0;
+        }
+
+        .dark .ef-modal__pill {
+            background: #334155;
+        }
+
+        .ef-modal__header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 20px 14px;
+            border-bottom: 1px solid rgba(37, 99, 235, 0.08);
+            flex-shrink: 0;
+        }
+
+        .dark .ef-modal__header {
+            border-bottom-color: rgba(255, 255, 255, 0.07);
+        }
+
+        .ef-modal__header-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: #eff6ff;
+            border: 1px solid rgba(37, 99, 235, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            flex-shrink: 0;
+        }
+
+        .dark .ef-modal__header-icon {
+            background: rgba(37, 99, 235, 0.12);
+            border-color: rgba(37, 99, 235, 0.25);
+            color: #60a5fa;
+        }
+
+        .ef-modal__title {
+            flex: 1;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .dark .ef-modal__title {
+            color: #f1f5f9;
+        }
+
+        .ef-modal__close {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .ef-modal__close:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .dark .ef-modal__close {
+            background: rgba(255, 255, 255, 0.07);
+            color: #94a3b8;
+        }
+
+        .dark .ef-modal__close:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #f1f5f9;
+        }
+
+        .ef-modal__body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            overscroll-behavior: contain;
+        }
+
+        .ef-modal__body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .ef-modal__body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .ef-modal__body::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 99px;
+        }
+
+        .dark .ef-modal__body::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        .ef-modal__section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .ef-modal__section-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .dark .ef-modal__section-title {
+            color: #f1f5f9;
+        }
+
+        .ef-modal__section p {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.7;
+        }
+
+        .dark .ef-modal__section p {
+            color: #94a3b8;
+        }
+
+        .ef-modal__footer {
+            padding: 14px 20px max(14px, env(safe-area-inset-bottom));
+            border-top: 1px solid rgba(37, 99, 235, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .dark .ef-modal__footer {
+            border-top-color: rgba(255, 255, 255, 0.07);
+        }
+
+        .ef-modal__agree-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+            transition: box-shadow 0.2s, transform 0.15s;
+        }
+
+        .ef-modal__agree-btn:hover {
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .ef-modal__cancel-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 12px;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .ef-modal__cancel-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .dark .ef-modal__cancel-btn {
+            background: rgba(255, 255, 255, 0.07);
+            color: #94a3b8;
+        }
+
+        .dark .ef-modal__cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        @keyframes efSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
+
+    <script>
+        (function () {
+
+            // ── Modal helpers ─────────────────────────────────────────
+            function openModal(id) {
+                document.getElementById(id).classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal(id) {
+                const el = document.getElementById(id);
+                el.querySelector('.ef-modal').style.animation = 'efModalDown .22s cubic-bezier(.4,0,1,1) forwards';
+
+                // inject keyframe sekali saja
+                if (!document.getElementById('efModalDownKf')) {
+                    const s = document.createElement('style');
+                    s.id = 'efModalDownKf';
+                    s.textContent = '@keyframes efModalDown{to{transform:translateY(60px);opacity:0}}';
+                    document.head.appendChild(s);
+                }
+
+                setTimeout(() => {
+                    el.classList.remove('open');
+                    el.querySelector('.ef-modal').style.animation = '';
+                    document.body.style.overflow = '';
+                }, 220);
+            }
+
+            // ── Terms modal ───────────────────────────────────────────
+            document.getElementById('openTerms').addEventListener('click', () => openModal('termsModal'));
+            document.getElementById('closeTerms').addEventListener('click', () => closeModal('termsModal'));
+            document.getElementById('closeTerms2').addEventListener('click', () => closeModal('termsModal'));
+            document.getElementById('agreeFromTerms').addEventListener('click', () => {
+                document.getElementById('agreeTerms').checked = true;
+                closeModal('termsModal');
+            });
+
+            // ── Privacy modal ─────────────────────────────────────────
+            document.getElementById('openPrivacy').addEventListener('click', () => openModal('privacyModal'));
+            document.getElementById('closePrivacy').addEventListener('click', () => closeModal('privacyModal'));
+            document.getElementById('closePrivacy2').addEventListener('click', () => closeModal('privacyModal'));
+            document.getElementById('agreeFromPrivacy').addEventListener('click', () => {
+                document.getElementById('agreeTerms').checked = true;
+                closeModal('privacyModal');
+            });
+
+            // Klik backdrop untuk tutup
+            ['termsModal', 'privacyModal'].forEach(id => {
+                document.getElementById(id).addEventListener('click', e => {
+                    if (e.target.id === id) closeModal(id);
+                });
+            });
+
+            // Escape untuk tutup
+            document.addEventListener('keydown', e => {
+                if (e.key !== 'Escape') return;
+                ['termsModal', 'privacyModal'].forEach(id => {
+                    if (document.getElementById(id).classList.contains('open')) closeModal(id);
+                });
+            });
+
+            // ── Submit loading state ──────────────────────────────────
+            document.getElementById('registerForm').addEventListener('submit', function () {
+                const btn = document.getElementById('submitBtn');
+                btn.disabled = true;
+                btn.innerHTML = `
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round"
+                        style="animation:efSpin .7s linear infinite;flex-shrink:0">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83
+                                 M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    </svg>
+                    Mendaftarkan...`;
+            });
+
+        })();
+    </script>
 
 </x-guest-layout>
