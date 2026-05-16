@@ -908,3 +908,114 @@
 .ef-toast--error svg {
     color: #e11d48;
 }
+
+/* ── Bottom Sheet ── */
+.ef-sheet-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    align-items: flex-end;
+    justify-content: center;
+}
+.ef-sheet-overlay.open {
+    display: flex;
+}
+.ef-sheet {
+    width: 100%;
+    max-width: 520px;
+    background: #fff;
+    border-radius: 22px 22px 0 0;
+    padding: 24px 20px max(20px, env(safe-area-inset-bottom));
+    box-shadow: 0 -8px 40px rgba(15, 23, 42, 0.18);
+    animation: efSheetUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes efSheetUp {
+    from {
+        transform: translateY(60px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+.ef-sheet__pill {
+    width: 36px;
+    height: 4px;
+    border-radius: 99px;
+    background: #e2e8f0;
+    margin: 0 auto 20px;
+}
+.ef-sheet__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #fff1f2;
+    border: 2px solid rgba(225, 29, 72, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e11d48;
+    margin: 0 auto 14px;
+}
+.ef-sheet__title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1e293b;
+    text-align: center;
+    margin-bottom: 6px;
+}
+.ef-sheet__body {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 22px;
+}
+.ef-sheet__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.ef-sheet__btn-del {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #e11d48, #be123c);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
+    transition:
+        box-shadow 0.2s,
+        transform 0.15s;
+}
+.ef-sheet__btn-del:hover {
+    box-shadow: 0 6px 20px rgba(225, 29, 72, 0.45);
+    transform: translateY(-1px);
+}
+.ef-sheet__btn-cancel {
+    width: 100%;
+    padding: 13px;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.ef-sheet__btn-cancel:hover {
+    background: #e2e8f0;
+}

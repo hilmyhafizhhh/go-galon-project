@@ -194,12 +194,12 @@
     </div>
 
     {{-- ══════════════════════════════
-    CONFIRM DIALOG
+    BOTTOM SHEET — Delete Confirmation
     ══════════════════════════════ --}}
-    <div id="confirmDialog" class="ef-dialog" aria-modal="true" role="dialog" style="display:none">
-        <div class="ef-dialog__backdrop" id="dialogBackdrop"></div>
-        <div class="ef-dialog__box">
-            <div class="ef-dialog__icon">
+    <div class="ef-sheet-overlay" id="confirmDialog" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+        <div class="ef-sheet" id="sheetBox">
+            <div class="ef-sheet__pill"></div>
+            <div class="ef-sheet__icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6" />
@@ -208,18 +208,19 @@
                     <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
                 </svg>
             </div>
-            <h3 class="ef-dialog__title" id="dialogTitle">Hapus item?</h3>
-            <p class="ef-dialog__body" id="dialogBody">Item akan dihapus dari keranjang.</p>
-            <div class="ef-dialog__actions">
-                <button class="ef-dialog__btn ef-dialog__btn--cancel" id="dialogCancel">Batal</button>
-                <button class="ef-dialog__btn ef-dialog__btn--confirm" id="dialogConfirm">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            <h3 class="ef-sheet__title" id="sheetTitle">Hapus item?</h3>
+            <p class="ef-sheet__body" id="sheetBody">Item akan dihapus dari keranjang.</p>
+            <div class="ef-sheet__actions">
+                <button class="ef-sheet__btn-del" id="dialogConfirm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="3 6 5 6 21 6" />
                         <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                        <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
                     </svg>
-                    Ya, Hapus
+                    Ya, Hapus Sekarang
                 </button>
+                <button class="ef-sheet__btn-cancel" id="dialogCancel">Batal</button>
             </div>
         </div>
     </div>
@@ -371,39 +372,44 @@
             }
 
             // ── Dialog ─────────────────────────────────────────────────
+             // ── Dialog (Bottom Sheet) ──────────────────────────────────
             function openDialog(title, body, onConfirm) {
-                dialogTitle.textContent = title;
-                dialogBody.textContent = body;
-                dialog.style.display = 'flex';
-                requestAnimationFrame(() => dialog.classList.add('ef-dialog--open'));
+                document.getElementById('sheetTitle').textContent = title;
+                document.getElementById('sheetBody').textContent = body;
+                dialog.classList.add('open');
 
                 function cleanup() {
                     dialogConfirm.removeEventListener('click', handleConfirm);
                     dialogCancel.removeEventListener('click', handleCancel);
-                    dialogBdrop.removeEventListener('click', handleCancel);
+                    dialog.removeEventListener('click', handleBackdrop);
+                    document.removeEventListener('keydown', handleEsc);
                 }
 
-                function handleConfirm() {
-                    cleanup();
-                    closeDialog();
-                    onConfirm();
-                }
-
-                function handleCancel() {
-                    cleanup();
-                    closeDialog();
-                }
+                function handleConfirm() { cleanup(); closeDialog(); onConfirm(); }
+                function handleCancel()  { cleanup(); closeDialog(); }
+                function handleBackdrop(e) { if (e.target === dialog) { cleanup(); closeDialog(); } }
+                function handleEsc(e)    { if (e.key === 'Escape') { cleanup(); closeDialog(); } }
 
                 dialogConfirm.addEventListener('click', handleConfirm);
                 dialogCancel.addEventListener('click', handleCancel);
-                dialogBdrop.addEventListener('click', handleCancel);
+                dialog.addEventListener('click', handleBackdrop);
+                document.addEventListener('keydown', handleEsc);
             }
 
             function closeDialog() {
-                dialog.classList.remove('ef-dialog--open');
+                const sheet = document.getElementById('sheetBox');
+                sheet.style.animation = 'efSheetDown .22s cubic-bezier(.4,0,1,1) forwards';
+                // inject keyframe sekali saja
+                if (!document.getElementById('efSheetDownKf')) {
+                    const s = document.createElement('style');
+                    s.id = 'efSheetDownKf';
+                    s.textContent = '@keyframes efSheetDown{to{transform:translateY(60px);opacity:0}}';
+                    document.head.appendChild(s);
+                }
                 setTimeout(() => {
-                    dialog.style.display = 'none';
-                }, 280);
+                    dialog.classList.remove('open');
+                    sheet.style.animation = '';
+                }, 220);
             }
 
             // ── Animate item out ───────────────────────────────────────
