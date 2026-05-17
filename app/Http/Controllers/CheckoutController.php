@@ -25,16 +25,15 @@ class CheckoutController extends Controller
             ->orderByDesc('is_default')
             ->get();
 
-
-
         return view('checkout.index', compact('order', 'addresses'));
     }
 
     public function process(Request $request)
     {
         $request->validate([
-            'address_id' => 'required|exists:addresses,id',
-            'payment_method' => 'required'
+            'address_id'     => 'required|exists:addresses,id',
+            'payment_method' => 'required|in:cod,transfer',
+            'note'           => 'nullable|string|max:200',
         ]);
 
         $order = Order::with('items.product')
@@ -42,22 +41,27 @@ class CheckoutController extends Controller
             ->where('status', 'draft')
             ->first();
 
+        if (!$order) {
+            return back()->with('error', 'Order tidak ditemukan');
+        }
+
         $items = $order->items->where('is_selected', true);
 
         if ($items->isEmpty()) {
             return back()->with('error', 'Tidak ada item dipilih');
         }
 
-        // 🔥 hapus item yang tidak dipilih
+        // Hapus item yang tidak dipilih
         $order->items()->where('is_selected', false)->delete();
 
         $total = $items->sum('subtotal');
 
         $order->update([
-            'total_amount' => $total,
-            'status' => 'pending',
-            'address_id' => $request->address_id,
-            'payment_method' => $request->payment_method
+            'total_amount'   => $total,
+            'status'         => 'pending',
+            'address_id'     => $request->address_id,
+            'payment_method' => $request->payment_method,
+            'note'           => $request->note,  // ← tambahan
         ]);
 
         return redirect()->route('customer.checkout.success', $order->id);
@@ -66,39 +70,50 @@ class CheckoutController extends Controller
     public function addressPicker()
     {
         $addresses = Address::where('user_id', auth()->id())
-            ->orderByDesc('is_default')->get();
+            ->orderByDesc('is_default')
+            ->get();
+
         return view('checkout.address-picker', compact('addresses'));
     }
 
     public function edit(Address $address)
     {
-        // Pastikan alamat milik user yang login
         abort_if($address->user_id !== auth()->id(), 403);
+
         return view('customer.address.edit', compact('address'));
     }
 
     public function update(Request $request, Address $address)
     {
         abort_if($address->user_id !== auth()->id(), 403);
+
         $request->validate([
             'label'   => 'required|string|max:100',
             'address' => 'required|string',
         ]);
+
         if ($request->boolean('is_default')) {
-            Address::where('user_id', auth()->id())->update(['is_default' => false]);
+            Address::where('user_id', auth()->id())
+                ->where('id', '!=', $address->id)
+                ->update(['is_default' => false]);
         }
+
         $address->update([
             'label'      => $request->label,
             'address'    => $request->address,
             'is_default' => $request->boolean('is_default'),
         ]);
+
         return redirect()->back()->with('success', 'Alamat berhasil diperbarui');
     }
 
     public function destroy(Address $address)
     {
         abort_if($address->user_id !== auth()->id(), 403);
+
         $address->delete();
-        return redirect()->route('customer.checkout.address-picker');
+
+        return redirect()->route('customer.checkout.address-picker')
+            ->with('success', 'Alamat berhasil dihapus');
     }
 }

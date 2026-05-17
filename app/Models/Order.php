@@ -24,6 +24,7 @@ class Order extends Model
         'assigned_courier_id',
         'address_id',
         'delivered_at',
+        'note',
     ];
 
     protected $casts = [

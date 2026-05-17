@@ -274,6 +274,24 @@
                             </div>
                         @endforeach
                     </div>
+                    {{-- ── Add Note trigger ── --}}
+                    <button type="button" class="co-note-trigger" id="openNoteSheet">
+                        <div class="co-note-trigger__left">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5" />
+                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                            <span id="noteTriggerText">Tambah catatan untuk kurir</span>
+                        </div>
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </button>
+
+                    {{-- hidden input yang dikirim ke form --}}
+                    <input type="hidden" name="note" id="noteHidden">
                 </div>
 
                 {{-- ── 4. Ringkasan Biaya ── --}}
@@ -572,6 +590,142 @@
                 openLeaveSheet(href);
             });
 
+            // ── Note Bottom Sheet ─────────────────────────────────────
+            const noteSheet = document.getElementById('noteSheet');
+            const noteSheetBox = document.getElementById('noteSheetBox');
+            const noteTextarea = document.getElementById('noteTextarea');
+            const noteHidden = document.getElementById('noteHidden');
+            const noteTrigger = document.getElementById('openNoteSheet');
+            const noteTriggerText = document.getElementById('noteTriggerText');
+            const noteCountEl = document.getElementById('noteCount');
+
+            function openNoteSheet() {
+                noteSheet.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                setTimeout(() => noteTextarea.focus(), 300);
+            }
+
+            function closeNoteSheet() {
+                noteSheetBox.style.animation = 'efSheetDown .22s cubic-bezier(.4,0,1,1) forwards';
+                setTimeout(() => {
+                    noteSheet.classList.remove('open');
+                    noteSheetBox.style.animation = '';
+                    document.body.style.overflow = '';
+                }, 220);
+            }
+
+            function updateTrigger(val) {
+                const hasNote = val.trim().length > 0;
+                noteTrigger.classList.toggle('has-note', hasNote);
+                noteTriggerText.textContent = hasNote
+                    ? `📝 ${val.trim().length > 40 ? val.trim().slice(0, 40) + '…' : val.trim()}`
+                    : 'Tambah catatan untuk kurir';
+            }
+
+            noteTrigger.addEventListener('click', openNoteSheet);
+            document.getElementById('closeNoteSheet').addEventListener('click', closeNoteSheet);
+
+            // Backdrop dismiss
+            noteSheet.addEventListener('click', e => {
+                if (e.target === noteSheet) closeNoteSheet();
+            });
+
+            // Chips
+            document.querySelectorAll('.co-note-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const isActive = chip.classList.contains('active');
+                    document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove('active'));
+                    if (!isActive) {
+                        chip.classList.add('active');
+                        noteTextarea.value = chip.dataset.note;
+                    } else {
+                        noteTextarea.value = '';
+                    }
+                    noteCountEl.textContent = noteTextarea.value.length;
+                });
+            });
+
+            // Counter + reset chip saat ketik manual
+            noteTextarea.addEventListener('input', () => {
+                noteCountEl.textContent = noteTextarea.value.length;
+                document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove('active'));
+            });
+
+            // Simpan
+            document.getElementById('saveNote').addEventListener('click', () => {
+                const val = noteTextarea.value.trim();
+                noteHidden.value = val;
+                updateTrigger(val);
+                closeNoteSheet();
+                formDirty = true;
+
+            });
+
+            // Hapus
+            document.getElementById('clearNote').addEventListener('click', () => {
+                noteTextarea.value = '';
+                noteHidden.value = '';
+                noteCountEl.textContent = '0';
+                document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove('active'));
+                updateTrigger('');
+                closeNoteSheet();
+            });
         });
     </script>
+
+    {{-- ── Note Bottom Sheet ── --}}
+    <div class="ef-sheet-overlay" id="noteSheet" role="dialog" aria-modal="true" aria-labelledby="noteSheetTitle">
+        <div class="ef-sheet" id="noteSheetBox">
+            <div class="ef-sheet__pill"></div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 16px">
+                <h3 class="ef-sheet__title" id="noteSheetTitle" style="text-align:left;margin:0;font-size:.95rem">
+                    Catatan untuk Kurir
+                </h3>
+                <button id="closeNoteSheet"
+                    style="width:30px;height:30px;border-radius:8px;background:#f1f5f9;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#64748b">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Quick chips --}}
+            <div class="co-note-chips">
+                <button type="button" class="co-note-chip" data-note="Hubungi saya sebelum datang">
+                    📞 Hubungi dulu
+                </button>
+                <button type="button" class="co-note-chip" data-note="Taruh di depan pintu, saya tidak ada di rumah">
+                    🚪 Taruh di depan pintu
+                </button>
+                <button type="button" class="co-note-chip" data-note="Galon kosong ada di depan, tolong dibawa balik">
+                    🔄 Bawa galon kosong
+                </button>
+                <button type="button" class="co-note-chip" data-note="Tidak ada lift, tolong naik tangga">
+                    🏢 Tidak ada lift
+                </button>
+            </div>
+
+            {{-- Textarea --}}
+            <div style="position:relative;margin-top:12px">
+                <textarea id="noteTextarea" rows="3" maxlength="200"
+                    placeholder="Contoh: Hubungi 10 menit sebelum tiba, galon kosong di depan pagar..."
+                    class="co-note-textarea"></textarea>
+                <span class="co-note-counter"><span id="noteCount">0</span>/200</span>
+            </div>
+
+            <div class="ef-sheet__actions" style="margin-top:16px">
+                <button class="ef-sheet__btn-del" id="saveNote"
+                    style="background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 14px rgba(37,99,235,.35)">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    Simpan Catatan
+                </button>
+                <button class="ef-sheet__btn-cancel" id="clearNote">Hapus Catatan</button>
+            </div>
+        </div>
+    </div>
 </x-app-layout>
