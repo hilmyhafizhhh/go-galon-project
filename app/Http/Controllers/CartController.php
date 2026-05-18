@@ -38,10 +38,14 @@ class CartController extends Controller
 
         // 2. kalau belum ada → buat
         if (!$order) {
+            $uuid = Str::uuid();
+            $shortId = strtoupper(substr(str_replace('-', '', $uuid), 0, 8));
+
             $order = Order::create([
-                'id' => Str::uuid(),
-                'user_id' => $userId,
-                'status' => 'draft'
+                'id'         => $uuid,  // ← pakai $uuid yang sama
+                'user_id'    => $userId,
+                'status'     => 'draft',
+                'order_code' => 'ORDER-' . $shortId . '-' . time(),
             ]);
         }
 

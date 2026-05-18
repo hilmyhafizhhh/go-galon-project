@@ -1190,8 +1190,8 @@
                         return;
                     }
                     window.snap.pay(data.token, {
-                        onSuccess: () => { window.location.href = '/orders/'; },
-                        onPending: () => { window.location.href = '/orders'; },
+                        onSuccess: () => { window.location.href = '/customer/order'; },
+                        onPending: () => { window.location.href = '/customer/order'; },
                         onError:   () => {
                             alert('Pembayaran gagal, silakan coba lagi.');
                             btn.disabled = false;

@@ -22,6 +22,7 @@ class PaymentController extends Controller
         // Update address jika dikirim dari frontend
         if ($request->address_id) {
             $order->address_id = $request->address_id;
+            $order->total_amount   = $order->items->sum('subtotal'); // ← tambah ini
             $order->save();
         }
 
@@ -65,7 +66,7 @@ class PaymentController extends Controller
             ],
 
             'callbacks' => [
-                'finish' => url('/customer/orders'),
+                'finish' => url('/customer/order'),
             ],
 
             'snap_token_properties' => [
@@ -105,7 +106,7 @@ class PaymentController extends Controller
         $parts   = explode('-', $request->order_id);
         $shortId = $parts[1] ?? null;
 
-        $order = Order::whereRaw("LEFT(REPLACE(id, '-', ''), 8) = ?", [$shortId])->first();
+        $order = Order::whereRaw("LEFT(REPLACE(id::text, '-', ''), 8) = ?", [$shortId])->first();
 
         if (!$order) {
             \Log::error('Order not found', ['order_id' => $request->order_id]);
