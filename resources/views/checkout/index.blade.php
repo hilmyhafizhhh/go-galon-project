@@ -48,6 +48,7 @@
                 {{-- ── Hidden selected address id ── --}}
                 @php
                     $selectedAddress = $addresses->firstWhere('is_default', true) ?? $addresses->first();
+                    $defaultAddress  = $selectedAddress;
                 @endphp
                 <input type="hidden" name="address_id" id="selectedAddressId" value="{{ $selectedAddress?->id }}">
 
@@ -57,9 +58,17 @@
                     <span>Alamat Pengiriman</span>
                 </div>
 
-                {{-- Single address card — tap to go to address selector page --}}
-                <a href="{{ route('customer.address.select') }}" class="co-addr-card" id="addrCardLink">
-                    @if ($selectedAddress)
+                {{-- Hidden radio inputs — bawa data-* agar JS bisa update tampilan --}}
+                @foreach ($addresses as $address)
+                    <input type="radio" name="address_id" id="addr_{{ $address->id }}" value="{{ $address->id }}"
+                        data-label="{{ $address->label }}" data-address="{{ $address->address }}"
+                        data-is-default="{{ $address->is_default ? '1' : '0' }}"
+                        {{ $address->id == $defaultAddress?->id ? 'checked' : '' }}
+                        style="display:none">
+                @endforeach
+
+                @if ($defaultAddress)
+                    <a href="{{ route('customer.checkout.address-picker') }}" class="co-addr-card" id="addrCardLink">
                         <div class="co-addr-card__icon">
                             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -67,75 +76,23 @@
                                 <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                         </div>
-                        <span class="co-section-label__text">Alamat Pengiriman</span>
-                    </div>
-
-                    {{-- Hidden radio inputs — bawa data-* agar JS bisa update tampilan --}}
-                    @php $defaultAddress = $addresses->firstWhere('is_default', true) ?? $addresses->first(); @endphp
-                    @foreach ($addresses as $address)
-                        <input type="radio" name="address_id" id="addr_{{ $address->id }}" value="{{ $address->id }}"
-                            data-label="{{ $address->label }}" data-address="{{ $address->address }}"
-                            data-is-default="{{ $address->is_default ? '1' : '0' }}" {{ $address->id == $defaultAddress?->id ? 'checked' : '' }} style="display:none">
-                    @endforeach
-
-                    {{-- Address row — sama padding dengan .co-select-list --}}
-                    <div class="co-select-list" style="padding-bottom: 14px">
-                        @if ($defaultAddress)
-                            <a href="{{ route('customer.checkout.address-picker') }}" class="co-addr-row" id="addrRow">
-                                <div class="co-addr-row__icon">
-                                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path
-                                            d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                </div>
-                                <div class="co-addr-row__body">
-                                    <div class="co-addr-row__top">
-                                        <span class="co-addr-row__label" id="addrLabel">{{ $defaultAddress->label }}</span>
-                                        <span class="co-badge co-badge--blue co-addr-row__badge" id="addrBadge"
-                                            style="{{ $defaultAddress->is_default ? '' : 'display:none' }}">Utama</span>
-                                    </div>
-                                    <p class="co-addr-row__detail" id="addrDetail">{{ $defaultAddress->address }}</p>
-                                </div>
-                                <div class="co-addr-row__chevron">
-                                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"
-                                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path d="M9 18l6-6-6-6" />
-                                    </svg>
-                                </div>
-                            </a>
-                        @else
-                            {{-- No address yet --}}
-                            <a href="{{ route('customer.address.create') }}" class="co-addr-empty">
-                                <div class="co-addr-empty__icon">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                        <path
-                                            d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                </div>
-                                <div class="co-addr-empty__text">
-                                    <span class="co-addr-empty__title">Belum ada alamat</span>
-                                    <span class="co-addr-empty__sub">Tambah alamat pengiriman</span>
-                                </div>
-                                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"
-                                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                    <path d="M9 18l6-6-6-6" />
-                                </svg>
-                            </a>
-                        @endif
                         <div class="co-addr-card__body">
                             <div class="co-addr-card__top">
-                                <span class="co-addr-card__label">{{ $selectedAddress->label }}</span>
-                                @if ($selectedAddress->is_default)
-                                    <span class="co-chip co-chip--primary">Utama</span>
-                                @endif
+                                <span class="co-addr-card__label" id="addrLabel">{{ $defaultAddress->label }}</span>
+                                <span class="co-badge co-badge--blue co-addr-row__badge" id="addrBadge"
+                                    style="{{ $defaultAddress->is_default ? '' : 'display:none' }}">Utama</span>
                             </div>
-                            <p class="co-addr-card__address">{{ $selectedAddress->address }}</p>
+                            <p class="co-addr-card__address" id="addrDetail">{{ $defaultAddress->address }}</p>
                         </div>
-                    @else
+                        <div class="co-addr-card__arrow">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"
+                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </div>
+                    </a>
+                @else
+                    <a href="{{ route('customer.address.create') }}" class="co-addr-card">
                         <div class="co-addr-card__icon co-addr-card__icon--empty">
                             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -145,14 +102,14 @@
                         <div class="co-addr-card__body">
                             <p class="co-addr-card__empty">Tambah alamat pengiriman</p>
                         </div>
-                    @endif
-                    <div class="co-addr-card__arrow">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M9 18l6-6-6-6" />
-                        </svg>
-                    </div>
-                </a>
+                        <div class="co-addr-card__arrow">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"
+                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </div>
+                    </a>
+                @endif
 
                 {{-- ── 2. Metode Pembayaran ── --}}
                 <div class="co-section-title">
@@ -228,8 +185,15 @@
                                     </div>
                                 @endif
                             </div>
-                        @endforeach
-                    </div>
+                            <div class="co-prod-info">
+                                <p class="co-prod-name">{{ $item->product->name }}</p>
+                                <span class="co-prod-meta">{{ $item->quantity }} pcs
+                                    &nbsp;·&nbsp; Rp{{ number_format($item->product->price, 0, ',', '.') }}/pcs</span>
+                            </div>
+                            <span class="co-prod-sub">Rp{{ number_format($item->subtotal, 0, ',', '.') }}</span>
+                        </div>
+                    @endforeach
+
                     {{-- ── Add Note trigger ── --}}
                     <button type="button" class="co-note-trigger" id="openNoteSheet">
                         <div class="co-note-trigger__left">
@@ -248,14 +212,6 @@
 
                     {{-- hidden input yang dikirim ke form --}}
                     <input type="hidden" name="note" id="noteHidden">
-                            <div class="co-prod-info">
-                                <p class="co-prod-name">{{ $item->product->name }}</p>
-                                <span class="co-prod-meta">{{ $item->quantity }} pcs
-                                    &nbsp;·&nbsp; Rp{{ number_format($item->product->price, 0, ',', '.') }}/pcs</span>
-                            </div>
-                            <span class="co-prod-sub">Rp{{ number_format($item->subtotal, 0, ',', '.') }}</span>
-                        </div>
-                    @endforeach
                 </div>
 
                 {{-- ── 4. Ringkasan Biaya ── --}}
@@ -267,8 +223,7 @@
                 <div class="co-card co-summary-card">
                     <div class="co-sum-row">
                         <span class="co-sum-label">Subtotal produk</span>
-                        <span
-                            class="co-sum-val">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
+                        <span class="co-sum-val">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
                     </div>
                     <div class="co-sum-row">
                         <span class="co-sum-label">Ongkos kirim</span>
@@ -284,8 +239,7 @@
                     <div class="co-sum-divider"></div>
                     <div class="co-sum-row co-sum-row--total">
                         <span>Total pembayaran</span>
-                        <span
-                            class="co-sum-total">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
+                        <span class="co-sum-total">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
                     </div>
                     <div class="co-sum-note">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
@@ -319,8 +273,7 @@
             <div class="co-footer__inner">
                 <div class="co-footer__info">
                     <span class="co-footer__label">Total pembayaran</span>
-                    <span
-                        class="co-footer__val">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
+                    <span class="co-footer__val">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
                 </div>
                 <button type="submit" class="co-footer__btn" id="submitBtn">
                     Buat Pesanan
@@ -359,285 +312,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // ─────────────────────────────────────────────────────────────
-        // CONSTANTS
-        // ─────────────────────────────────────────────────────────────
-        const CHECKOUT_STATE_KEY = 'checkout_state';
-
-        const CHECKOUT_FLOW_PATHS = [
-            '/customer/checkout/address-picker',
-            '/customer/address/create',
-        ];
-
-        // ─────────────────────────────────────────────────────────────
-        // HELPERS
-        // ─────────────────────────────────────────────────────────────
-        function isCheckoutFlow(href) {
-            if (!href) return false;
-            return CHECKOUT_FLOW_PATHS.some(path => href.includes(path));
-        }
-
-        function toggleTransfer() {
-            const selected = document.querySelector('input[name="payment_method"]:checked');
-            document.getElementById('transferDetail')
-                .classList.toggle('visible', selected?.value === 'transfer');
-        }
-
-        function saveCheckoutState() {
-            const state = {
-                address_id: document.querySelector('input[name="address_id"]:checked')?.value ?? null,
-                payment_method: document.querySelector('input[name="payment_method"]:checked')?.value ?? 'cod',
-                saved_at: Date.now(),
-            };
-            localStorage.setItem(CHECKOUT_STATE_KEY, JSON.stringify(state));
-        }
-
-        function restoreCheckoutState() {
-            const raw = localStorage.getItem(CHECKOUT_STATE_KEY);
-            if (!raw) return;
-            let state;
-            try { state = JSON.parse(raw); } catch { return; }
-            if (Date.now() - (state.saved_at ?? 0) > 30 * 60 * 1000) {
-                localStorage.removeItem(CHECKOUT_STATE_KEY);
-                return;
-            }
-            if (state.address_id) {
-                const r = document.querySelector(`input[name="address_id"][value="${state.address_id}"]`);
-                if (r) r.checked = true;
-            }
-            if (state.payment_method) {
-                const r = document.querySelector(`input[name="payment_method"][value="${state.payment_method}"]`);
-                if (r) { r.checked = true; toggleTransfer(); }
-            }
-            localStorage.removeItem(CHECKOUT_STATE_KEY);
-        }
-
-        // ─────────────────────────────────────────────────────────────
-        // LEAVE GUARD STATE — di luar DOMContentLoaded agar konsisten
-        // ─────────────────────────────────────────────────────────────
-        let pendingNav = null;
-        let formDirty = false;
-        let isSubmitting = false;
-
-        // ─────────────────────────────────────────────────────────────
-        // MAIN
-        // ─────────────────────────────────────────────────────────────
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // Bersihkan address-picker dari history stack
-            if (document.referrer.includes('/checkout/address-picker')) {
-                history.replaceState(null, '', window.location.href);
-            }
-
-            // ── Restore alamat dari address-picker (sessionStorage) ───
-            const chosenId = sessionStorage.getItem('chosen_address_id');
-            if (chosenId) {
-                sessionStorage.removeItem('chosen_address_id');
-                const radio = document.getElementById('addr_' + chosenId);
-                if (radio) {
-                    document.querySelectorAll('input[name="address_id"]').forEach(r => r.checked = false);
-                    radio.checked = true;
-                    const elLabel = document.getElementById('addrLabel');
-                    const elDetail = document.getElementById('addrDetail');
-                    const elBadge = document.getElementById('addrBadge');
-                    if (elLabel) elLabel.textContent = radio.dataset.label;
-                    if (elDetail) elDetail.textContent = radio.dataset.address;
-                    if (elBadge) elBadge.style.display = radio.dataset.isDefault === '1' ? '' : 'none';
-
-                    formDirty = true; // ← user sudah pilih alamat berbeda
-
-                }
-            }
-
-            // Restore dari localStorage (kembali dari tambah alamat)
-            restoreCheckoutState();
-
-            // ── Payment method ────────────────────────────────────────
-            document.querySelectorAll('input[name="payment_method"]')
-                .forEach(r => r.addEventListener('change', toggleTransfer));
-            toggleTransfer();
-
-            // ── Copy nomor rekening ───────────────────────────────────
-            document.querySelectorAll('.co-copy-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    navigator.clipboard.writeText(btn.dataset.num).then(() => {
-                        const original = btn.innerHTML;
-                        btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <path d="M20 6L9 17l-5-5"/></svg> Tersalin`;
-                        btn.classList.add('copied');
-                        setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
-                    });
-                });
-            });
-
-            // ── Submit — loading state ────────────────────────────────
-            document.getElementById('checkoutForm').addEventListener('submit', function () {
-                isSubmitting = true;
-                const btn = this.querySelector('.co-footer__btn');
-                btn.disabled = true;
-                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2.2" stroke-linecap="round" class="co-spin">
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83
-                         M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-            </svg> Memproses...`;
-            });
-
-            // Simpan state sebelum navigasi ke tambah alamat
-            document.querySelector('.co-addr-add')?.addEventListener('click', saveCheckoutState);
-
-            // ── Leave Guard ───────────────────────────────────────────
-            const leaveSheet = document.getElementById('leaveSheet');
-            const leaveSheetBox = document.getElementById('leaveSheetBox');
-            const leaveStay = document.getElementById('leaveStay');
-            const leaveConfirm = document.getElementById('leaveConfirm');
-
-            // Tandai dirty saat user mengubah pilihan
-            document.querySelectorAll('input[name="payment_method"], input[name="address_id"]')
-                .forEach(el => el.addEventListener('change', () => { formDirty = true; }));
-
-            function openLeaveSheet(nav) {
-                pendingNav = nav;
-                leaveSheet.classList.add('open');
-            }
-
-            function closeLeaveSheet(callback) {
-                leaveSheetBox.style.animation = 'efSheetDown .22s cubic-bezier(.4,0,1,1) forwards';
-                setTimeout(() => {
-                    leaveSheet.classList.remove('open');
-                    leaveSheetBox.style.animation = '';
-                    callback?.();
-                }, 220);
-            }
-
-            function doNavigate(nav) {
-                isSubmitting = true;
-                if (!nav || nav === '__back__') history.back();
-                else window.location.href = nav;
-            }
-
-            leaveStay.addEventListener('click', () => closeLeaveSheet());
-            leaveConfirm.addEventListener('click', () => closeLeaveSheet(() => doNavigate(pendingNav)));
-
-            // ── Khusus tombol back — href="javascript:..." ────────────
-            // Tidak bisa diintercept via href check, harus listener sendiri
-            document.querySelector('.co-header__back')?.addEventListener('click', e => {
-                if (isSubmitting || !formDirty) return;
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                openLeaveSheet('__back__');
-            });
-
-            // ── Intercept link <a> biasa (navbar, dll) ────────────────
-            document.addEventListener('click', e => {
-                if (isSubmitting || !formDirty) return;
-
-                const link = e.target.closest('a[href]');
-                if (!link) return;
-
-                // Skip tombol back — sudah dihandle di atas
-                if (link.classList.contains('co-header__back')) return;
-
-                const href = link.getAttribute('href');
-                if (!href) return;
-
-                // Skip: anchor, javascript:, target blank, flow checkout
-                if (
-                    href.startsWith('#') ||
-                    href.startsWith('javascript') ||
-                    link.target === '_blank' ||
-                    isCheckoutFlow(href)
-                ) return;
-
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                openLeaveSheet(href);
-            });
-
-            // ── Note Bottom Sheet ─────────────────────────────────────
-            const noteSheet = document.getElementById('noteSheet');
-            const noteSheetBox = document.getElementById('noteSheetBox');
-            const noteTextarea = document.getElementById('noteTextarea');
-            const noteHidden = document.getElementById('noteHidden');
-            const noteTrigger = document.getElementById('openNoteSheet');
-            const noteTriggerText = document.getElementById('noteTriggerText');
-            const noteCountEl = document.getElementById('noteCount');
-
-            function openNoteSheet() {
-                noteSheet.classList.add('open');
-                document.body.style.overflow = 'hidden';
-                setTimeout(() => noteTextarea.focus(), 300);
-            }
-
-            function closeNoteSheet() {
-                noteSheetBox.style.animation = 'efSheetDown .22s cubic-bezier(.4,0,1,1) forwards';
-                setTimeout(() => {
-                    noteSheet.classList.remove('open');
-                    noteSheetBox.style.animation = '';
-                    document.body.style.overflow = '';
-                }, 220);
-            }
-
-            function updateTrigger(val) {
-                const hasNote = val.trim().length > 0;
-                noteTrigger.classList.toggle('has-note', hasNote);
-                noteTriggerText.textContent = hasNote
-                    ? `📝 ${val.trim().length > 40 ? val.trim().slice(0, 40) + '…' : val.trim()}`
-                    : 'Tambah catatan untuk kurir';
-            }
-
-            noteTrigger.addEventListener('click', openNoteSheet);
-            document.getElementById('closeNoteSheet').addEventListener('click', closeNoteSheet);
-
-            // Backdrop dismiss
-            noteSheet.addEventListener('click', e => {
-                if (e.target === noteSheet) closeNoteSheet();
-            });
-
-            // Chips
-            document.querySelectorAll('.co-note-chip').forEach(chip => {
-                chip.addEventListener('click', () => {
-                    const isActive = chip.classList.contains('active');
-                    document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove('active'));
-                    if (!isActive) {
-                        chip.classList.add('active');
-                        noteTextarea.value = chip.dataset.note;
-                    } else {
-                        noteTextarea.value = '';
-                    }
-                    noteCountEl.textContent = noteTextarea.value.length;
-                });
-            });
-
-            // Counter + reset chip saat ketik manual
-            noteTextarea.addEventListener('input', () => {
-                noteCountEl.textContent = noteTextarea.value.length;
-                document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove('active'));
-            });
-
-            // Simpan
-            document.getElementById('saveNote').addEventListener('click', () => {
-                const val = noteTextarea.value.trim();
-                noteHidden.value = val;
-                updateTrigger(val);
-                closeNoteSheet();
-                formDirty = true;
-
-            });
-
-            // Hapus
-            document.getElementById('clearNote').addEventListener('click', () => {
-                noteTextarea.value = '';
-                noteHidden.value = '';
-                noteCountEl.textContent = '0';
-                document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove('active'));
-                updateTrigger('');
-                closeNoteSheet();
-            });
-        });
-    </script>
 
     {{-- ── Note Bottom Sheet ── --}}
     <div class="ef-sheet-overlay" id="noteSheet" role="dialog" aria-modal="true" aria-labelledby="noteSheetTitle">
@@ -694,7 +368,7 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+
     {{-- ── Styles ── --}}
     <style>
         *,
@@ -732,11 +406,9 @@
             color: var(--text-primary);
         }
 
-        /* ── Header ── */
-        .co-root {
-            min-height: 100dvh;
-        }
+        .co-root { min-height: 100dvh; }
 
+        /* ── Header ── */
         .co-header {
             position: sticky;
             top: 0;
@@ -763,9 +435,7 @@
             transition: background .15s;
         }
 
-        .co-header__back:active {
-            background: var(--border);
-        }
+        .co-header__back:active { background: var(--border); }
 
         .co-header__title {
             font-size: 16px;
@@ -841,17 +511,8 @@
         }
 
         @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 1
-            }
-
-            50% {
-                transform: scale(1.3);
-                opacity: .7
-            }
+            0%, 100% { transform: scale(1); opacity: 1 }
+            50%       { transform: scale(1.3); opacity: .7 }
         }
 
         .co-progress__line {
@@ -862,9 +523,7 @@
             margin-bottom: 16px;
         }
 
-        .co-progress__line--done {
-            background: var(--accent);
-        }
+        .co-progress__line--done { background: var(--accent); }
 
         /* ── Body ── */
         .co-body {
@@ -944,9 +603,7 @@
             pointer-events: none;
         }
 
-        .co-addr-card:active::after {
-            opacity: .03;
-        }
+        .co-addr-card:active::after { opacity: .03; }
 
         .co-addr-card:active {
             border-color: var(--accent);
@@ -1020,21 +677,9 @@
             flex-shrink: 0;
         }
 
-        .co-chip--primary {
-            background: var(--accent-soft);
-            color: var(--accent);
-        }
-
-        .co-chip--green {
-            background: var(--green-soft);
-            color: var(--green);
-        }
-
-        .co-chip--gray {
-            background: var(--bg);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-mid);
-        }
+        .co-chip--primary { background: var(--accent-soft); color: var(--accent); }
+        .co-chip--green   { background: var(--green-soft);  color: var(--green); }
+        .co-chip--gray    { background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border-mid); }
 
         /* ── Payment rows ── */
         .co-pay-row {
@@ -1046,13 +691,8 @@
             transition: background .12s;
         }
 
-        .co-pay-row:active {
-            background: var(--bg);
-        }
-
-        .co-pay-row input[type="radio"] {
-            display: none;
-        }
+        .co-pay-row:active { background: var(--bg); }
+        .co-pay-row input[type="radio"] { display: none; }
 
         .co-pay-row__icon {
             width: 38px;
@@ -1064,20 +704,10 @@
             justify-content: center;
         }
 
-        .co-pay-row__icon--cod {
-            background: var(--amber-soft);
-            color: var(--amber);
-        }
+        .co-pay-row__icon--cod      { background: var(--amber-soft); color: var(--amber); }
+        .co-pay-row__icon--transfer { background: var(--accent-soft); color: var(--accent); }
 
-        .co-pay-row__icon--transfer {
-            background: var(--accent-soft);
-            color: var(--accent);
-        }
-
-        .co-pay-row__info {
-            flex: 1;
-            min-width: 0;
-        }
+        .co-pay-row__info { flex: 1; min-width: 0; }
 
         .co-pay-row__name {
             display: block;
@@ -1119,105 +749,86 @@
             transition: background .15s;
         }
 
-        .co-pay-row--active .co-radio-visual {
-            border-color: var(--accent);
-        }
+        .co-pay-row--active .co-radio-visual { border-color: var(--accent); }
+        .co-pay-row--active .co-radio-dot    { background: var(--accent); }
+        .co-pay-divider { height: 1px; background: var(--border); margin: 0 16px; }
 
-        .co-pay-row--active .co-radio-dot {
-            background: var(--accent);
-        }
-
-        .co-pay-divider {
-            height: 1px;
-            background: var(--border);
-            margin: 0 16px;
-        }
-
-        /* ── Transfer panel ── */
-        .co-transfer-panel {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height .3s cubic-bezier(.4, 0, .2, 1);
-        }
-
-        .co-transfer-panel.open {
-            max-height: 300px;
-        }
-
-        .co-transfer-panel__inner {
-            margin: 0 16px 14px;
-            padding: 14px;
-            background: var(--bg);
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
-
-        .co-transfer-panel__title {
-            font-size: 10.5px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: .7px;
-            margin-bottom: 10px;
-        }
-
-        .co-bank-row {
+        /* ── Note trigger ── */
+        .co-note-trigger {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border);
+            width: 100%;
+            padding: 13px 16px;
+            border: none;
+            border-top: 1px solid var(--border);
+            background: transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 13px;
+            transition: background .12s;
         }
 
-        .co-bank-row:last-of-type {
-            border-bottom: none;
-        }
+        .co-note-trigger:active { background: var(--bg); }
 
-        .co-bank-row__left {
+        .co-note-trigger__left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .co-bank-row__logo {
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--text-primary);
-            letter-spacing: .3px;
+        .co-note-trigger.has-note { color: var(--accent); }
+
+        /* ── Note chips ── */
+        .co-note-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .co-bank-row__num {
-            font-size: 13px;
+        .co-note-chip {
+            padding: 7px 12px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border-mid);
+            background: var(--bg);
+            font-size: 12px;
             font-weight: 500;
-            color: var(--text-primary);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .co-copy-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 11.5px;
-            font-weight: 600;
-            color: var(--accent);
-            background: var(--accent-soft);
-            border: none;
-            border-radius: 6px;
-            padding: 5px 9px;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: opacity .15s;
+            transition: border-color .15s, background .15s, color .15s;
         }
 
-        .co-copy-btn.copied {
-            color: var(--green);
-            background: var(--green-soft);
+        .co-note-chip.active,
+        .co-note-chip:active {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
         }
 
-        .co-transfer-panel__note {
-            font-size: 11.5px;
+        /* ── Note textarea ── */
+        .co-note-textarea {
+            width: 100%;
+            border: 1.5px solid var(--border-mid);
+            border-radius: 10px;
+            padding: 12px 14px 28px;
+            font-size: 13.5px;
+            font-family: inherit;
+            color: var(--text-primary);
+            background: var(--bg);
+            resize: none;
+            outline: none;
+            line-height: 1.55;
+            transition: border-color .15s;
+        }
+
+        .co-note-textarea:focus { border-color: var(--accent); }
+
+        .co-note-counter {
+            position: absolute;
+            bottom: 9px;
+            right: 12px;
+            font-size: 11px;
             color: var(--text-muted);
-            line-height: 1.5;
-            margin-top: 10px;
         }
 
         /* ── Products ── */
@@ -1228,9 +839,7 @@
             padding: 13px 16px;
         }
 
-        .co-prod-row--border {
-            border-bottom: 1px solid var(--border);
-        }
+        .co-prod-row--border { border-bottom: 1px solid var(--border); }
 
         .co-prod-img {
             width: 52px;
@@ -1242,11 +851,7 @@
             border: 1px solid var(--border);
         }
 
-        .co-prod-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .co-prod-img img { width: 100%; height: 100%; object-fit: cover; }
 
         .co-prod-img__placeholder {
             width: 100%;
@@ -1256,10 +861,7 @@
             justify-content: center;
         }
 
-        .co-prod-info {
-            flex: 1;
-            min-width: 0;
-        }
+        .co-prod-info { flex: 1; min-width: 0; }
 
         .co-prod-name {
             font-size: 13px;
@@ -1288,9 +890,7 @@
         }
 
         /* ── Summary ── */
-        .co-summary-card {
-            padding: 16px;
-        }
+        .co-summary-card { padding: 16px; }
 
         .co-sum-row {
             display: flex;
@@ -1301,9 +901,7 @@
             margin-bottom: 10px;
         }
 
-        .co-sum-label {
-            color: var(--text-secondary);
-        }
+        .co-sum-label { color: var(--text-secondary); }
 
         .co-sum-val {
             font-weight: 600;
@@ -1320,11 +918,7 @@
             font-size: 12.5px;
         }
 
-        .co-sum-divider {
-            height: 1px;
-            background: var(--border);
-            margin: 4px 0 14px;
-        }
+        .co-sum-divider { height: 1px; background: var(--border); margin: 4px 0 14px; }
 
         .co-sum-row--total {
             font-size: 15px;
@@ -1387,10 +981,7 @@
             gap: 12px;
         }
 
-        .co-footer__info {
-            flex: 1;
-            min-width: 0;
-        }
+        .co-footer__info { flex: 1; min-width: 0; }
 
         .co-footer__label {
             font-size: 11px;
@@ -1426,118 +1017,340 @@
             transition: opacity .15s, transform .1s;
         }
 
-        .co-footer__btn:active {
-            opacity: .9;
-            transform: scale(.98);
-        }
+        .co-footer__btn:active   { opacity: .9; transform: scale(.98); }
+        .co-footer__btn:disabled { opacity: .6; pointer-events: none; }
 
-        .co-footer__btn:disabled {
-            opacity: .6;
-            pointer-events: none;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .co-spin {
-            animation: spin .8s linear infinite;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .co-spin { animation: spin .8s linear infinite; }
     </style>
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
-    </script>
+
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ config('midtrans.client_key') }}"></script>
 
     <script>
+        // ─────────────────────────────────────────────────────────────
+        // CONSTANTS
+        // ─────────────────────────────────────────────────────────────
+        const CHECKOUT_STATE_KEY = 'checkout_state';
+
+        const CHECKOUT_FLOW_PATHS = [
+            '/customer/checkout/address-picker',
+            '/customer/address/create',
+        ];
+
+        // ─────────────────────────────────────────────────────────────
+        // HELPERS
+        // ─────────────────────────────────────────────────────────────
+        function isCheckoutFlow(href) {
+            if (!href) return false;
+            return CHECKOUT_FLOW_PATHS.some(path => href.includes(path));
+        }
+
+        function saveCheckoutState() {
+            const state = {
+                address_id: document.querySelector('input[name="address_id"]:checked')?.value ?? null,
+                payment_method: document.querySelector('input[name="payment_method"]:checked')?.value ?? 'cod',
+                saved_at: Date.now(),
+            };
+            localStorage.setItem(CHECKOUT_STATE_KEY, JSON.stringify(state));
+        }
+
+        function restoreCheckoutState() {
+            const raw = localStorage.getItem(CHECKOUT_STATE_KEY);
+            if (!raw) return;
+            let state;
+            try { state = JSON.parse(raw); } catch { return; }
+            if (Date.now() - (state.saved_at ?? 0) > 30 * 60 * 1000) {
+                localStorage.removeItem(CHECKOUT_STATE_KEY);
+                return;
+            }
+            if (state.address_id) {
+                const r = document.querySelector(`input[name="address_id"][value="${state.address_id}"]`);
+                if (r) r.checked = true;
+            }
+            if (state.payment_method) {
+                const r = document.querySelector(`input[name="payment_method"][value="${state.payment_method}"]`);
+                if (r) r.checked = true;
+            }
+            localStorage.removeItem(CHECKOUT_STATE_KEY);
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // LEAVE GUARD STATE
+        // ─────────────────────────────────────────────────────────────
+        let pendingNav    = null;
+        let formDirty     = false;
+        let isSubmitting  = false;
+
+        // ─────────────────────────────────────────────────────────────
+        // MAIN
+        // ─────────────────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
 
-            // ── Payment toggle ──
+            // Bersihkan address-picker dari history stack
+            if (document.referrer.includes('/checkout/address-picker')) {
+                history.replaceState(null, '', window.location.href);
+            }
+
+            // ── Restore alamat dari address-picker (sessionStorage) ───
+            const chosenId = sessionStorage.getItem('chosen_address_id');
+            if (chosenId) {
+                sessionStorage.removeItem('chosen_address_id');
+                const radio = document.getElementById('addr_' + chosenId);
+                if (radio) {
+                    document.querySelectorAll('input[name="address_id"]').forEach(r => r.checked = false);
+                    radio.checked = true;
+
+                    const elLabel  = document.getElementById('addrLabel');
+                    const elDetail = document.getElementById('addrDetail');
+                    const elBadge  = document.getElementById('addrBadge');
+                    if (elLabel)  elLabel.textContent  = radio.dataset.label;
+                    if (elDetail) elDetail.textContent = radio.dataset.address;
+                    if (elBadge)  elBadge.style.display = radio.dataset.isDefault === '1' ? '' : 'none';
+
+                    // Update hidden address_id
+                    document.getElementById('selectedAddressId').value = chosenId;
+                    formDirty = true;
+                }
+            }
+
+            // Restore dari localStorage (kembali dari tambah alamat)
+            restoreCheckoutState();
+
+            // ── Payment method toggle ─────────────────────────────────
             const payRadios = document.querySelectorAll('input[name="payment_method"]');
             const payRows = {
-                cod: document.getElementById('payRowCod'),
-                transfer: document.getElementById('payRowMidtrans')
+                cod:      document.getElementById('payRowCod'),
+                midtrans: document.getElementById('payRowMidtrans'),
             };
 
             function syncPayment() {
                 const val = document.querySelector('input[name="payment_method"]:checked')?.value;
-                payRows.cod.classList.toggle('co-pay-row--active', val === 'cod');
-                payRows.transfer.classList.toggle('co-pay-row--active', val === 'midtrans');
+                payRows.cod.classList.toggle('co-pay-row--active',      val === 'cod');
+                payRows.midtrans.classList.toggle('co-pay-row--active', val === 'midtrans');
             }
 
-            payRadios.forEach(r => r.addEventListener('change', syncPayment));
+            payRadios.forEach(r => r.addEventListener('change', () => { syncPayment(); formDirty = true; }));
             syncPayment();
 
-            // ── Submit ──
+            // ── Copy nomor rekening ───────────────────────────────────
+            document.querySelectorAll('.co-copy-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(btn.dataset.num).then(() => {
+                        const original = btn.innerHTML;
+                        btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M20 6L9 17l-5-5"/></svg> Tersalin`;
+                        btn.classList.add('copied');
+                        setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
+                    });
+                });
+            });
+
+            // ── Submit ────────────────────────────────────────────────
             document.getElementById('checkoutForm').addEventListener('submit', function(e) {
                 e.preventDefault();
+                isSubmitting = true;
 
                 const btn = document.getElementById('submitBtn');
                 btn.disabled = true;
-                btn.innerHTML =
-                    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" class="co-spin"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Memproses...`;
+                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.2" stroke-linecap="round" class="co-spin">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83
+                             M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg> Memproses...`;
 
                 const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
 
-                // Kalau COD, submit form biasa
+                // COD — submit form biasa
                 if (paymentMethod === 'cod') {
                     this.submit();
                     return;
                 }
 
-                // Kalau Midtrans, pakai Snap
+                // Midtrans — pakai Snap
                 fetch(`/payment/{{ $order->id }}/create`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            payment_method: paymentMethod,
-                            address_id: document.getElementById('selectedAddressId').value
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (!data.token) {
-                            alert('Snap token tidak ditemukan');
-                            btn.disabled = false;
-                            btn.innerHTML = `Buat Pesanan`;
-                            return;
-                        }
-                        window.snap.pay(data.token, {
-                            onSuccess: function(result) {
-                                window.location.href = '/orders/';
-
-                            },
-                            onPending: function(result) {
-                                window.location.href = '/orders';
-                            },
-                            onError: function() {
-                                alert('Pembayaran gagal, silakan coba lagi.');
-                                btn.disabled = false;
-                                btn.innerHTML = `Buat Pesanan`;
-                            },
-                            onClose: function() {
-                                btn.disabled = false;
-                                btn.innerHTML = `Buat Pesanan`;
-                            }
-                        });
-                    })
-                    .catch(() => {
-                        alert('Terjadi kesalahan, coba lagi.');
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        payment_method: paymentMethod,
+                        address_id: document.getElementById('selectedAddressId').value,
+                    }),
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.token) {
+                        alert('Snap token tidak ditemukan');
                         btn.disabled = false;
                         btn.innerHTML = `Buat Pesanan`;
+                        return;
+                    }
+                    window.snap.pay(data.token, {
+                        onSuccess: () => { window.location.href = '/orders/'; },
+                        onPending: () => { window.location.href = '/orders'; },
+                        onError:   () => {
+                            alert('Pembayaran gagal, silakan coba lagi.');
+                            btn.disabled = false;
+                            btn.innerHTML = `Buat Pesanan`;
+                        },
+                        onClose:   () => {
+                            btn.disabled = false;
+                            btn.innerHTML = `Buat Pesanan`;
+                        },
                     });
+                })
+                .catch(() => {
+                    alert('Terjadi kesalahan, coba lagi.');
+                    btn.disabled = false;
+                    btn.innerHTML = `Buat Pesanan`;
+                });
             });
 
-            // ── Restore selected address from session ──
+            // Simpan state sebelum navigasi ke tambah alamat
+            document.querySelector('.co-addr-add')?.addEventListener('click', saveCheckoutState);
+
+            // ── Leave Guard ───────────────────────────────────────────
+            const leaveSheet    = document.getElementById('leaveSheet');
+            const leaveSheetBox = document.getElementById('leaveSheetBox');
+            const leaveStay     = document.getElementById('leaveStay');
+            const leaveConfirm  = document.getElementById('leaveConfirm');
+
+            document.querySelectorAll('input[name="address_id"]')
+                .forEach(el => el.addEventListener('change', () => { formDirty = true; }));
+
+            function openLeaveSheet(nav) {
+                pendingNav = nav;
+                leaveSheet.classList.add('open');
+            }
+
+            function closeLeaveSheet(callback) {
+                leaveSheetBox.style.animation = 'efSheetDown .22s cubic-bezier(.4,0,1,1) forwards';
+                setTimeout(() => {
+                    leaveSheet.classList.remove('open');
+                    leaveSheetBox.style.animation = '';
+                    callback?.();
+                }, 220);
+            }
+
+            function doNavigate(nav) {
+                isSubmitting = true;
+                if (!nav || nav === '__back__') history.back();
+                else window.location.href = nav;
+            }
+
+            leaveStay.addEventListener('click',    () => closeLeaveSheet());
+            leaveConfirm.addEventListener('click', () => closeLeaveSheet(() => doNavigate(pendingNav)));
+
+            document.querySelector('.co-header__back')?.addEventListener('click', e => {
+                if (isSubmitting || !formDirty) return;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                openLeaveSheet('__back__');
+            });
+
+            document.addEventListener('click', e => {
+                if (isSubmitting || !formDirty) return;
+                const link = e.target.closest('a[href]');
+                if (!link) return;
+                if (link.classList.contains('co-header__back')) return;
+                const href = link.getAttribute('href');
+                if (!href) return;
+                if (
+                    href.startsWith('#') ||
+                    href.startsWith('javascript') ||
+                    link.target === '_blank' ||
+                    isCheckoutFlow(href)
+                ) return;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                openLeaveSheet(href);
+            });
+
+            // ── Restore selected address from session (fallback) ──────
             const pendingAddr = sessionStorage.getItem('selected_address_id');
             if (pendingAddr) {
                 document.getElementById('selectedAddressId').value = pendingAddr;
                 sessionStorage.removeItem('selected_address_id');
             }
+
+            // ── Note Bottom Sheet ─────────────────────────────────────
+            const noteSheet      = document.getElementById('noteSheet');
+            const noteSheetBox   = document.getElementById('noteSheetBox');
+            const noteTextarea   = document.getElementById('noteTextarea');
+            const noteHidden     = document.getElementById('noteHidden');
+            const noteTrigger    = document.getElementById('openNoteSheet');
+            const noteTriggerText = document.getElementById('noteTriggerText');
+            const noteCountEl    = document.getElementById('noteCount');
+
+            function openNoteSheet() {
+                noteSheet.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                setTimeout(() => noteTextarea.focus(), 300);
+            }
+
+            function closeNoteSheet() {
+                noteSheetBox.style.animation = 'efSheetDown .22s cubic-bezier(.4,0,1,1) forwards';
+                setTimeout(() => {
+                    noteSheet.classList.remove('open');
+                    noteSheetBox.style.animation = '';
+                    document.body.style.overflow = '';
+                }, 220);
+            }
+
+            function updateTrigger(val) {
+                const hasNote = val.trim().length > 0;
+                noteTrigger.classList.toggle('has-note', hasNote);
+                noteTriggerText.textContent = hasNote
+                    ? `📝 ${val.trim().length > 40 ? val.trim().slice(0, 40) + '…' : val.trim()}`
+                    : 'Tambah catatan untuk kurir';
+            }
+
+            noteTrigger.addEventListener('click', openNoteSheet);
+            document.getElementById('closeNoteSheet').addEventListener('click', closeNoteSheet);
+
+            noteSheet.addEventListener('click', e => {
+                if (e.target === noteSheet) closeNoteSheet();
+            });
+
+            document.querySelectorAll('.co-note-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const isActive = chip.classList.contains('active');
+                    document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove('active'));
+                    if (!isActive) {
+                        chip.classList.add('active');
+                        noteTextarea.value = chip.dataset.note;
+                    } else {
+                        noteTextarea.value = '';
+                    }
+                    noteCountEl.textContent = noteTextarea.value.length;
+                });
+            });
+
+            noteTextarea.addEventListener('input', () => {
+                noteCountEl.textContent = noteTextarea.value.length;
+                document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove('active'));
+            });
+
+            document.getElementById('saveNote').addEventListener('click', () => {
+                const val = noteTextarea.value.trim();
+                noteHidden.value = val;
+                updateTrigger(val);
+                closeNoteSheet();
+                formDirty = true;
+            });
+
+            document.getElementById('clearNote').addEventListener('click', () => {
+                noteTextarea.value  = '';
+                noteHidden.value    = '';
+                noteCountEl.textContent = '0';
+                document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove('active'));
+                updateTrigger('');
+                closeNoteSheet();
+            });
         });
     </script>
 

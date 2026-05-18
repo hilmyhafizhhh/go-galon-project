@@ -25,6 +25,7 @@ class Order extends Model
         'address_id',
         'delivered_at',
         'note',
+        'transaction_id',
     ];
 
     protected $casts = [

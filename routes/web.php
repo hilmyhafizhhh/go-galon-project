@@ -19,6 +19,7 @@ use App\Models\Order;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -174,7 +175,7 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
 
 // pmidtrans
 Route::post('/payment/{order}/create', [PaymentController::class, 'createPayment'])->name('payment.create');
-Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback')->withoutMiddleware(VerifyCsrfToken::class);;
 
 // Route Google OAuth
 Route::get('/auth/google/redirect', [ProviderController::class, 'redirect']);

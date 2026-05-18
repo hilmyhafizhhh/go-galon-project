@@ -28,43 +28,36 @@ class CheckoutController extends Controller
         return view('checkout.index', compact('order', 'addresses'));
     }
 
+    // CheckoutController.php — method process()
+
     public function process(Request $request)
     {
-        $request->validate([
-            'address_id'     => 'required|exists:addresses,id',
-            'payment_method' => 'required|in:cod,transfer',
-            'note'           => 'nullable|string|max:200',
-        ]);
-
-        $order = Order::with('items.product')
-            ->where('user_id', auth()->id())
+        $order = Order::where('user_id', auth()->id())
             ->where('status', 'draft')
-            ->first();
+            ->with('items')
+            ->firstOrFail();
 
-        if (!$order) {
-            return back()->with('error', 'Order tidak ditemukan');
+        // ── Generate order_code kalau belum ada ──
+        if (!$order->order_code) {
+            $order->order_code = 'ORD-' . strtoupper(substr(uniqid(), -6)) . '-' . date('Ymd');
         }
 
-        $items = $order->items->where('is_selected', true);
+        // ── Hitung total_amount ──
+        $order->total_amount = $order->items->sum('subtotal');
 
-        if ($items->isEmpty()) {
-            return back()->with('error', 'Tidak ada item dipilih');
+        // ── Set address & payment method ──
+        $order->address_id      = $request->address_id;
+        $order->payment_method  = $request->payment_method; // 'cod' atau 'midtrans'
+        $order->note            = $request->note;
+
+        if ($request->payment_method === 'cod') {
+            $order->status         = 'confirmed';
+            $order->payment_status = 'pending'; // bayar nanti saat COD
         }
 
-        // Hapus item yang tidak dipilih
-        $order->items()->where('is_selected', false)->delete();
+        $order->save();
 
-        $total = $items->sum('subtotal');
-
-        $order->update([
-            'total_amount'   => $total,
-            'status'         => 'pending',
-            'address_id'     => $request->address_id,
-            'payment_method' => $request->payment_method,
-            'note'           => $request->note,  // ← tambahan
-        ]);
-
-        return redirect()->route('customer.checkout.success', $order->id);
+        // lanjut redirect / return response...
     }
 
     public function addressPicker()

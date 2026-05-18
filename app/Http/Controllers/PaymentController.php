@@ -65,7 +65,7 @@ class PaymentController extends Controller
             ],
 
             'callbacks' => [
-                'finish' => url('/orders'),
+                'finish' => url('/customer/orders'),
             ],
 
             'snap_token_properties' => [
@@ -83,6 +83,8 @@ class PaymentController extends Controller
         return response()->json(['token' => $snapToken]);
     }
 
+    // PaymentController.php — callback()
+
     public function callback(Request $request)
     {
         $serverKey = config('midtrans.server_key');
@@ -95,31 +97,70 @@ class PaymentController extends Controller
         );
 
         if ($hashedKey !== $request->signature_key) {
+            \Log::warning('Midtrans invalid signature', $request->all());
             return response()->json(['message' => 'Invalid signature'], 403);
         }
 
-        // Format order_id: ORDER-{8char}-{timestamp}
+        // Ambil short ID dari format ORDER-{8char}-{timestamp}
         $parts   = explode('-', $request->order_id);
         $shortId = $parts[1] ?? null;
-        $order   = Order::whereRaw('LEFT(REPLACE(id, "-", ""), 8) = ?', [$shortId])->first();
+
+        $order = Order::whereRaw("LEFT(REPLACE(id, '-', ''), 8) = ?", [$shortId])->first();
 
         if (!$order) {
+            \Log::error('Order not found', ['order_id' => $request->order_id]);
             return response()->json(['message' => 'Order not found'], 404);
         }
 
-        if (in_array($request->transaction_status, ['capture', 'settlement'])) {
-            $order->update([
-                'payment_status' => 'paid',
-                'transaction_id' => $request->transaction_id,
-                'status'         => 'confirmed',
-            ]);
-        } elseif (in_array($request->transaction_status, ['cancel', 'deny', 'expire'])) {
+        // ── Map payment_type ke nama yang lebih jelas ──
+        $paymentMethodMap = [
+            'gopay'             => 'GoPay',
+            'qris'              => 'QRIS',
+            'bank_transfer'     => 'Bank Transfer (' . strtoupper($request->va_numbers[0]['bank'] ?? '') . ')',
+            'bca_va'            => 'Bank Transfer (BCA)',
+            'bni_va'            => 'Bank Transfer (BNI)',
+            'bri_va'            => 'Bank Transfer (BRI)',
+            'mandiri_bill'      => 'Bank Transfer (Mandiri)',
+            'credit_card'       => 'Kartu Kredit',
+            'shopeepay'         => 'ShopeePay',
+            'akulaku'           => 'Akulaku',
+        ];
+
+        $paymentType   = $request->payment_type ?? 'midtrans';
+        $paymentMethod = $paymentMethodMap[$paymentType] ?? ucfirst($paymentType);
+
+        $status       = $request->transaction_status;
+        $fraudStatus  = $request->fraud_status ?? null;
+
+        if ($status === 'capture' && $fraudStatus === 'accept') {
+            $this->markPaid($order, $request->transaction_id, $paymentMethod);
+        } elseif ($status === 'settlement') {
+            $this->markPaid($order, $request->transaction_id, $paymentMethod);
+        } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
             $order->update([
                 'payment_status' => 'failed',
                 'status'         => 'cancelled',
+                'payment_method' => $paymentMethod,
+            ]);
+        } elseif ($status === 'pending') {
+            $order->update([
+                'payment_status' => 'pending',
+                'payment_method' => $paymentMethod,
             ]);
         }
 
         return response()->json(['message' => 'OK']);
+    }
+
+    private function markPaid(Order $order, string $transactionId, string $paymentMethod): void
+    {
+        if ($order->payment_status === 'paid') return; // idempotent
+
+        $order->update([
+            'payment_status' => 'paid',
+            'payment_method' => $paymentMethod,  // ← GoPay / QRIS / dll
+            'transaction_id' => $transactionId,
+            'status'         => 'confirmed',
+        ]);
     }
 }
