@@ -14,6 +14,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\PaymentController;
 use App\Models\Order;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
@@ -166,8 +167,14 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     Route::put('/address/{address}',           [AddressController::class, 'update'])->name('address.update');
     Route::patch('/address/{address}/default', [AddressController::class, 'setDefault'])->name('address.default');
     Route::delete('/address/{address}',        [AddressController::class, 'destroy'])->name('address.destroy');
+    Route::delete('/address/{address}',  [AddressController::class, 'destroy'])->name('address.destroy');
+    Route::get('/address/select', [AddressController::class, 'select'])->name('address.select');
 });
 
+
+// pmidtrans
+Route::post('/payment/{order}/create', [PaymentController::class, 'createPayment'])->name('payment.create');
+Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
 // Route Google OAuth
 Route::get('/auth/google/redirect', [ProviderController::class, 'redirect']);

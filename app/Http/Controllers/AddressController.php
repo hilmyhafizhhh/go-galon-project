@@ -110,4 +110,10 @@ class AddressController extends Controller
         return redirect()->route('customer.checkout')
             ->with('success', 'Alamat berhasil dihapus');
     }
+
+    public function select()
+    {
+        $addresses = auth()->user()->addresses()->orderByDesc('is_default')->get();
+        return view('customer.address.select', compact('addresses'));
+    }
 }
