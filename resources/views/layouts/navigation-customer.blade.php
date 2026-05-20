@@ -46,7 +46,7 @@
                 </div>
             </div>
 
-            {{-- ════ RIGHT: Cart + User (Desktop) ════ --}}
+            {{-- ════ RIGHT: Cart + Edit Profil + User ════ --}}
             <div class="ef-nav__right">
 
                 {{-- Cart --}}
@@ -57,9 +57,20 @@
                         <circle cx="20" cy="21" r="1" />
                         <path d="M1 1h4l2.68 13.39A2 2 0 009.66 16h9.72a2 2 0 001.99-1.61L23 6H6" />
                     </svg>
-                    @if ($cartCount > 0)
-                        <span class="cart-count ef-nav__cart-badge">{{ $cartCount }}</span>
-                    @endif
+                    <span
+                        class="cart-count ef-nav__cart-badge {{ $cartCount > 0 ? 'ef-nav__cart-badge--visible' : '' }}"
+                        data-count="{{ $cartCount }}">{{ $cartCount > 0 ? $cartCount : '' }}</span>
+                </a>
+
+                {{-- ── Edit Profil icon button ── --}}
+                <a href="{{ route('customer.profile') }}"
+                    class="ef-nav__edit-btn {{ request()->routeIs('customer.profile*') ? 'ef-nav__edit-btn--active' : '' }}"
+                    title="Edit Profil">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
                 </a>
 
                 {{-- User Dropdown --}}
@@ -105,9 +116,9 @@
                         <circle cx="20" cy="21" r="1" />
                         <path d="M1 1h4l2.68 13.39A2 2 0 009.66 16h9.72a2 2 0 001.99-1.61L23 6H6" />
                     </svg>
-                    @if ($cartCount > 0)
-                        <span class="cart-count ef-nav__cart-badge">{{ $cartCount }}</span>
-                    @endif
+                    <span
+                        class="cart-count ef-nav__cart-badge {{ $cartCount > 0 ? 'ef-nav__cart-badge--visible' : '' }}"
+                        data-count="{{ $cartCount }}">{{ $cartCount > 0 ? $cartCount : '' }}</span>
                 </a>
 
                 <button @click="open = !open" class="ef-nav__hamburger" :aria-expanded="open.toString()">
@@ -129,16 +140,24 @@
         x-transition:leave-start="ef-drawer-leave-start" x-transition:leave-end="ef-drawer-leave-end"
         class="ef-drawer sm:hidden">
 
-        {{-- User Info --}}
-        <div class="ef-drawer__user">
+        {{-- ── User Info — seluruh area bisa diklik ke edit profil ── --}}
+        <a href="{{ route('customer.profile') }}" class="ef-drawer__user ef-drawer__user--clickable">
             <div class="ef-drawer__avatar">
                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
             </div>
-            <div>
+            <div style="flex:1;min-width:0">
                 <p class="ef-drawer__name">{{ Auth::user()->name }}</p>
                 <p class="ef-drawer__email">{{ Auth::user()->email }}</p>
             </div>
-        </div>
+            {{-- Pensil kecil di ujung kanan --}}
+            <span class="ef-drawer__edit-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+            </span>
+        </a>
 
         {{-- Nav Links --}}
         @role('customer')
@@ -192,3 +211,72 @@
     </div>
 
 </nav>
+
+<style>
+    /* ── Desktop: tombol pensil edit profil ────────────────────── */
+    .ef-nav__edit-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        color: #64748b;
+        background: transparent;
+        border: 1px solid transparent;
+        text-decoration: none;
+        transition: color .15s, background .15s, border-color .15s, transform .15s;
+        flex-shrink: 0;
+    }
+
+    .ef-nav__edit-btn:hover {
+        color: #2563eb;
+        background: #eff6ff;
+        border-color: rgba(37, 99, 235, 0.15);
+        transform: scale(1.08);
+    }
+
+    .ef-nav__edit-btn--active {
+        color: #2563eb;
+        background: #eff6ff;
+        border-color: rgba(37, 99, 235, 0.2);
+    }
+
+    /* ── Mobile drawer: user card jadi tappable ────────────────── */
+    .ef-drawer__user--clickable {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        cursor: pointer;
+        border-radius: 12px;
+        transition: background .15s;
+        position: relative;
+    }
+
+    .ef-drawer__user--clickable:hover,
+    .ef-drawer__user--clickable:active {
+        background: rgba(37, 99, 235, 0.05);
+    }
+
+    /* ── Mobile drawer: badge pensil di kanan ──────────────────── */
+    .ef-drawer__edit-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        background: #eff6ff;
+        border: 1px solid rgba(37, 99, 235, 0.15);
+        color: #2563eb;
+        flex-shrink: 0;
+        opacity: 0.75;
+        transition: opacity .15s, background .15s, transform .15s;
+    }
+
+    .ef-drawer__user--clickable:hover .ef-drawer__edit-badge {
+        opacity: 1;
+        background: #dbeafe;
+        transform: scale(1.05);
+    }
+</style>

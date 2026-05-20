@@ -43,10 +43,34 @@
         <main>
             {{ $slot }}
         </main>
+
+        {{-- Toast Container --}}
+        <div id="ef-toast-container" aria-live="polite"></div>
     </div>
 
     {{-- ✅ Tambahkan ini di bawah --}}
     {{-- @stack('scripts') --}}
+
+    <script>
+        window.showToast = function (msg, type = 'success') {
+            const container = document.getElementById('ef-toast-container');
+            const t = document.createElement('div');
+            t.className = `ef-toast ef-toast--${type}`;
+            const icon = type === 'success'
+                ? '<path d="M20 6L9 17l-5-5"/>'
+                : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
+            t.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${icon}</svg>
+                <span>${msg}</span>`;
+            container.prepend(t);
+            requestAnimationFrame(() => t.classList.add('ef-toast--show'));
+            setTimeout(() => {
+                t.classList.remove('ef-toast--show');
+                setTimeout(() => t.remove(), 380);
+            }, 2800);
+        };
+    </script>
 
     <script defer>
         document.addEventListener('alpine:init', () => {
@@ -57,7 +81,7 @@
                 init() {
                     if (this.editMode) {
                         history.replaceState({}, '', window.location
-                        .pathname); // hapus ?edit dari URL biar bersih
+                            .pathname); // hapus ?edit dari URL biar bersih
                     }
                 },
 
@@ -79,13 +103,13 @@
 
                 submit() {
                     fetch("{{ route('courier.profile.update') }}", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                            },
-                            body: JSON.stringify(this.form)
-                        })
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify(this.form)
+                    })
                         .then(r => r.json())
                         .then(res => {
                             if (res.success) {

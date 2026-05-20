@@ -1,21 +1,25 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Auth\ProviderController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
+// use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CourierController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\PaymentController;
 use App\Models\Order;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -57,6 +61,10 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
 
     // ⚙️ Pengaturan
     Route::get('/settings', [SettingController::class, 'index'])->name('settings');
+
+    // ── Profile ──
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 
@@ -93,11 +101,8 @@ Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name
     Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
 
 
-    Route::get('/profile', [ProfileController::class, 'show'])
-        ->name('profile');
-
-    Route::post('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 // Route Customer
@@ -116,8 +121,25 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/select-item',[CartController::class, 'selectItem']);
+    Route::post('/cart/update-qty', [CartController::class, 'updateQty'])->name('cart.update-qty');
     Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+
+    // addres
+    Route::get('/address/create', [AddressController::class, 'create'])->name('address.create');
+    Route::get('/address/edit', [AddressController::class, 'edit'])->name('address.edit');
+    Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
+
+
+    // route untuk chechout
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/address-picker', [CheckoutController::class, 'addressPicker'])
+    ->name('checkout.address-picker');
+    Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])
+        ->name('checkout.success');
 
     // cart count untuk navbar
     Route::get('/cart/count', function () {
@@ -133,7 +155,29 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
             'count' => $count
         ]);
     });
+
+    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/remove', [CartController::class, 'removeBulk'])->name('cart.remove.bulk'); 
+
+    // ── Profile ──
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // ── Alamat ──────────────────────────────────────────────────────────────
+    Route::get('/address/create',              [AddressController::class, 'create'])->name('address.create');
+    Route::post('/address',                    [AddressController::class, 'store'])->name('address.store');
+    Route::get('/address/{address}/edit',      [AddressController::class, 'edit'])->name('address.edit');
+    Route::put('/address/{address}',           [AddressController::class, 'update'])->name('address.update');
+    Route::patch('/address/{address}/default', [AddressController::class, 'setDefault'])->name('address.default');
+    Route::delete('/address/{address}',        [AddressController::class, 'destroy'])->name('address.destroy');
+    Route::delete('/address/{address}',  [AddressController::class, 'destroy'])->name('address.destroy');
+    Route::get('/address/select', [AddressController::class, 'select'])->name('address.select');
 });
+
+
+// pmidtrans
+Route::post('/payment/{order}/create', [PaymentController::class, 'createPayment'])->name('payment.create');
+Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback')->withoutMiddleware(VerifyCsrfToken::class);;
 
 // Route Google OAuth
 Route::get('/auth/google/redirect', [ProviderController::class, 'redirect']);

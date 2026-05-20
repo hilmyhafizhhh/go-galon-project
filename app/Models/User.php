@@ -77,4 +77,14 @@ class User extends Authenticatable
             }
         });
     }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class)->orderByDesc('is_default')->orderBy('created_at');
+    }
+    
+    public function defaultAddress()
+    {
+        return $this->hasOne(Address::class)->where('is_default', true);
+    }
 }

@@ -20,7 +20,7 @@ class CartController extends Controller
 
         return view('customer.cart.index', compact('order'));
     }
-    
+
 
     public function add(Request $request)
     {
@@ -28,7 +28,7 @@ class CartController extends Controller
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1'
         ]);
-        
+
         $userId = Auth::id();
 
         // 1. cari cart (draft)
@@ -38,10 +38,14 @@ class CartController extends Controller
 
         // 2. kalau belum ada → buat
         if (!$order) {
+            $uuid = Str::uuid();
+            $shortId = strtoupper(substr(str_replace('-', '', $uuid), 0, 8));
+
             $order = Order::create([
-                'id' => Str::uuid(),
-                'user_id' => $userId,
-                'status' => 'draft'
+                'id'         => $uuid,  // ← pakai $uuid yang sama
+                'user_id'    => $userId,
+                'status'     => 'draft',
+                'order_code' => 'ORDER-' . $shortId . '-' . time(),
             ]);
         }
 
@@ -54,7 +58,7 @@ class CartController extends Controller
             $item->quantity += $request->quantity;
             $item->subtotal = $item->quantity * $item->unit_price;
             $item->save();
-        }else {
+        } else {
             // insert baru
             $product = Product::findOrFail($request->product_id);
 
@@ -66,6 +70,80 @@ class CartController extends Controller
                 'subtotal' => $product->price * $request->quantity,
             ]);
         }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function selectItem(Request $request)
+    {
+        try {
+
+            $item = OrderItem::find($request->item_id);
+
+            if (!$item) {
+                return response()->json(['error' => 'Item tidak ditemukan'], 404);
+            }
+
+            $item->update([
+                'is_selected' => filter_var($request->selected, FILTER_VALIDATE_BOOLEAN)
+            ]);
+
+            return response()->json([
+                'success' => true
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function removeBulk(Request $request)
+    {
+        $ids = $request->input('item_ids', []);
+
+        if (empty($ids)) {
+            return response()->json(['message' => 'Tidak ada item dipilih'], 422);
+        }
+
+        // Pastikan item milik user yang login
+        $order = Order::where('user_id', auth()->id())
+            ->where('status', 'draft')
+            ->first();
+
+        if (!$order) {
+            return response()->json(['message' => 'Order tidak ditemukan'], 404);
+        }
+
+        $order->items()->whereIn('id', $ids)->delete();
+
+        return response()->json(['message' => 'Item berhasil dihapus']);
+    }
+
+    public function updateQty(Request $request)
+    {
+        $request->validate([
+            'item_id' => 'required',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $order = Order::where('user_id', auth()->id())
+            ->where('status', 'draft')
+            ->first();
+
+        if (!$order) {
+            return response()->json(['error' => 'Order tidak ditemukan'], 404);
+        }
+
+        $item = $order->items()->find($request->item_id);
+
+        if (!$item) {
+            return response()->json(['error' => 'Item tidak ditemukan'], 404);
+        }
+
+        $item->update([
+            'quantity' => $request->quantity,
+            'subtotal' => $item->unit_price * $request->quantity,
+        ]);
 
         return response()->json(['success' => true]);
     }
