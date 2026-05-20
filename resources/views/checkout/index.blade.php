@@ -1179,6 +1179,7 @@
                     body: JSON.stringify({
                         payment_method: paymentMethod,
                         address_id: document.getElementById('selectedAddressId').value,
+                        note: document.getElementById('noteHidden').value ?? null, // ← tambah ini
                     }),
                 })
                 .then(res => res.json())
