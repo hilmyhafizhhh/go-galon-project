@@ -27,6 +27,15 @@
                 class="inline-block px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition ml-2">
                 Dashboard
             </a>
+
+            <!-- Logout -->
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <x-responsive-nav-link :href="route('logout')"
+                    onclick="event.preventDefault(); this.closest('form').submit();">
+                    {{ __('Log Out') }}
+                </x-responsive-nav-link>
+            </form>
         </div>
 
         <p class="mt-10 text-sm text-gray-400">

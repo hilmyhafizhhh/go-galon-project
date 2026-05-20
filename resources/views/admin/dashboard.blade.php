@@ -17,7 +17,7 @@
 </x-app-layout> --}}
 
 <!-- resources/views/admin/dashboard.blade.php -->
-@extends('layout')
+{{-- @extends('layout')
 
 @section('content')
     <h1 class="text-2xl font-bold text-gray-800 mb-6">DASHBOARD</h1>
@@ -107,4 +107,160 @@
             <button class="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah Stok</button>
         </div>
     </div>
+@endsection --}}
+
+@extends('layout')
+
+@section('content')
+<h1 class="text-2xl font-bold text-gray-800 mb-6">DASHBOARD</h1>
+
+<div class="grid grid-cols-4 gap-4 mb-6">
+
+    <div class="bg-white p-4 rounded-xl shadow text-center">
+        <p class="text-gray-500">Total Pesanan</p>
+        <h2 id="totalOrders" class="text-2xl font-bold text-blue-600">0</h2>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow text-center">
+        <p class="text-gray-500">Pendapatan Hari Ini</p>
+        <h2 id="todayIncome" class="text-2xl font-bold text-green-600">Rp 0</h2>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow text-center">
+        <p class="text-gray-500">Pesanan Aktif</p>
+        <h2 id="activeOrders" class="text-2xl font-bold text-orange-500">0</h2>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow text-center">
+        <p class="text-gray-500">Kurir Online</p>
+        <h2 id="courierOnline" class="text-2xl font-bold text-purple-600">0/0</h2>
+    </div>
+
+</div>
+
+
+<div class="bg-white p-4 rounded-xl shadow mb-6">
+    <h2 class="font-semibold text-lg mb-4">Daftar Pesanan</h2>
+
+    <table class="min-w-full border text-sm">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="border p-2">ID</th>
+                <th class="border p-2">Customer</th>
+                <th class="border p-2">Item</th>
+                <th class="border p-2">Status</th>
+                <th class="border p-2">Kurir</th>
+            </tr>
+        </thead>
+
+        <tbody id="orderTable"></tbody>
+
+    </table>
+</div>
+
+<div class="grid grid-cols-2 gap-6 mt-6">
+
+    <div class="bg-white p-4 rounded-xl shadow">
+        <h2 class="font-semibold mb-4">Kurir Aktif</h2>
+        <div id="courierList" class="space-y-2 text-sm"></div>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow">
+        <h2 class="font-semibold mb-4">Inventory Galon</h2>
+        <div id="inventoryList" class="space-y-2 text-sm"></div>
+    </div>
+
+</div>
+
+
+<script>
+function loadDashboard()
+{
+    fetch("{{ route('admin.dashboard.data') }}")
+    .then(response => response.json())
+    .then(data => {
+
+        document.getElementById('totalOrders').innerText = data.totalOrders;
+        document.getElementById('todayIncome').innerText = 'Rp ' + data.todayIncome;
+        document.getElementById('activeOrders').innerText = data.activeOrders;
+        document.getElementById('courierOnline').innerText = data.courierOnline + '/' + data.totalCourier;
+
+        let rows = '';
+
+        data.orders.forEach(order => {
+
+            let itemNames = '';
+
+            order.items.forEach(item => {
+                itemNames += item.quantity + 'x ' + item.product.name + ', ';
+            });
+
+            rows += `
+                <tr>
+                    <td class="border p-2">${order.order_code}</td>
+                    <td class="border p-2">${order.user?.name ?? '-'}</td>
+                    <td class="border p-2">${itemNames}</td>
+                    <td class="border p-2">${order.status}</td>
+                    <td class="border p-2">${order.courier?.name ?? '-'}</td>
+                </tr>
+            `;
+        });
+
+        document.getElementById('orderTable').innerHTML = rows;
+
+        let courierHtml = '';
+
+data.activeCouriers.forEach(courier => {
+
+    let totalTask = data.orders.filter(order =>
+        order.assigned_courier_id === courier.id &&
+        order.status !== 'completed'
+    ).length;
+
+    courierHtml += `
+        <div class="border rounded p-3">
+            <p><strong>${courier.user?.name ?? '-'}</strong></p>
+            <p class="text-green-600">Online</p>
+            <p>Pesanan: ${totalTask}</p>
+        </div>
+    `;
+});
+
+document.getElementById('courierList').innerHTML = courierHtml;
+
+
+
+let inventoryHtml = '';
+
+data.products.forEach(product => {
+
+    let color = product.stock <= 10 ? 'text-red-600' :
+                product.stock <= 20 ? 'text-yellow-600' :
+                'text-green-600';
+
+    let icon = product.stock <= 10 ? '❌' :
+               product.stock <= 20 ? '⚠️' :
+               '✅';
+
+    inventoryHtml += `
+        <p>
+            ${product.name}
+            →
+            <span class="${color}">
+                Stock: ${product.stock} | Rp.${parseInt(product.price).toLocaleString('id-ID')}
+            </span>
+            ${icon}
+        </p>
+    `;
+});
+
+document.getElementById('inventoryList').innerHTML = inventoryHtml;
+    });
+}
+
+loadDashboard();
+
+setInterval(loadDashboard, 5000);
+</script>
+
 @endsection

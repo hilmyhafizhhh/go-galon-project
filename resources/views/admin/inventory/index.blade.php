@@ -7,21 +7,30 @@
 
 <h1 class="text-2xl font-bold text-gray-800 mb-6">INVENTORY</h1>
 
+{{-- BLOK NOTIFIKASI MULAI DI SINI --}}
+@if(session('success'))
+    <div class="mb-6 px-4 py-3 bg-green-100 border border-green-400 text-green-700 rounded relative" role="alert">
+        <strong class="font-bold">Berhasil!</strong>
+        <span class="block sm:inline">{{ session('success') }}</span>
+    </div>
+@endif
+{{-- BLOK NOTIFIKASI SELESAI --}}
+
 <div class="mb-4 flex justify-between">
     <form method="GET" action="{{ route('admin.inventory.index') }}" class="flex gap-2">
 
-        <input type="text" name="search" placeholder="Cari nama barang..."
+        <input type="text" name="search" placeholder="Cari nama barang"
                value="{{ request('search') }}"
                class="px-3 py-2 border rounded">
 
         <select name="category" class="px-3 py-2 border rounded">
-            <option value="">--Kategori--</option>
+            <option value="">Semua Kategori</option>
             <option value="air" {{ request('category') == 'air' ? 'selected' : '' }}>Air</option>
             <option value="aksesoris" {{ request('category') == 'aksesoris' ? 'selected' : '' }}>Aksesoris</option>
         </select>
 
         <select name="status" class="px-3 py-2 border rounded">
-            <option value="">--Status--</option>
+            <option value="">Status</option>
             <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available</option>
             <option value="unavailable" {{ request('status') == 'unavailable' ? 'selected' : '' }}>Unavailable</option>
         </select>

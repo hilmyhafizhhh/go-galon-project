@@ -21,7 +21,7 @@
         </div>
 
         <div class="mb-4">
-            <label class="block font-semibold mb-2">Volume (ML)</label>
+            <label class="block font-semibold mb-2">Volume (L)</label>
             <input type="number" name="volume_ml" class="w-full border px-4 py-2 rounded" required>
         </div>
 

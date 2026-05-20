@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoGalon Admin</title>
     @vite('resources/css/app.css')
+
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -54,12 +61,24 @@
                     </button>
 
                     <!-- Dropdown menu -->
-                    <div x-show="open" @click.away="open = false"
-                        class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 z-50">
+                    <div x-show="open" 
+                         x-cloak
+                         @click.away="open = false"
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="transform opacity-0 scale-95"
+                         x-transition:enter-end="transform opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="transform opacity-100 scale-100"
+                         x-transition:leave-end="transform opacity-0 scale-95"
+                         class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 z-50">
+                    {{-- <div x-show="open" @click.away="open = false"dimatikan sementara
+                        class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 z-50"> --}}
                         <a href="{{ route('profile.edit') }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             ✏️ Edit Profile
                         </a>
+
+                        <hr class="my-1 border-gray-100">
 
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

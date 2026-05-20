@@ -14,11 +14,13 @@ class InventoryController extends Controller
 
         // Filter: nama / kategori / status
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            // Mengubah 'like' menjadi 'ilike' agar kebal huruf besar/kecil (PostgreSQL)
+            $query->where('name', 'ilike', '%' . $request->search . '%');
         }
 
         if ($request->filled('category')) {
-            $query->where('category', $request->category);
+            // Menggunakan 'ilike' agar filter 'air' tetap memunculkan data 'Air'
+            $query->where('category', 'ilike', $request->category);
         }
 
         if ($request->filled('status')) {
@@ -29,6 +31,22 @@ class InventoryController extends Controller
 
         return view('admin.inventory.index', compact('products'));
     }
+    //     if ($request->filled('search')) {
+    //         $query->where('name', 'like', '%' . $request->search . '%');
+    //     }
+
+    //     if ($request->filled('category')) {
+    //         $query->where('category', $request->category);
+    //     }
+
+    //     if ($request->filled('status')) {
+    //         $query->where('status', $request->status);
+    //     }
+
+    //     $products = $query->orderBy('name')->paginate(10);
+
+    //     return view('admin.inventory.index', compact('products'));
+    // }
 
     // 🟩 CREATE
     public function create()
