@@ -12,6 +12,7 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -96,45 +97,63 @@ class DatabaseSeeder extends Seeder
 //     }
 // }
 
-$orders = Order::where('status', 'confirmed')
-    ->whereNotNull('assigned_courier_id')
-    ->get();
+// $orders = Order::where('status', 'confirmed')
+//     ->whereNotNull('assigned_courier_id')
+//     ->get();
 
-foreach ($orders as $order) {
+// foreach ($orders as $order) {
 
-    // titik awal depot EFATA
-    $lat = -6.1413375;
-    $lng = 106.7869347;
+//     // titik awal depot EFATA
+//     $lat = -6.1413375;
+//     $lng = 106.7869347;
 
-    // tiap order punya 5-15 titik tracking
-    $totalTracks = rand(5, 15);
+//     // tiap order punya 5-15 titik tracking
+//     $totalTracks = rand(5, 15);
 
-    for ($i = 1; $i <= $totalTracks; $i++) {
+//     for ($i = 1; $i <= $totalTracks; $i++) {
 
-        // gerakan kecil tiap tracking
-        $lat += fake()->randomFloat(6, 0.0001, 0.0010);
-        $lng += fake()->randomFloat(6, 0.0001, 0.0010);
+//         // gerakan kecil tiap tracking
+//         $lat += fake()->randomFloat(6, 0.0001, 0.0010);
+//         $lng += fake()->randomFloat(6, 0.0001, 0.0010);
 
-        TrackingLog::create([
-            'courier_id' => $order->assigned_courier_id,
+//         TrackingLog::create([
+//             'courier_id' => $order->assigned_courier_id,
 
-            'order_id' => $order->id,
+//             'order_id' => $order->id,
 
-            'latitude' => $lat,
+//             'latitude' => $lat,
 
-            'longitude' => $lng,
+//             'longitude' => $lng,
 
-            'speed' => rand(15, 40),
+//             'speed' => rand(15, 40),
 
-            'recorded_at' => now()->subMinutes(
-                rand(10, 300)
-            ),
+//             'recorded_at' => now()->subMinutes(
+//                 rand(10, 300)
+//             ),
 
-            'created_at' => now(),
+//             'created_at' => now(),
 
-            'updated_at' => now(),
-        ]);
-    }
-}
+//             'updated_at' => now(),
+//         ]);
+//     }
+// }
+
+User::all()->each(function ($user) {
+
+    // bikin 1-3 alamat
+    Address::factory(rand(1, 3))->create([
+        'user_id' => $user->id,
+        'is_default' => false,
+    ]);
+
+    // pilih 1 alamat random jadi default
+    $defaultAddress = $user->addresses()
+        ->inRandomOrder()
+        ->first();
+
+    $defaultAddress?->update([
+        'is_default' => true
+    ]);
+});
     }
 }

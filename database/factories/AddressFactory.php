@@ -113,7 +113,7 @@ class AddressFactory extends Factory
                 106.810000
             ),
 
-            'is_default' => $faker->boolean(70),
+            'is_default' => false,
 
             'created_at' => now(),
             'updated_at' => now(),
