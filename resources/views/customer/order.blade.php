@@ -34,39 +34,34 @@
                 {{-- Tab Filter --}}
                 <div class="ef-tabs" role="tablist">
                     @foreach ($tabs as $key => $tab)
-                        <a href="?tab={{ $key }}"
-                            class="ef-tab {{ $activeTab === $key ? 'ef-tab--active' : '' }}" role="tab"
-                            aria-selected="{{ $activeTab === $key ? 'true' : 'false' }}">
+                        <a href="?tab={{ $key }}" class="ef-tab {{ $activeTab === $key ? 'ef-tab--active' : '' }}"
+                            role="tab" aria-selected="{{ $activeTab === $key ? 'true' : 'false' }}">
 
                             {{-- Icon --}}
                             @if ($tab['icon'] === 'history')
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                    stroke-linejoin="round">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="12" r="10" />
                                     <polyline points="12 6 12 12 16 14" />
                                 </svg>
                             @elseif ($tab['icon'] === 'truck')
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                    stroke-linejoin="round">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="1" y="3" width="15" height="13" />
                                     <path d="M16 8h4l3 3v5h-7V8z" />
                                     <circle cx="5.5" cy="18.5" r="2.5" />
                                     <circle cx="18.5" cy="18.5" r="2.5" />
                                 </svg>
                             @elseif ($tab['icon'] === 'draft')
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                    stroke-linejoin="round">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
                                     <polyline points="14 2 14 8 20 8" />
                                     <line x1="9" y1="13" x2="15" y2="13" />
                                 </svg>
                             @else
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                    stroke-linejoin="round">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="12" r="10" />
                                     <line x1="15" y1="9" x2="9" y2="15" />
                                     <line x1="9" y1="9" x2="15" y2="15" />
@@ -158,21 +153,21 @@
                                 <circle cx="18.5" cy="18.5" r="2.5" />
                             </svg>
                         @elseif ($activeTab === 'batal')
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="1.5">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="15" y1="9" x2="9" y2="15" />
                                 <line x1="9" y1="9" x2="15" y2="15" />
                             </svg>
                         @elseif ($activeTab === 'draf')
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="1.5">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5">
                                 <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
                                 <polyline points="14 2 14 8 20 8" />
                             </svg>
                         @else
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="1.5">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5">
                                 <circle cx="12" cy="12" r="10" />
                                 <polyline points="12 6 12 12 16 14" />
                             </svg>

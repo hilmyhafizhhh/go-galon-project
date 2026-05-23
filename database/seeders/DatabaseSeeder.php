@@ -138,22 +138,22 @@ class DatabaseSeeder extends Seeder
 //     }
 // }
 
-User::all()->each(function ($user) {
+// User::all()->each(function ($user) {
 
-    // bikin 1-3 alamat
-    Address::factory(rand(1, 3))->create([
-        'user_id' => $user->id,
-        'is_default' => false,
-    ]);
+//     // bikin 1-3 alamat
+//     Address::factory(rand(1, 3))->create([
+//         'user_id' => $user->id,
+//         'is_default' => false,
+//     ]);
 
-    // pilih 1 alamat random jadi default
-    $defaultAddress = $user->addresses()
-        ->inRandomOrder()
-        ->first();
+//     // pilih 1 alamat random jadi default
+//     $defaultAddress = $user->addresses()
+//         ->inRandomOrder()
+//         ->first();
 
-    $defaultAddress?->update([
-        'is_default' => true
-    ]);
-});
+//     $defaultAddress?->update([
+//         'is_default' => true
+//     ]);
+// });
     }
 }
