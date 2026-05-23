@@ -11,6 +11,7 @@
 @import "./pages/address-picker.css";
 @import "./navigations/navigation-customer.css";
 @import "./pages/homeCourir.css";
+/* @import "./pages/Orders.css"; */
 
 @tailwind base;
 @tailwind components;

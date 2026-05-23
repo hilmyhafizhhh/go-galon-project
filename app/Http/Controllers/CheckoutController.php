@@ -32,6 +32,9 @@ class CheckoutController extends Controller
 
     public function process(Request $request)
     {
+
+        // dd($request->all());
+
         $order = Order::where('user_id', auth()->id())
             ->where('status', 'draft')
             ->with('items')
@@ -51,13 +54,16 @@ class CheckoutController extends Controller
         $order->note            = $request->note;
 
         if ($request->payment_method === 'cod') {
-            $order->status         = 'confirmed';
-            $order->payment_status = 'pending'; // bayar nanti saat COD
+            $order->status         = 'pending';
+            $order->payment_status = 'unpaid'; // bayar nanti saat COD
         }
 
         $order->save();
 
         // lanjut redirect / return response...
+        // Di akhir method process()
+        return redirect()->route('customer.order', ['tab' => 'draf'])
+            ->with('success', 'Pesanan berhasil dibuat!');
     }
 
     public function addressPicker()

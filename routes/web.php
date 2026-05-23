@@ -15,6 +15,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\CustomerOrderController;
 use App\Models\Order;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
@@ -109,10 +110,10 @@ Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name
 Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->name('customer.')->group(function () {
     Route::get('/home', [ProductController::class, 'index'])->name('home');
 
-    Route::get('/order', function () {
-        return view('customer.order');
-    })->name('order');
-
+    // Route::get('/order', function () {
+    //     return view('customer.order');
+    // })->name('order');
+    Route::get('/order', [CustomerOrderController::class, 'index'])->name('order');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
     // Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     // Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');

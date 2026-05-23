@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('order_items', function (Blueprint $table) {
-            $table->boolean('is_selected')->default(false);
+            // $table->boolean('is_selected')->default(false);
         });
     }
 
     public function down(): void
     {
         Schema::table('order_items', function (Blueprint $table) {
-            $table->dropColumn('is_selected');
+            // $table->dropColumn('is_selected');
         });
     }
 };
