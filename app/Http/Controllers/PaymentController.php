@@ -19,10 +19,13 @@ class PaymentController extends Controller
 
     public function createPayment(Request $request, Order $order)
     {
+        // dd($request->all()); // ← tambah ini
+
         // Update address jika dikirim dari frontend
         if ($request->address_id) {
             $order->address_id = $request->address_id;
             $order->total_amount   = $order->items->sum('subtotal'); // ← tambah ini
+            $order->note = $request->note;
             $order->save();
         }
 
@@ -161,7 +164,7 @@ class PaymentController extends Controller
             'payment_status' => 'paid',
             'payment_method' => $paymentMethod,  // ← GoPay / QRIS / dll
             'transaction_id' => $transactionId,
-            'status'         => 'confirmed',
+            'status'         => 'pending',
         ]);
     }
 }

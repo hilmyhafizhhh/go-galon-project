@@ -48,7 +48,7 @@
                 {{-- ── Hidden selected address id ── --}}
                 @php
                     $selectedAddress = $addresses->firstWhere('is_default', true) ?? $addresses->first();
-                    $defaultAddress  = $selectedAddress;
+                    $defaultAddress = $selectedAddress;
                 @endphp
                 <input type="hidden" name="address_id" id="selectedAddressId" value="{{ $selectedAddress?->id }}">
 
@@ -63,8 +63,7 @@
                     <input type="radio" name="address_id" id="addr_{{ $address->id }}" value="{{ $address->id }}"
                         data-label="{{ $address->label }}" data-address="{{ $address->address }}"
                         data-is-default="{{ $address->is_default ? '1' : '0' }}"
-                        {{ $address->id == $defaultAddress?->id ? 'checked' : '' }}
-                        style="display:none">
+                        {{ $address->id == $defaultAddress?->id ? 'checked' : '' }} style="display:none">
                 @endforeach
 
                 @if ($defaultAddress)
@@ -121,8 +120,9 @@
                     <label class="co-pay-row co-pay-row--active" id="payRowCod">
                         <input type="radio" name="payment_method" value="cod" id="pay_cod" checked>
                         <div class="co-pay-row__icon co-pay-row__icon--cod">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <svg width="18" height="18" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                                viewBox="0 0 24 24">
                                 <path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2" />
                                 <rect x="9" y="11" width="12" height="8" rx="2" />
                                 <circle cx="15" cy="15" r="1.5" />
@@ -197,8 +197,8 @@
                     {{-- ── Add Note trigger ── --}}
                     <button type="button" class="co-note-trigger" id="openNoteSheet">
                         <div class="co-note-trigger__left">
-                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <svg width="14" height="14" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                 <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5" />
                                 <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
                             </svg>
@@ -223,7 +223,8 @@
                 <div class="co-card co-summary-card">
                     <div class="co-sum-row">
                         <span class="co-sum-label">Subtotal produk</span>
-                        <span class="co-sum-val">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
+                        <span
+                            class="co-sum-val">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
                     </div>
                     <div class="co-sum-row">
                         <span class="co-sum-label">Ongkos kirim</span>
@@ -239,7 +240,8 @@
                     <div class="co-sum-divider"></div>
                     <div class="co-sum-row co-sum-row--total">
                         <span>Total pembayaran</span>
-                        <span class="co-sum-total">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
+                        <span
+                            class="co-sum-total">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
                     </div>
                     <div class="co-sum-note">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
@@ -273,7 +275,8 @@
             <div class="co-footer__inner">
                 <div class="co-footer__info">
                     <span class="co-footer__label">Total pembayaran</span>
-                    <span class="co-footer__val">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
+                    <span
+                        class="co-footer__val">Rp{{ number_format($order->items->sum('subtotal'), 0, ',', '.') }}</span>
                 </div>
                 <button type="submit" class="co-footer__btn" id="submitBtn">
                     Buat Pesanan
@@ -292,8 +295,8 @@
         <div class="ef-sheet" id="leaveSheetBox">
             <div class="ef-sheet__pill"></div>
             <div class="ef-sheet__icon" style="background:#fffbeb;border-color:rgba(217,119,6,.18);color:#d97706">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
                     <line x1="12" y1="9" x2="12" y2="13" />
                     <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -336,10 +339,12 @@
                 <button type="button" class="co-note-chip" data-note="Hubungi saya sebelum datang">
                     📞 Hubungi dulu
                 </button>
-                <button type="button" class="co-note-chip" data-note="Taruh di depan pintu, saya tidak ada di rumah">
+                <button type="button" class="co-note-chip"
+                    data-note="Taruh di depan pintu, saya tidak ada di rumah">
                     🚪 Taruh di depan pintu
                 </button>
-                <button type="button" class="co-note-chip" data-note="Galon kosong ada di depan, tolong dibawa balik">
+                <button type="button" class="co-note-chip"
+                    data-note="Galon kosong ada di depan, tolong dibawa balik">
                     🔄 Bawa galon kosong
                 </button>
                 <button type="button" class="co-note-chip" data-note="Tidak ada lift, tolong naik tangga">
@@ -350,8 +355,7 @@
             {{-- Textarea --}}
             <div style="position:relative;margin-top:12px">
                 <textarea id="noteTextarea" rows="3" maxlength="200"
-                    placeholder="Contoh: Hubungi 10 menit sebelum tiba, galon kosong di depan pagar..."
-                    class="co-note-textarea"></textarea>
+                    placeholder="Contoh: Hubungi 10 menit sebelum tiba, galon kosong di depan pagar..." class="co-note-textarea"></textarea>
                 <span class="co-note-counter"><span id="noteCount">0</span>/200</span>
             </div>
 
@@ -406,7 +410,9 @@
             color: var(--text-primary);
         }
 
-        .co-root { min-height: 100dvh; }
+        .co-root {
+            min-height: 100dvh;
+        }
 
         /* ── Header ── */
         .co-header {
@@ -435,7 +441,9 @@
             transition: background .15s;
         }
 
-        .co-header__back:active { background: var(--border); }
+        .co-header__back:active {
+            background: var(--border);
+        }
 
         .co-header__title {
             font-size: 16px;
@@ -511,8 +519,17 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1 }
-            50%       { transform: scale(1.3); opacity: .7 }
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: .7
+            }
         }
 
         .co-progress__line {
@@ -523,7 +540,9 @@
             margin-bottom: 16px;
         }
 
-        .co-progress__line--done { background: var(--accent); }
+        .co-progress__line--done {
+            background: var(--accent);
+        }
 
         /* ── Body ── */
         .co-body {
@@ -603,7 +622,9 @@
             pointer-events: none;
         }
 
-        .co-addr-card:active::after { opacity: .03; }
+        .co-addr-card:active::after {
+            opacity: .03;
+        }
 
         .co-addr-card:active {
             border-color: var(--accent);
@@ -677,9 +698,21 @@
             flex-shrink: 0;
         }
 
-        .co-chip--primary { background: var(--accent-soft); color: var(--accent); }
-        .co-chip--green   { background: var(--green-soft);  color: var(--green); }
-        .co-chip--gray    { background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border-mid); }
+        .co-chip--primary {
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .co-chip--green {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .co-chip--gray {
+            background: var(--bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-mid);
+        }
 
         /* ── Payment rows ── */
         .co-pay-row {
@@ -691,8 +724,13 @@
             transition: background .12s;
         }
 
-        .co-pay-row:active { background: var(--bg); }
-        .co-pay-row input[type="radio"] { display: none; }
+        .co-pay-row:active {
+            background: var(--bg);
+        }
+
+        .co-pay-row input[type="radio"] {
+            display: none;
+        }
 
         .co-pay-row__icon {
             width: 38px;
@@ -704,10 +742,20 @@
             justify-content: center;
         }
 
-        .co-pay-row__icon--cod      { background: var(--amber-soft); color: var(--amber); }
-        .co-pay-row__icon--transfer { background: var(--accent-soft); color: var(--accent); }
+        .co-pay-row__icon--cod {
+            background: var(--amber-soft);
+            color: var(--amber);
+        }
 
-        .co-pay-row__info { flex: 1; min-width: 0; }
+        .co-pay-row__icon--transfer {
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .co-pay-row__info {
+            flex: 1;
+            min-width: 0;
+        }
 
         .co-pay-row__name {
             display: block;
@@ -749,9 +797,19 @@
             transition: background .15s;
         }
 
-        .co-pay-row--active .co-radio-visual { border-color: var(--accent); }
-        .co-pay-row--active .co-radio-dot    { background: var(--accent); }
-        .co-pay-divider { height: 1px; background: var(--border); margin: 0 16px; }
+        .co-pay-row--active .co-radio-visual {
+            border-color: var(--accent);
+        }
+
+        .co-pay-row--active .co-radio-dot {
+            background: var(--accent);
+        }
+
+        .co-pay-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0 16px;
+        }
 
         /* ── Note trigger ── */
         .co-note-trigger {
@@ -769,7 +827,9 @@
             transition: background .12s;
         }
 
-        .co-note-trigger:active { background: var(--bg); }
+        .co-note-trigger:active {
+            background: var(--bg);
+        }
 
         .co-note-trigger__left {
             display: flex;
@@ -777,7 +837,9 @@
             gap: 8px;
         }
 
-        .co-note-trigger.has-note { color: var(--accent); }
+        .co-note-trigger.has-note {
+            color: var(--accent);
+        }
 
         /* ── Note chips ── */
         .co-note-chips {
@@ -821,7 +883,9 @@
             transition: border-color .15s;
         }
 
-        .co-note-textarea:focus { border-color: var(--accent); }
+        .co-note-textarea:focus {
+            border-color: var(--accent);
+        }
 
         .co-note-counter {
             position: absolute;
@@ -839,7 +903,9 @@
             padding: 13px 16px;
         }
 
-        .co-prod-row--border { border-bottom: 1px solid var(--border); }
+        .co-prod-row--border {
+            border-bottom: 1px solid var(--border);
+        }
 
         .co-prod-img {
             width: 52px;
@@ -851,7 +917,11 @@
             border: 1px solid var(--border);
         }
 
-        .co-prod-img img { width: 100%; height: 100%; object-fit: cover; }
+        .co-prod-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
         .co-prod-img__placeholder {
             width: 100%;
@@ -861,7 +931,10 @@
             justify-content: center;
         }
 
-        .co-prod-info { flex: 1; min-width: 0; }
+        .co-prod-info {
+            flex: 1;
+            min-width: 0;
+        }
 
         .co-prod-name {
             font-size: 13px;
@@ -890,7 +963,9 @@
         }
 
         /* ── Summary ── */
-        .co-summary-card { padding: 16px; }
+        .co-summary-card {
+            padding: 16px;
+        }
 
         .co-sum-row {
             display: flex;
@@ -901,7 +976,9 @@
             margin-bottom: 10px;
         }
 
-        .co-sum-label { color: var(--text-secondary); }
+        .co-sum-label {
+            color: var(--text-secondary);
+        }
 
         .co-sum-val {
             font-weight: 600;
@@ -918,7 +995,11 @@
             font-size: 12.5px;
         }
 
-        .co-sum-divider { height: 1px; background: var(--border); margin: 4px 0 14px; }
+        .co-sum-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0 14px;
+        }
 
         .co-sum-row--total {
             font-size: 15px;
@@ -981,7 +1062,10 @@
             gap: 12px;
         }
 
-        .co-footer__info { flex: 1; min-width: 0; }
+        .co-footer__info {
+            flex: 1;
+            min-width: 0;
+        }
 
         .co-footer__label {
             font-size: 11px;
@@ -1017,15 +1101,29 @@
             transition: opacity .15s, transform .1s;
         }
 
-        .co-footer__btn:active   { opacity: .9; transform: scale(.98); }
-        .co-footer__btn:disabled { opacity: .6; pointer-events: none; }
+        .co-footer__btn:active {
+            opacity: .9;
+            transform: scale(.98);
+        }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .co-spin { animation: spin .8s linear infinite; }
+        .co-footer__btn:disabled {
+            opacity: .6;
+            pointer-events: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .co-spin {
+            animation: spin .8s linear infinite;
+        }
     </style>
 
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="{{ config('midtrans.client_key') }}"></script>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
+    </script>
 
     <script>
         // ─────────────────────────────────────────────────────────────
@@ -1059,7 +1157,11 @@
             const raw = localStorage.getItem(CHECKOUT_STATE_KEY);
             if (!raw) return;
             let state;
-            try { state = JSON.parse(raw); } catch { return; }
+            try {
+                state = JSON.parse(raw);
+            } catch {
+                return;
+            }
             if (Date.now() - (state.saved_at ?? 0) > 30 * 60 * 1000) {
                 localStorage.removeItem(CHECKOUT_STATE_KEY);
                 return;
@@ -1078,9 +1180,9 @@
         // ─────────────────────────────────────────────────────────────
         // LEAVE GUARD STATE
         // ─────────────────────────────────────────────────────────────
-        let pendingNav    = null;
-        let formDirty     = false;
-        let isSubmitting  = false;
+        let pendingNav = null;
+        let formDirty = false;
+        let isSubmitting = false;
 
         // ─────────────────────────────────────────────────────────────
         // MAIN
@@ -1101,12 +1203,12 @@
                     document.querySelectorAll('input[name="address_id"]').forEach(r => r.checked = false);
                     radio.checked = true;
 
-                    const elLabel  = document.getElementById('addrLabel');
+                    const elLabel = document.getElementById('addrLabel');
                     const elDetail = document.getElementById('addrDetail');
-                    const elBadge  = document.getElementById('addrBadge');
-                    if (elLabel)  elLabel.textContent  = radio.dataset.label;
+                    const elBadge = document.getElementById('addrBadge');
+                    if (elLabel) elLabel.textContent = radio.dataset.label;
                     if (elDetail) elDetail.textContent = radio.dataset.address;
-                    if (elBadge)  elBadge.style.display = radio.dataset.isDefault === '1' ? '' : 'none';
+                    if (elBadge) elBadge.style.display = radio.dataset.isDefault === '1' ? '' : 'none';
 
                     // Update hidden address_id
                     document.getElementById('selectedAddressId').value = chosenId;
@@ -1120,17 +1222,20 @@
             // ── Payment method toggle ─────────────────────────────────
             const payRadios = document.querySelectorAll('input[name="payment_method"]');
             const payRows = {
-                cod:      document.getElementById('payRowCod'),
+                cod: document.getElementById('payRowCod'),
                 midtrans: document.getElementById('payRowMidtrans'),
             };
 
             function syncPayment() {
                 const val = document.querySelector('input[name="payment_method"]:checked')?.value;
-                payRows.cod.classList.toggle('co-pay-row--active',      val === 'cod');
+                payRows.cod.classList.toggle('co-pay-row--active', val === 'cod');
                 payRows.midtrans.classList.toggle('co-pay-row--active', val === 'midtrans');
             }
 
-            payRadios.forEach(r => r.addEventListener('change', () => { syncPayment(); formDirty = true; }));
+            payRadios.forEach(r => r.addEventListener('change', () => {
+                syncPayment();
+                formDirty = true;
+            }));
             syncPayment();
 
             // ── Copy nomor rekening ───────────────────────────────────
@@ -1142,7 +1247,10 @@
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                             <path d="M20 6L9 17l-5-5"/></svg> Tersalin`;
                         btn.classList.add('copied');
-                        setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
+                        setTimeout(() => {
+                            btn.innerHTML = original;
+                            btn.classList.remove('copied');
+                        }, 2000);
                     });
                 });
             });
@@ -1170,57 +1278,65 @@
 
                 // Midtrans — pakai Snap
                 fetch(`/payment/{{ $order->id }}/create`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        payment_method: paymentMethod,
-                        address_id: document.getElementById('selectedAddressId').value,
-                    }),
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.token) {
-                        alert('Snap token tidak ditemukan');
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            payment_method: paymentMethod,
+                            address_id: document.getElementById('selectedAddressId').value,
+                            note: document.getElementById('noteHidden').value, // ← tambah ini
+
+                        }),
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.token) {
+                            alert('Snap token tidak ditemukan');
+                            btn.disabled = false;
+                            btn.innerHTML = `Buat Pesanan`;
+                            return;
+                        }
+                        window.snap.pay(data.token, {
+                            onSuccess: () => {
+                                window.location.href = '/customer/order';
+                            },
+                            onPending: () => {
+                                window.location.href = '/customer/order';
+                            },
+                            onError: () => {
+                                alert('Pembayaran gagal, silakan coba lagi.');
+                                btn.disabled = false;
+                                btn.innerHTML = `Buat Pesanan`;
+                            },
+                            onClose: () => {
+                                btn.disabled = false;
+                                btn.innerHTML = `Buat Pesanan`;
+                            },
+                        });
+                    })
+                    .catch(() => {
+                        alert('Terjadi kesalahan, coba lagi.');
                         btn.disabled = false;
                         btn.innerHTML = `Buat Pesanan`;
-                        return;
-                    }
-                    window.snap.pay(data.token, {
-                        onSuccess: () => { window.location.href = '/customer/order'; },
-                        onPending: () => { window.location.href = '/customer/order'; },
-                        onError:   () => {
-                            alert('Pembayaran gagal, silakan coba lagi.');
-                            btn.disabled = false;
-                            btn.innerHTML = `Buat Pesanan`;
-                        },
-                        onClose:   () => {
-                            btn.disabled = false;
-                            btn.innerHTML = `Buat Pesanan`;
-                        },
                     });
-                })
-                .catch(() => {
-                    alert('Terjadi kesalahan, coba lagi.');
-                    btn.disabled = false;
-                    btn.innerHTML = `Buat Pesanan`;
-                });
             });
 
             // Simpan state sebelum navigasi ke tambah alamat
             document.querySelector('.co-addr-add')?.addEventListener('click', saveCheckoutState);
 
             // ── Leave Guard ───────────────────────────────────────────
-            const leaveSheet    = document.getElementById('leaveSheet');
+            const leaveSheet = document.getElementById('leaveSheet');
             const leaveSheetBox = document.getElementById('leaveSheetBox');
-            const leaveStay     = document.getElementById('leaveStay');
-            const leaveConfirm  = document.getElementById('leaveConfirm');
+            const leaveStay = document.getElementById('leaveStay');
+            const leaveConfirm = document.getElementById('leaveConfirm');
 
             document.querySelectorAll('input[name="address_id"]')
-                .forEach(el => el.addEventListener('change', () => { formDirty = true; }));
+                .forEach(el => el.addEventListener('change', () => {
+                    formDirty = true;
+                }));
 
             function openLeaveSheet(nav) {
                 pendingNav = nav;
@@ -1242,7 +1358,7 @@
                 else window.location.href = nav;
             }
 
-            leaveStay.addEventListener('click',    () => closeLeaveSheet());
+            leaveStay.addEventListener('click', () => closeLeaveSheet());
             leaveConfirm.addEventListener('click', () => closeLeaveSheet(() => doNavigate(pendingNav)));
 
             document.querySelector('.co-header__back')?.addEventListener('click', e => {
@@ -1278,13 +1394,13 @@
             }
 
             // ── Note Bottom Sheet ─────────────────────────────────────
-            const noteSheet      = document.getElementById('noteSheet');
-            const noteSheetBox   = document.getElementById('noteSheetBox');
-            const noteTextarea   = document.getElementById('noteTextarea');
-            const noteHidden     = document.getElementById('noteHidden');
-            const noteTrigger    = document.getElementById('openNoteSheet');
+            const noteSheet = document.getElementById('noteSheet');
+            const noteSheetBox = document.getElementById('noteSheetBox');
+            const noteTextarea = document.getElementById('noteTextarea');
+            const noteHidden = document.getElementById('noteHidden');
+            const noteTrigger = document.getElementById('openNoteSheet');
             const noteTriggerText = document.getElementById('noteTriggerText');
-            const noteCountEl    = document.getElementById('noteCount');
+            const noteCountEl = document.getElementById('noteCount');
 
             function openNoteSheet() {
                 noteSheet.classList.add('open');
@@ -1304,9 +1420,9 @@
             function updateTrigger(val) {
                 const hasNote = val.trim().length > 0;
                 noteTrigger.classList.toggle('has-note', hasNote);
-                noteTriggerText.textContent = hasNote
-                    ? `📝 ${val.trim().length > 40 ? val.trim().slice(0, 40) + '…' : val.trim()}`
-                    : 'Tambah catatan untuk kurir';
+                noteTriggerText.textContent = hasNote ?
+                    `📝 ${val.trim().length > 40 ? val.trim().slice(0, 40) + '…' : val.trim()}` :
+                    'Tambah catatan untuk kurir';
             }
 
             noteTrigger.addEventListener('click', openNoteSheet);
@@ -1319,7 +1435,8 @@
             document.querySelectorAll('.co-note-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
                     const isActive = chip.classList.contains('active');
-                    document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove('active'));
+                    document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove(
+                        'active'));
                     if (!isActive) {
                         chip.classList.add('active');
                         noteTextarea.value = chip.dataset.note;
@@ -1344,8 +1461,8 @@
             });
 
             document.getElementById('clearNote').addEventListener('click', () => {
-                noteTextarea.value  = '';
-                noteHidden.value    = '';
+                noteTextarea.value = '';
+                noteHidden.value = '';
                 noteCountEl.textContent = '0';
                 document.querySelectorAll('.co-note-chip').forEach(c => c.classList.remove('active'));
                 updateTrigger('');
