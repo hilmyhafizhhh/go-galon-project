@@ -27,6 +27,12 @@
                 class="inline-block px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition ml-2">
                 Dashboard
             </a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    🚪 Logout
+                </button>
+            </form>
         </div>
 
         <p class="mt-10 text-sm text-gray-400">
