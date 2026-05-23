@@ -15,6 +15,8 @@ class User extends Authenticatable
     use HasFactory, Notifiable,  HasRoles;
     // use HasFactory, Notifiable, HasRoles, HasUuids;
 
+    protected $primaryKey = 'id'; // TAMBAHKAN INI
+    
     public $incrementing = false; // wajib untuk UUID
     protected $keyType = 'string'; // wajib juga
 

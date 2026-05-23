@@ -7,7 +7,8 @@
 <h1 class="text-2xl font-bold text-gray-800 mb-6">EDIT PRODUK</h1>
 
 <div class="bg-white shadow-md rounded-lg p-6">
-    <form action="{{ route('admin.inventory.update', $product->id) }}" method="POST">
+    <form action="{{ route('admin.inventory.update', $product->id) }}" method="POST"
+        enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -49,9 +50,39 @@
             </select>
         </div>
 
+        {{-- tambahan script tambah gambar --}}
+        <div class="mb-4">
+            <label class="block font-semibold mb-2">Gambar Produk</label>
+            
+            <img
+            id="preview-image"
+            src="{{ $product->image ? asset('storage/' . $product->image) : asset('images/no-image.png') }}"
+            class="w-40 rounded mb-3 object-cover">
+            
+            <input
+            type="file"
+            name="image"
+            accept="image/*"
+            class="w-full border px-4 py-2 rounded">
+        </div>
+
         <div class="flex justify-end">
             <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Update</button>
         </div>
     </form>
 </div>
+
+<script>
+document.querySelector('input[name="image"]').addEventListener('change', function(e) {
+
+    const preview = document.getElementById('preview-image');
+
+    const file = e.target.files[0];
+
+    if(file)
+    {
+        preview.src = URL.createObjectURL(file);
+    }
+});
+</script>
 @endsection

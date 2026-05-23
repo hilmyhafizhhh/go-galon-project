@@ -48,6 +48,7 @@
     <table class="min-w-full border-collapse">
         <thead class="bg-gray-200">
             <tr>
+                <th class="px-4 py-2 text-left">Gambar</th>
                 <th class="px-4 py-2 text-left">Nama Barang</th>
                 <th class="px-4 py-2 text-left">Kategori</th>
                 <th class="px-4 py-2 text-left">Volume (L)</th>
@@ -59,6 +60,10 @@
         <tbody>
             @forelse($products as $p)
             <tr>
+                <td class="border px-4 py-2">
+                    <img src="{{ $p->image ? asset('storage/' . $p->image) : asset('images/no-image.png') }}"
+                    class="w-16 h-16 object-cover rounded">
+                </td>
                 <td class="border px-4 py-2">{{ $p->name }}</td>
                 <td class="border px-4 py-2">{{ $p->category }}</td>
                 <td class="border px-4 py-2">{{ $p->volume_ml }}</td>
