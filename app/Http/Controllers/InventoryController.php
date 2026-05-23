@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class InventoryController extends Controller
 {
@@ -57,18 +58,41 @@ class InventoryController extends Controller
     // 🟩 STORE
     public function store(Request $request)
     {
-        $request->validate([
+        // try {
+            $request->validate([
             'name' => 'required',
             'category' => 'required',
             'volume_ml' => 'required|integer',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:10000',
         ]);
 
-        Product::create($request->all());
+        $data = $request->all();
+        
+        if ($request->hasFile('image')) {
 
+            $imagePath = $request->file('image')
+            // $data['image'] = $request->file('image')
+            ->store('products', 'public');
+            
+            $data['image'] = $imagePath;
+        }
+            
+        Product::create($data);
+            
         return redirect()->route('admin.inventory.index')
-            ->with('success', 'Produk berhasil ditambahkan!');
+        ->with('success', 'Produk berhasil ditambahkan!');
+
+    //     } catch (\Exception $e) {
+
+    //     dd($e->getMessage());
+    // }
+
+        // Product::create($request->all());
+
+        // return redirect()->route('admin.inventory.index')
+        //     ->with('success', 'Produk berhasil ditambahkan!');
     }
 
     // 🟨 EDIT
@@ -87,13 +111,33 @@ class InventoryController extends Controller
             'volume_ml' => 'required|integer',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $product = Product::findOrFail($id);
-        $product->update($request->all());
+        
+        $data = $request->all();
+        
+        if ($request->hasFile('image')) {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+                }
+                $imagePath = $request->file('image')
+                ->store('products', 'public');
+                
+                $data['image'] = $imagePath;
+                }
+                
+                $product->update($data);
+                
+                return redirect()->route('admin.inventory.index')
+                ->with('success', 'Produk berhasil diperbarui!');
 
-        return redirect()->route('admin.inventory.index')
-            ->with('success', 'Produk berhasil diperbarui!');
+        // $product = Product::findOrFail($id);
+        // $product->update($request->all());
+
+        // return redirect()->route('admin.inventory.index')
+        //     ->with('success', 'Produk berhasil diperbarui!');
     }
 
     // 🟥 DESTROY

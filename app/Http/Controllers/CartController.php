@@ -24,6 +24,8 @@ class CartController extends Controller
 
     public function add(Request $request)
     {
+        try {
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1'
@@ -39,13 +41,21 @@ class CartController extends Controller
         // 2. kalau belum ada → buat
         if (!$order) {
             $uuid = Str::uuid();
+            // $uuid = (string) Str::uuid(); //tambahan
             $shortId = strtoupper(substr(str_replace('-', '', $uuid), 0, 8));
 
             $order = Order::create([
-                'id'         => $uuid,  // ← pakai $uuid yang sama
-                'user_id'    => $userId,
-                'status'     => 'draft',
+                'id' => (string) $uuid,
+                'user_id' => $userId,
                 'order_code' => 'ORDER-' . $shortId . '-' . time(),
+                // 'payment_status' => 'pending',
+                'status' => 'draft',
+                 
+                // 'id'         => $uuid,  // ← pakai $uuid yang sama
+                // 'user_id'    => $userId,
+                // 'status'     => 'draft',
+                // 'payment_status' => 'pending', //tambahan sementara
+                // 'order_code' => 'ORDER-' . $shortId . '-' . time(),
             ]);
         }
 
@@ -62,17 +72,29 @@ class CartController extends Controller
             // insert baru
             $product = Product::findOrFail($request->product_id);
 
+
             OrderItem::create([
+                // 'id' => Str::uuid(), //tambahan
                 'order_id' => $order->id,
                 'product_id' => $request->product_id,
                 'quantity' => $request->quantity,
                 'unit_price' => $product->price,
                 'subtotal' => $product->price * $request->quantity,
+               
             ]);
         }
 
         return response()->json(['success' => true]);
+    } catch (\Throwable $e) {
+
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ], 500);
     }
+}
 
     public function selectItem(Request $request)
     {

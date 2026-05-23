@@ -10,11 +10,30 @@ class Order extends Model
 {
     use HasFactory;
 
+    // protected $primaryKey = 'id';
+    
     public $incrementing = false;
     protected $keyType = 'string';
 
+//     protected $attributes = [
+//     'payment_status' => 'pending',
+//     'status' => 'draft',
+// ];
+
     protected $fillable = [
-        'id', // ⬅️ INI WAJIB
+        // 'id', // ⬅️ INI WAJIB
+        // 'user_id',
+        // 'order_code',
+        // 'total_amount',
+        // 'payment_method',
+        // 'payment_status',
+        // 'status',
+        // 'assigned_courier_id',
+        // 'address_id',
+        // 'delivered_at',
+        // 'note',
+        // 'transaction_id',
+        'id',
         'user_id',
         'order_code',
         'total_amount',
@@ -26,6 +45,8 @@ class Order extends Model
         'delivered_at',
         'note',
         'transaction_id',
+        // 'payment_token',
+        // 'snap_url',
     ];
 
     protected $casts = [

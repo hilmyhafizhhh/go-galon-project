@@ -106,8 +106,11 @@
 
                             {{-- Image --}}
                             <div class="ef-cart__img-wrap">
-                                <img src="{{ asset('assets/icons/' . $item->product->image) }}"
-                                    alt="{{ $item->product->name }}" class="ef-cart__img">
+                                <img src="{{ $item->product->image
+                                ? asset('storage/' . $item->product->image)
+                                : asset('assets/icons/no-image.png') }}"
+                                alt="{{ $item->product->name }}"
+                                class="ef-cart__img">
                             </div>
 
                             {{-- Info --}}
@@ -447,15 +450,28 @@
                             item_ids: ids
                         })
                     })
-                    .then(r => {
-                        if (!r.ok) throw new Error();
-                        return r.json();
+                    // .then(r => {
+                    //     if (!r.ok) throw new Error();
+                    //     return r.json();
+                    // }) dimatikan sementara
+                    .then(async r => {
+                        const data = await r.json();
+                        
+                        if (!r.ok) {
+                            throw new Error(data.message || 'Gagal');
+                        }
+                        
+                        return data;
                     })
                     .then(() => showToast(successMsg))
-                    .catch(() => {
-                        showToast('Gagal menghapus. Halaman akan dimuat ulang.', 'error');
-                        setTimeout(() => location.reload(), 1200);
-                    });
+                    // .catch(() => {
+                    //     showToast('Gagal menghapus. Halaman akan dimuat ulang.', 'error');
+                    //     setTimeout(() => location.reload(), 1200);
+                    // }); dimatikan sementara
+                    .catch(err => {
+                        console.log(err);
+                        showErrorToast(err.message);
+                    })
             }
 
             // // ── Single delete (tombol hapus per item) ──────────────────
