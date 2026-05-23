@@ -23,6 +23,7 @@ class PaymentController extends Controller
         if ($request->address_id) {
             $order->address_id = $request->address_id;
             $order->total_amount   = $order->items->sum('subtotal'); // ← tambah ini
+            $order->note  = $request->note ?? null;
             $order->save();
         }
 
