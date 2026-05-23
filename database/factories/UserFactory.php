@@ -23,11 +23,30 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $faker = fake('id_ID');
+
+        $name = $faker->name();
+
+        // contoh:
+        // "Budi Santoso" -> "budisantoso"
+        $username = strtolower(Str::slug($name, ''));
+
+        // random biar unique
+        $randomNumber = rand(10, 99);
+
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $name,
+
+            'username' => $username . $randomNumber,
+
+            'email' => $username . $randomNumber . '@gmail.com',
+
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+
+            'password' => static::$password ??= Hash::make('tamankota'),
+
+            'phone' => '08' . fake()->numerify('##########'),
+
             'remember_token' => Str::random(10),
         ];
     }
@@ -37,7 +56,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

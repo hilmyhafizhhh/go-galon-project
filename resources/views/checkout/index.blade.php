@@ -62,8 +62,7 @@
                 @foreach ($addresses as $address)
                     <input type="radio" name="address_id" id="addr_{{ $address->id }}" value="{{ $address->id }}"
                         data-label="{{ $address->label }}" data-address="{{ $address->address }}"
-                        data-is-default="{{ $address->is_default ? '1' : '0' }}"
-                        {{ $address->id == $defaultAddress?->id ? 'checked' : '' }} style="display:none">
+                        data-is-default="{{ $address->is_default ? '1' : '0' }}" {{ $address->id == $defaultAddress?->id ? 'checked' : '' }} style="display:none">
                 @endforeach
 
                 @if ($defaultAddress)
@@ -120,9 +119,8 @@
                     <label class="co-pay-row co-pay-row--active" id="payRowCod">
                         <input type="radio" name="payment_method" value="cod" id="pay_cod" checked>
                         <div class="co-pay-row__icon co-pay-row__icon--cod">
-                            <svg width="18" height="18" fill="none" stroke="currentColor"
-                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                                viewBox="0 0 24 24">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                 <path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2" />
                                 <rect x="9" y="11" width="12" height="8" rx="2" />
                                 <circle cx="15" cy="15" r="1.5" />
@@ -143,9 +141,8 @@
                     <label class="co-pay-row" id="payRowMidtrans">
                         <input type="radio" name="payment_method" value="midtrans" id="pay_midtrans">
                         <div class="co-pay-row__icon co-pay-row__icon--transfer">
-                            <svg width="18" height="18" fill="none" stroke="currentColor"
-                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                                viewBox="0 0 24 24">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                 <rect x="2" y="5" width="20" height="14" rx="2" />
                                 <path d="M2 10h20M6 15h4" />
                             </svg>
@@ -177,8 +174,8 @@
                                         alt="{{ $item->product->name }}">
                                 @else
                                     <div class="co-prod-img__placeholder">
-                                        <svg width="18" height="18" fill="none" stroke="#C8C8C8"
-                                            stroke-width="1.5" viewBox="0 0 24 24">
+                                        <svg width="18" height="18" fill="none" stroke="#C8C8C8" stroke-width="1.5"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
@@ -197,8 +194,8 @@
                     {{-- ── Add Note trigger ── --}}
                     <button type="button" class="co-note-trigger" id="openNoteSheet">
                         <div class="co-note-trigger__left">
-                            <svg width="14" height="14" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                 <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5" />
                                 <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
                             </svg>
@@ -229,9 +226,8 @@
                     <div class="co-sum-row">
                         <span class="co-sum-label">Ongkos kirim</span>
                         <span class="co-sum-free">
-                            <svg width="11" height="11" fill="none" stroke="currentColor"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                                viewBox="0 0 24 24">
+                            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"
+                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                 <path d="M20 6L9 17l-5-5" />
                             </svg>
                             Gratis
@@ -295,8 +291,8 @@
         <div class="ef-sheet" id="leaveSheetBox">
             <div class="ef-sheet__pill"></div>
             <div class="ef-sheet__icon" style="background:#fffbeb;border-color:rgba(217,119,6,.18);color:#d97706">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
                     <line x1="12" y1="9" x2="12" y2="13" />
                     <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -339,12 +335,10 @@
                 <button type="button" class="co-note-chip" data-note="Hubungi saya sebelum datang">
                     📞 Hubungi dulu
                 </button>
-                <button type="button" class="co-note-chip"
-                    data-note="Taruh di depan pintu, saya tidak ada di rumah">
+                <button type="button" class="co-note-chip" data-note="Taruh di depan pintu, saya tidak ada di rumah">
                     🚪 Taruh di depan pintu
                 </button>
-                <button type="button" class="co-note-chip"
-                    data-note="Galon kosong ada di depan, tolong dibawa balik">
+                <button type="button" class="co-note-chip" data-note="Galon kosong ada di depan, tolong dibawa balik">
                     🔄 Bawa galon kosong
                 </button>
                 <button type="button" class="co-note-chip" data-note="Tidak ada lift, tolong naik tangga">
@@ -355,7 +349,8 @@
             {{-- Textarea --}}
             <div style="position:relative;margin-top:12px">
                 <textarea id="noteTextarea" rows="3" maxlength="200"
-                    placeholder="Contoh: Hubungi 10 menit sebelum tiba, galon kosong di depan pagar..." class="co-note-textarea"></textarea>
+                    placeholder="Contoh: Hubungi 10 menit sebelum tiba, galon kosong di depan pagar..."
+                    class="co-note-textarea"></textarea>
                 <span class="co-note-counter"><span id="noteCount">0</span>/200</span>
             </div>
 
@@ -1256,7 +1251,7 @@
             });
 
             // ── Submit ────────────────────────────────────────────────
-            document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            document.getElementById('checkoutForm').addEventListener('submit', function (e) {
                 e.preventDefault();
                 isSubmitting = true;
 
@@ -1278,19 +1273,19 @@
 
                 // Midtrans — pakai Snap
                 fetch(`/payment/{{ $order->id }}/create`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            payment_method: paymentMethod,
-                            address_id: document.getElementById('selectedAddressId').value,
-                            note: document.getElementById('noteHidden').value, // ← tambah ini
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        payment_method: paymentMethod,
+                        address_id: document.getElementById('selectedAddressId').value,
+                        note: document.getElementById('noteHidden').value, // ← tambah ini
 
-                        }),
-                    })
+                    }),
+                })
                     .then(res => res.json())
                     .then(data => {
                         if (!data.token) {
