@@ -48,12 +48,8 @@ class CartController extends Controller
                 'id' => (string) $uuid,
                 'user_id' => $userId,
                 'order_code' => 'ORDER-' . $shortId . '-' . time(),
-                'payment_status' => 'pending',
+                // 'payment_status' => 'pending',
                 'status' => 'draft',
-
-                'payment_method'  => 'pending',
-
-                'total_amount'    => 0,
                  
                 // 'id'         => $uuid,  // ← pakai $uuid yang sama
                 // 'user_id'    => $userId,
