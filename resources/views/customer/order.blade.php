@@ -85,7 +85,10 @@
                 @php
                     $shown++;
                     $display = $statusDisplay[$order->status] ?? ['text' => $order->status, 'color' => 'gray'];
-                    $itemSummary = $order->items->map(fn($i) => $i->quantity . ' ' . $i->product->name)->join(', ');
+                    // $itemSummary = $order->items->map(fn($i) => $i->quantity . ' ' . $i->product->name)->join(', ');
+                    $itemSummary = $order->items->map(
+                        fn($i) => $i->quantity . ' ' . (optional($i->product)->name ?? 'Produk Dihapus')
+                    )->join(', '); //diperbarui
                 @endphp
 
                 <article class="ef-order-card" data-reveal data-delay="{{ $loop->index * 70 }}">

@@ -40,6 +40,21 @@ class CheckoutController extends Controller
             ->with('items')
             ->firstOrFail();
 
+        // ── CEK STOK PRODUK ──
+        foreach ($order->items as $item) {
+
+            $product = $item->product;
+            
+            // cek stok
+            if ($item->quantity > $product->stock) {
+
+                return redirect()->back()->with(
+                    'error',
+                    'Stok produk ' . $product->name . ' tidak mencukupi.'
+                );
+            }
+        }
+
         // ── Generate order_code kalau belum ada ──
         if (!$order->order_code) {
             $order->order_code = 'ORD-' . strtoupper(substr(uniqid(), -6)) . '-' . date('Ymd');
@@ -59,6 +74,16 @@ class CheckoutController extends Controller
         }
 
         $order->save();
+
+        // ── Kurangi stock produk ──
+        foreach ($order->items as $item) {
+
+            if ($item->product) {
+
+                $item->product->decrement('stock', $item->quantity);
+
+            }
+        }
 
         // lanjut redirect / return response...
         // Di akhir method process()

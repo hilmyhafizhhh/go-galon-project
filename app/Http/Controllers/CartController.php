@@ -24,6 +24,8 @@ class CartController extends Controller
 
     public function add(Request $request)
     {
+        try {
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1'
@@ -39,13 +41,26 @@ class CartController extends Controller
         // 2. kalau belum ada → buat
         if (!$order) {
             $uuid = Str::uuid();
+            // $uuid = (string) Str::uuid(); //tambahan
             $shortId = strtoupper(substr(str_replace('-', '', $uuid), 0, 8));
 
             $order = Order::create([
-                'id'         => $uuid,  // ← pakai $uuid yang sama
-                'user_id'    => $userId,
-                'status'     => 'draft',
+                'id' => (string) $uuid,
+                'user_id' => $userId,
                 'order_code' => 'ORDER-' . $shortId . '-' . time(),
+                'payment_status' => 'pending',
+                'status' => 'draft',
+                
+                'payment_method' => 'pending',
+                // 'payment_method' => 'cod',
+
+                'total_amount' => 0,
+                 
+                // 'id'         => $uuid,  // ← pakai $uuid yang sama
+                // 'user_id'    => $userId,
+                // 'status'     => 'draft',
+                // 'payment_status' => 'pending', //tambahan sementara
+                // 'order_code' => 'ORDER-' . $shortId . '-' . time(),
             ]);
         }
 
@@ -53,26 +68,70 @@ class CartController extends Controller
         $item = OrderItem::where('order_id', $order->id)
             ->where('product_id', $request->product_id)
             ->first();
+        
+        $product = Product::findOrFail($request->product_id);
 
         if ($item) {
-            $item->quantity += $request->quantity;
+
+            // $product = Product::findOrFail($request->product_id);
+            
+            $newQty = $item->quantity + $request->quantity;
+            
+            // cek stock
+            if ($newQty > $product->stock) {
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Stock galon tidak mencukupi'
+                ], 400);
+                
+            }
+            
+            $item->quantity = $newQty;
             $item->subtotal = $item->quantity * $item->unit_price;
-            $item->save();
+            $item->save(); //diperbarui atau diganti
         } else {
-            // insert baru
-            $product = Product::findOrFail($request->product_id);
+
+            // cek stock
+            if ($request->quantity > $product->stock) {
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Stock galon tidak mencukupi'
+                ], 400);
+
+            }
+            // if ($item) {
+        //     $item->quantity += $request->quantity;
+        //     $item->subtotal = $item->quantity * $item->unit_price;
+        //     $item->save();
+        // } else {
+        //     // insert baru
+        //     $product = Product::findOrFail($request->product_id);
+
 
             OrderItem::create([
+                // 'id' => Str::uuid(), //tambahan
                 'order_id' => $order->id,
                 'product_id' => $request->product_id,
                 'quantity' => $request->quantity,
                 'unit_price' => $product->price,
                 'subtotal' => $product->price * $request->quantity,
+               
             ]);
         }
 
         return response()->json(['success' => true]);
+    } catch (\Throwable $e) {
+
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ], 500);
     }
+}
 
     public function selectItem(Request $request)
     {
@@ -139,6 +198,16 @@ class CartController extends Controller
         if (!$item) {
             return response()->json(['error' => 'Item tidak ditemukan'], 404);
         }
+
+        // ── CEK STOK ──
+        $product = $item->product;
+        
+        if ($request->quantity > $product->stock) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Stok tidak mencukupi'
+            ], 400);
+        }//baru ditambahkan
 
         $item->update([
             'quantity' => $request->quantity,

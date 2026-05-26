@@ -106,8 +106,11 @@
 
                             {{-- Image --}}
                             <div class="ef-cart__img-wrap">
-                                <img src="{{ asset('assets/icons/' . $item->product->image) }}"
-                                    alt="{{ $item->product->name }}" class="ef-cart__img">
+                                <img src="{{ $item->product->image
+                                ? asset('storage/' . $item->product->image)
+                                : asset('assets/icons/no-image.png') }}"
+                                alt="{{ $item->product->name }}"
+                                class="ef-cart__img">
                             </div>
 
                             {{-- Info --}}
@@ -447,15 +450,28 @@
                             item_ids: ids
                         })
                     })
-                    .then(r => {
-                        if (!r.ok) throw new Error();
-                        return r.json();
+                    // .then(r => {
+                    //     if (!r.ok) throw new Error();
+                    //     return r.json();
+                    // }) dimatikan sementara
+                    .then(async r => {
+                        const data = await r.json();
+                        
+                        if (!r.ok) {
+                            throw new Error(data.message || 'Gagal');
+                        }
+                        
+                        return data;
                     })
                     .then(() => showToast(successMsg))
-                    .catch(() => {
-                        showToast('Gagal menghapus. Halaman akan dimuat ulang.', 'error');
-                        setTimeout(() => location.reload(), 1200);
-                    });
+                    // .catch(() => {
+                    //     showToast('Gagal menghapus. Halaman akan dimuat ulang.', 'error');
+                    //     setTimeout(() => location.reload(), 1200);
+                    // }); dimatikan sementara
+                    .catch(err => {
+                        console.log(err);
+                        showToast(err.message);
+                    })
             }
 
             // // ── Single delete (tombol hapus per item) ──────────────────
@@ -503,14 +519,20 @@ cartList.addEventListener('click', e => {
     const valEl   = qtyWrap.querySelector('.ef-cart__qty-val');
     const cb      = qtyWrap.closest('.ef-cart__item').querySelector('.item-checkbox');
     const itemId  = qtyWrap.dataset.itemId;
-    let val = parseInt(valEl.textContent);
+    // let val = parseInt(valEl.textContent);
 
-    if (minus) val = Math.max(1, val - 1);
-    if (plus)  val = val + 1;
+    // if (minus) val = Math.max(1, val - 1);
+    // if (plus)  val = val + 1;
 
-    valEl.textContent  = val;
-    cb.dataset.qty     = val;
-    updateCart();
+    // valEl.textContent  = val;
+    // cb.dataset.qty     = val;
+    // updateCart(); dimatikan sementara
+
+    const oldVal = parseInt(valEl.textContent);
+    let newVal = oldVal;
+
+    if (minus) newVal = Math.max(1, oldVal - 1);
+    if (plus)  newVal = oldVal + 1;
 
     // ← Sync ke backend
     fetch('/customer/cart/update-qty', {
@@ -519,9 +541,32 @@ cartList.addEventListener('click', e => {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
-        body: JSON.stringify({ item_id: itemId, quantity: val })
-    }).catch(() => showToast('Gagal menyimpan perubahan qty', 'error'));
+        body: JSON.stringify({
+            item_id: itemId,
+            quantity: newVal
+        })
+    })
+    .then(async res => {
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || 'Gagal update qty');
+        }
+
+        // update tampilan kalau berhasil
+        valEl.textContent = newVal;
+        cb.dataset.qty = newVal;
+        updateCart();
+    })
+    .catch(err => {
+        console.log(err);
+        showToast(err.message, 'error');
+    });
+
 });
+//         body: JSON.stringify({ item_id: itemId, quantity: val })
+//     }).catch(() => showToast('Gagal menyimpan perubahan qty', 'error'));
+// }); dimatikan sementara
 
             // ── Checkout ───────────────────────────────────────────────
             checkoutBtn.addEventListener('click', function() {
