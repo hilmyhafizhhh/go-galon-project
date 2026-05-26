@@ -19,10 +19,10 @@ class InventoryController extends Controller
             $query->where('name', 'ilike', '%' . $request->search . '%');
         }
 
-        if ($request->filled('category')) {
-            // Menggunakan 'ilike' agar filter 'air' tetap memunculkan data 'Air'
-            $query->where('category', 'ilike', $request->category);
-        }
+        // if ($request->filled('category')) {
+        //     // Menggunakan 'ilike' agar filter 'air' tetap memunculkan data 'Air'
+        //     $query->where('category', 'ilike', $request->category);
+        // }
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -61,8 +61,8 @@ class InventoryController extends Controller
         // try {
             $request->validate([
             'name' => 'required',
-            'category' => 'required',
-            'volume_ml' => 'required|integer',
+            // 'category' => 'required',
+            'volume_l' => 'required|integer',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:10000',
@@ -107,8 +107,8 @@ class InventoryController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'category' => 'required',
-            'volume_ml' => 'required|integer',
+            // 'category' => 'required',
+            'volume_l' => 'required|integer',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',

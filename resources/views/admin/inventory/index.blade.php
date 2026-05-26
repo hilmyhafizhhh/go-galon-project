@@ -23,11 +23,11 @@
                value="{{ request('search') }}"
                class="px-3 py-2 border rounded">
 
-        <select name="category" class="px-3 py-2 border rounded">
+        {{-- <select name="category" class="px-3 py-2 border rounded">
             <option value="">Semua Kategori</option>
             <option value="air" {{ request('category') == 'air' ? 'selected' : '' }}>Air</option>
             <option value="aksesoris" {{ request('category') == 'aksesoris' ? 'selected' : '' }}>Aksesoris</option>
-        </select>
+        </select> --}}
 
         <select name="status" class="px-3 py-2 border rounded">
             <option value="">Status</option>
@@ -66,7 +66,7 @@
                 </td>
                 <td class="border px-4 py-2">{{ $p->name }}</td>
                 <td class="border px-4 py-2">{{ $p->category }}</td>
-                <td class="border px-4 py-2">{{ $p->volume_ml }}</td>
+                <td class="border px-4 py-2">{{ $p->volume_l }}</td>
                 <td class="border px-4 py-2">{{ $p->stock }}</td>
                 <td class="border px-4 py-2">Rp {{ number_format($p->price, 0, ',', '.') }}</td>
                 <td class="border px-4 py-2 flex gap-2">

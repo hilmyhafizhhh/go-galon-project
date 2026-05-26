@@ -873,18 +873,24 @@
 
 .ef-track__dot--pulse {
     box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.6);
-    animation: efPulse 1.4s ease-out infinite;
+    animation: ef-pulse-orange 1.4s ease-out infinite; /* ✅ */
 }
 
-@keyframes efPulse {
+.ef-btn--disabled {
+    background: var(--ef-gray-100);
+    color: var(--ef-gray-400);
+    border: 1.5px solid var(--ef-gray-200);
+    cursor: not-allowed;
+    opacity: 1; /* override default :disabled opacity */
+}
+
+@keyframes ef-pulse-orange {
     0% {
         box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.6);
     }
-
     70% {
         box-shadow: 0 0 0 8px rgba(249, 115, 22, 0);
     }
-
     100% {
         box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
     }
@@ -987,4 +993,58 @@
 .ef-toast svg {
     color: #10b981;
     flex-shrink: 0;
+}
+
+/* ── Stock Badge ── */
+.ef-card__meta {
+    margin-bottom: 12px;
+}
+
+.ef-stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    padding: 3px 8px;
+    border-radius: 99px;
+}
+
+.ef-stock__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Tersedia */
+.ef-stock--available {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.ef-stock--available .ef-stock__dot {
+    background: #22c55e;
+    box-shadow: 0 0 0 2px #bbf7d0;
+    animation: ef-pulse-green 2s infinite; /* ✅ */
+}
+
+/* Habis */
+.ef-stock--empty {
+    background: #f5f5f5;
+    color: #9ca3af;
+}
+.ef-stock--empty .ef-stock__dot {
+    background: #d1d5db;
+}
+
+@keyframes ef-pulse-green {
+    0%,
+    100% {
+        box-shadow: 0 0 0 2px #bbf7d0;
+    }
+    50% {
+        box-shadow: 0 0 0 4px #dcfce7;
+    }
 }

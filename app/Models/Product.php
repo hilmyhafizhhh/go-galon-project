@@ -16,8 +16,8 @@ class Product extends Model
 
     protected $fillable = [
         'name',
-        'category', // Ditambahkan!
-        'volume_ml',
+        // 'category', // Ditambahkan!
+        'volume_l',
         'price',
         'stock',
         'status',
@@ -27,7 +27,7 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
         // 'volume_l' => 'decimal:2',
-        'volume_ml' => 'integer',
+        'volume_l' => 'integer',
         'stock' => 'integer',
     ];
 

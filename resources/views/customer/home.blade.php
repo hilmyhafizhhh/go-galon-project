@@ -38,47 +38,42 @@
 
                     <div class="ef-grid ef-grid--3">
                         @foreach ($products->take(3) as $i => $product)
-                        <article class="ef-card ef-card--featured" data-reveal data-delay="{{ $i * 80 }}">
-                            <div class="ef-card__badges">
-                                <span class="ef-badge ef-badge--primary">⭐ Rekomendasi</span>
-                                <span class="ef-badge ef-badge--hot">Paling Laris 🔥</span>
-                            </div>
-                            
-                            <div class="ef-card__img-wrap">
-                                <img src="{{ $product->image 
-                                ? asset('storage/' . $product->image) 
-                                : asset('assets/icons/no-image.png') }}"
-                                alt="{{ $product->name }}"
-                                class="ef-card__img">
-                                
-                                <div class="ef-card__img-glow"></div>
-                            </div>
-                            
-                            <div class="ef-card__body">
-                                <h3 class="ef-card__name">{{ $product->name }}</h3>
-                                
-                                <p class="ef-card__price">
-                                    Rp{{ number_format($product->price, 0, ',', '.') }}
-                                </p>
-                                
-                                <button
-                                class="ef-btn ef-btn--primary"
-                                onclick="addToCart(this)"
-                                data-id="{{ $product->id }}"
-                                data-product="{{ $product->name }}"
-                                >
-                                Pesan Sekarang
-                                
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2.5">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </button>
+                                            <article class="ef-card ef-card--featured" data-reveal data-delay="{{ $i * 80 }}">
+                                                <div class="ef-card__badges">
+                                                    <span class="ef-badge ef-badge--primary">⭐ Rekomendasi</span>
+                                                    <span class="ef-badge ef-badge--hot">Paling Laris 🔥</span>
+                                                </div>
+
+                                                <div class="ef-card__img-wrap">
+                                                    <img src="{{ $product->image
+                            ? asset('storage/' . $product->image)
+                            : asset('assets/icons/no-image.png') }}" alt="{{ $product->name }}"
+                                                        class="ef-card__img">
+
+                                                    <div class="ef-card__img-glow"></div>
+                                                </div>
+
+                                                <div class="ef-card__body">
+                                                    <h3 class="ef-card__name">{{ $product->name }}</h3>
+
+                                                    <p class="ef-card__price">
+                                                        Rp{{ number_format($product->price, 0, ',', '.') }}
+                                                    </p>
+
+                                                    <button class="ef-btn ef-btn--primary" onclick="addToCart(this)"
+                                                        data-id="{{ $product->id }}" data-product="{{ $product->name }}">
+                                                        Pesan Sekarang
+
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                            stroke-width="2.5">
+                                                            <path d="M5 12h14M12 5l7 7-7 7" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </article>
+                        @endforeach
                     </div>
-                </article>
-                 @endforeach
-                </div>
-            </section>
+                </section>
 
                 {{-- ── SEMUA PRODUK ── --}}
                 <section class="ef-section" data-reveal>
@@ -91,38 +86,42 @@
 
                     <div class="ef-grid ef-grid--3">
                         @foreach ($products as $i => $product)
-                            <article class="ef-card" data-reveal data-delay="{{ $i * 60 }}">
-                                <div class="ef-card__img-wrap">
-                                    <img src="{{ $product->image 
-                                    ? asset('storage/' . $product->image) 
-                                    : asset('assets/icons/no-image.png') }}"
-                                    alt="{{ $product->name }}"
-                                    class="ef-card__img">
-                                    {{-- <img src="{{ asset('assets/icons/' . $product->image) }}" alt="{{ $product->name }}"
-                                        class="ef-card__img"> --}}
-                                </div>
-                                <div class="ef-card__body">
-                                    <h3 class="ef-card__name">{{ $product->name }}</h3>
-                                    <p class="ef-card__price">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
-                                    <p class="ef-card__stock product-stock-{{ $product->id }}">
-                                        Stock : {{ $product->stock }}
-                                    </p>
+                                            <article class="ef-card" data-reveal data-delay="{{ $i * 60 }}">
+                                                <div class="ef-card__img-wrap">
+                                                    <img src="{{ $product->image
+                            ? asset('storage/' . $product->image)
+                            : asset('assets/icons/no-image.png') }}" alt="{{ $product->name }}" class="ef-card__img">
+                                                </div>
+                                                <div class="ef-card__body">
+                                                    <h3 class="ef-card__name">{{ $product->name }}</h3>
+                                                    <p class="ef-card__price">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
 
-                                    @if($product->stock > 0)
+                                                    <div class="ef-card__meta">
+                                                        @if ($product->stock > 0)
+                                                            <span class="ef-stock ef-stock--available">
+                                                                <span class="ef-stock__dot"></span>
+                                                                {{ $product->stock }} tersedia
+                                                            </span>
+                                                        @else
+                                                            <span class="ef-stock ef-stock--empty">
+                                                                <span class="ef-stock__dot"></span>
+                                                                Stok habis
+                                                            </span>
+                                                        @endif
+                                                    </div>
 
-                                    <button class="ef-btn ef-btn--outline" onclick="addToCart(this)"
-                                        data-id="{{ $product->id }}" data-product="{{ $product->name }}">
-                                        Pesan
-                                    </button>
-
-                                    @else
-                                    <button class="ef-btn ef-btn--disabled" disabled>
-                                        
-                                        Stock Habis
-                                    </button>
-                                    @endif
-                                </div>
-                            </article>
+                                                    @if ($product->stock > 0)
+                                                        <button class="ef-btn ef-btn--outline" onclick="addToCart(this)"
+                                                            data-id="{{ $product->id }}" data-product="{{ $product->name }}">
+                                                            Pesan
+                                                        </button>
+                                                    @else
+                                                        <button class="ef-btn ef-btn--disabled" disabled>
+                                                            Stok Habis
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            </article>
                         @endforeach
                     </div>
                 </section>
@@ -273,22 +272,22 @@
             document.addEventListener('DOMContentLoaded', () => {
 
                 function refreshStock() {
-                    
+
                     fetch('/api/products/stock')
-                    .then(r => r.json())
-                    .then(products => {
+                        .then(r => r.json())
+                        .then(products => {
 
-                        products.forEach(product => {
+                            products.forEach(product => {
 
-                            const stockEl = document.querySelector(
-                                `.product-stock-${product.id}`
-                            );
-                            
-                            if(stockEl){
-                                stockEl.innerText = 'Stock: ' + product.stock;
-                            }
+                                const stockEl = document.querySelector(
+                                    `.product-stock-${product.id}`
+                                );
+
+                                if (stockEl) {
+                                    stockEl.innerText = 'Stock: ' + product.stock;
+                                }
+                            });
                         });
-                    });
                 }
 
                 setInterval(refreshStock, 5000);
@@ -471,9 +470,9 @@
                         //     return r.json();
                         // })
                         .then(async r => { //diganti sementara
-                            
+
                             const data = await r.json();
-                            
+
                             if (!r.ok) {
                                 console.log(data);
                                 throw new Error(data.message || 'Error');
@@ -492,7 +491,7 @@
                         // })
                         .catch(async (err) => {
                             console.log(err);
-                            
+
                             if (err.message) {
                                 showErrorToast(err.message);
                             } else {

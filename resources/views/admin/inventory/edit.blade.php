@@ -18,16 +18,16 @@
                    value="{{ $product->name }}" required>
         </div>
 
-        <div class="mb-4">
+        {{-- <div class="mb-4">
             <label class="block font-semibold mb-2">Kategori</label>
             <input type="text" name="category" class="w-full border px-4 py-2 rounded"
                    value="{{ $product->category }}" required>
-        </div>
+        </div> --}}
 
         <div class="mb-4">
             <label class="block font-semibold mb-2">Volume (L)</label>
-            <input type="number" name="volume_ml" class="w-full border px-4 py-2 rounded"
-                   value="{{ $product->volume_ml }}" required>
+            <input type="number" name="volume_l" class="w-full border px-4 py-2 rounded"
+                   value="{{ $product->volume_l }}" required>
         </div>
 
         <div class="mb-4">
@@ -42,13 +42,13 @@
                    value="{{ $product->stock }}" required>
         </div>
 
-        <div class="mb-4">
+        {{-- <div class="mb-4">
             <label class="block font-semibold mb-2">Status</label>
             <select name="status" class="w-full border px-4 py-2 rounded">
                 <option value="available" {{ $product->status === 'available' ? 'selected' : '' }}>Available</option>
                 <option value="unavailable" {{ $product->status === 'unavailable' ? 'selected' : '' }}>Unavailable</option>
             </select>
-        </div>
+        </div> --}}
 
         {{-- tambahan script tambah gambar --}}
         <div class="mb-4">
