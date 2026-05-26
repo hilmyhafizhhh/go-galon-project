@@ -32,7 +32,7 @@ class OrderFactory extends Factory
             'confirmed',
             'confirmed',
             'cancelled',
-            'draft',
+            // 'draft',
         ]);
 
         // payment status

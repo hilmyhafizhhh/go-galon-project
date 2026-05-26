@@ -62,7 +62,7 @@ class CheckoutController extends Controller
 
         // lanjut redirect / return response...
         // Di akhir method process()
-        return redirect()->route('customer.order', ['tab' => 'draf'])
+        return redirect()->route('customer.order', ['tab' => 'pending'])
             ->with('success', 'Pesanan berhasil dibuat!');
     }
 

@@ -1,25 +1,20 @@
 <x-app-layout>
     <div class="ef-orders">
         @php
-            $activeTab = $activeTab ?? request('tab', 'draf');
+            $activeTab = $activeTab ?? request('tab', 'pending');
 
             $tabs = [
-                'riwayat' => ['label' => 'Riwayat', 'icon' => 'history'],
-                'dalam' => ['label' => 'Dalam Pengantaran', 'icon' => 'truck'],
-                'draf' => ['label' => 'Draf', 'icon' => 'draft'],
-                'batal' => ['label' => 'Batal', 'icon' => 'cancel'],
+                'pending' => ['label' => 'Draf', 'icon' => 'draft'],
+                'shipping' => ['label' => 'Dalam Pengantaran', 'icon' => 'truck'],
+                'completed' => ['label' => 'Riwayat', 'icon' => 'history'],
+                'cancelled' => ['label' => 'Batal', 'icon' => 'cancel'],
             ];
 
-            // Map status DB → warna & teks tampilan
             $statusDisplay = [
-                'pending' => ['text' => 'Dalam Proses', 'color' => 'blue'], // ← tambah ini
-                'draft' => ['text' => 'Draf', 'color' => 'blue'],
-                'confirmed' => ['text' => 'Dikonfirmasi', 'color' => 'blue'],
-                'processing' => ['text' => 'Diproses', 'color' => 'orange'],
+                'pending' => ['text' => 'Menunggu Konfirmasi', 'color' => 'yellow'],
                 'shipping' => ['text' => 'Dalam Pengantaran', 'color' => 'orange'],
-                'delivered' => ['text' => 'Terkirim', 'color' => 'green'],
                 'completed' => ['text' => 'Selesai', 'color' => 'green'],
-                'cancelled' => ['text' => 'Dibatalkan', 'color' => 'gray'],
+                'cancelled' => ['text' => 'Dibatalkan', 'color' => 'red'],
             ];
         @endphp
 
@@ -128,13 +123,13 @@
                                     Rp{{ number_format($order->total_amount, 0, ',', '.') }}
                                 </span>
 
-                                @if ($order->status === 'completed' || $order->status === 'delivered')
+                                @if ($order->status === 'completed')
                                     <button class="ef-order-card__btn ef-order-card__btn--green">Pesan Lagi</button>
-                                @elseif (in_array($order->status, ['processing', 'shipping']))
+                                @elseif ($order->status === 'shipping')
                                     <button class="ef-order-card__btn ef-order-card__btn--orange">Lacak</button>
-                                @elseif ($order->status === 'draft')
-                                    <a href="{{ route('customer.checkout.index') }}"
-                                        class="ef-order-card__btn ef-order-card__btn--blue">Lanjutkan</a>
+                                    {{-- @elseif ($order->status === 'pending')
+                                    <a href="{{ route('customer.checkout') }}"
+                                        class="ef-order-card__btn ef-order-card__btn--blue">Lanjutkan</a> --}}
                                 @endif
                             </div>
                         </div>
@@ -144,7 +139,7 @@
             @if ($shown === 0)
                 <div class="ef-orders__empty" data-reveal>
                     <div class="ef-orders__empty-icon">
-                        @if ($activeTab === 'dalam')
+                        @if ($activeTab === 'shipping')
                             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="1.5">
                                 <rect x="1" y="3" width="15" height="13" />
@@ -152,14 +147,14 @@
                                 <circle cx="5.5" cy="18.5" r="2.5" />
                                 <circle cx="18.5" cy="18.5" r="2.5" />
                             </svg>
-                        @elseif ($activeTab === 'batal')
+                        @elseif ($activeTab === 'cancelled')
                             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="1.5">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="15" y1="9" x2="9" y2="15" />
                                 <line x1="9" y1="9" x2="15" y2="15" />
                             </svg>
-                        @elseif ($activeTab === 'draf')
+                        @elseif ($activeTab === 'pending')
                             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="1.5">
                                 <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
