@@ -168,7 +168,7 @@
                 <div class="co-card">
                     @foreach ($order->items as $item)
                         <div class="co-prod-row {{ !$loop->last ? 'co-prod-row--border' : '' }}">
-                            <div class="co-prod-img">
+                            {{-- <div class="co-prod-img">
                                 @if ($item->product->image)
                                     <img src="{{ asset('assets/icons/' . $item->product->image) }}"
                                         alt="{{ $item->product->name }}">
@@ -181,6 +181,12 @@
                                         </svg>
                                     </div>
                                 @endif
+                            </div> --}}
+                            <div class="co-prod-img">
+                                <img src="{{ $item->product->image 
+                                ? asset('storage/' . $item->product->image) 
+                                : asset('assets/icons/no-image.png') }}"
+                                alt="{{ $item->product->name }}">
                             </div>
                             <div class="co-prod-info">
                                 <p class="co-prod-name">{{ $item->product->name }}</p>

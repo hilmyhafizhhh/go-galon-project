@@ -27,6 +27,7 @@ class DashboardController extends Controller
             ->sum('total_amount');
 
         $activeOrders = Order::whereIn('status', [
+            // 'draft', //tambahan
             'pending',
             'confirmed',
             'assigned',

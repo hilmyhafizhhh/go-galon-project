@@ -175,6 +175,16 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     Route::get('/address/select', [AddressController::class, 'select'])->name('address.select');
 });
 
+// ── API STOCK REALTIME ─────────────────────────────
+Route::get('/api/products/stock', function () {
+
+    return \App\Models\Product::select(
+        'id',
+        'stock'
+    )->get();
+
+});
+
 
 // pmidtrans
 Route::post('/payment/{order}/create', [PaymentController::class, 'createPayment'])->name('payment.create');

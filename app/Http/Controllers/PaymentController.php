@@ -160,6 +160,16 @@ class PaymentController extends Controller
     {
         if ($order->payment_status === 'paid') return; // idempotent
 
+        // ── Kurangi stock produk ──
+        foreach ($order->items as $item) {
+
+            if ($item->product) {
+
+                $item->product->decrement('stock', $item->quantity);
+                
+            }
+        }
+
         $order->update([
             'payment_status' => 'paid',
             'payment_method' => $paymentMethod,  // ← GoPay / QRIS / dll

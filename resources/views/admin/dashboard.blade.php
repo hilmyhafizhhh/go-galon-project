@@ -176,7 +176,7 @@
 <script>
 function loadDashboard()
 {
-    fetch("{{ route('admin.dashboard.data') }}")
+    fetch("/admin/dashboard/data")
     .then(response => response.json())
     .then(data => {
 
@@ -187,12 +187,14 @@ function loadDashboard()
 
         let rows = '';
 
-        data.orders.forEach(order => {
+        // data.orders.forEach(order => {
+        (data.orders || []).forEach(order => { //diperbarui
 
             let itemNames = '';
 
             order.items.forEach(item => {
-                itemNames += item.quantity + 'x ' + item.product.name + ', ';
+                // itemNames += item.quantity + 'x ' + item.product.name + ', ';
+                itemNames += item.quantity + 'x ' + (item.product?.name ?? 'Produk Dihapus') + ', '; //diperbarui
             });
 
             rows += `
@@ -210,7 +212,8 @@ function loadDashboard()
 
         let courierHtml = '';
 
-data.activeCouriers.forEach(courier => {
+// data.activeCouriers.forEach(courier => {
+(data.activeCouriers || []).forEach(courier => { //diperbarui
 
     let totalTask = data.orders.filter(order =>
         order.assigned_courier_id === courier.id &&
@@ -232,7 +235,8 @@ document.getElementById('courierList').innerHTML = courierHtml;
 
 let inventoryHtml = '';
 
-data.products.forEach(product => {
+// data.products.forEach(product => {
+data.products?.forEach(product => { //diperbarui
 
     let color = product.stock <= 10 ? 'text-red-600' :
                 product.stock <= 20 ? 'text-yellow-600' :

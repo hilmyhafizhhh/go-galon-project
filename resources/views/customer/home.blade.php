@@ -104,10 +104,23 @@
                                 <div class="ef-card__body">
                                     <h3 class="ef-card__name">{{ $product->name }}</h3>
                                     <p class="ef-card__price">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
+                                    <p class="ef-card__stock product-stock-{{ $product->id }}">
+                                        Stock : {{ $product->stock }}
+                                    </p>
+
+                                    @if($product->stock > 0)
+
                                     <button class="ef-btn ef-btn--outline" onclick="addToCart(this)"
                                         data-id="{{ $product->id }}" data-product="{{ $product->name }}">
                                         Pesan
                                     </button>
+
+                                    @else
+                                    <button class="ef-btn ef-btn--disabled" disabled>
+                                        
+                                        Stock Habis
+                                    </button>
+                                    @endif
                                 </div>
                             </article>
                         @endforeach
@@ -258,6 +271,27 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
+
+                function refreshStock() {
+                    
+                    fetch('/api/products/stock')
+                    .then(r => r.json())
+                    .then(products => {
+
+                        products.forEach(product => {
+
+                            const stockEl = document.querySelector(
+                                `.product-stock-${product.id}`
+                            );
+                            
+                            if(stockEl){
+                                stockEl.innerText = 'Stock: ' + product.stock;
+                            }
+                        });
+                    });
+                }
+
+                setInterval(refreshStock, 5000);
 
                 // ── Scroll Reveal ──────────────────────────────────────────
                 const revealEls = document.querySelectorAll('[data-reveal]');
