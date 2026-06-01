@@ -50,8 +50,15 @@ class DashboardController extends Controller
         //     ->latest()
         //     ->take(10)
         //     ->get();
+        // $orders = Order::with(['user', 'courier.user', 'items.product', 'address'])
+        //     ->whereDate('created_at', $today)
+        //     ->latest()
+        //     ->get();
         $orders = Order::with(['user', 'courier.user', 'items.product', 'address'])
-            ->whereDate('created_at', $today)
+            ->where(function ($q) use ($today) {
+                $q->whereDate('created_at', $today)
+                    ->orWhere('status', 'pending');
+            })
             ->latest()
             ->get();
 
