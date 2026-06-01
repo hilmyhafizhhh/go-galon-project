@@ -15,7 +15,7 @@
             {{-- ════ LEFT PANEL ════ --}}
             <div class="ef-login__left">
                 <a href="{{ route('admin.dashboard') }}" class="ef-login__brand">
-                    <img src="{{ asset('assets/icons/Frame 44.png') }}" alt="Brand Logo" class="ef-login__brand-img">
+                    <img src="{{ asset('assets/icons/Frame 44.webp') }}" alt="Brand Logo" class="ef-login__brand-img">
                 </a>
 
                 <div class="ef-login__left-copy">
@@ -181,7 +181,7 @@
         @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap");
 
         /* ── Root ──────────────────────────────────────────────────── */
-        .ef-login { 
+        .ef-login {
             font-family: "Plus Jakarta Sans", sans-serif;
             min-height: 100vh;
             display: flex;

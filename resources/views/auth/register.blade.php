@@ -13,7 +13,7 @@
             {{-- ════ LEFT PANEL ════ --}}
             <div class="ef-reg__left">
                 <a href="{{ route('admin.dashboard') }}" class="ef-reg__brand">
-                    <img src="{{ asset('assets/icons/Frame 44.png') }}" alt="Brand Logo" class="ef-reg__brand-img">
+                    <img src="{{ asset('assets/icons/Frame 44.webp') }}" alt="Brand Logo" class="ef-reg__brand-img">
                 </a>
 
                 <div class="ef-reg__left-copy">
