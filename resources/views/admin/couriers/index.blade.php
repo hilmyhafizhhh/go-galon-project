@@ -22,7 +22,7 @@
                 <option value="">Semua</option>
                 <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available</option>
                 <option value="on_delivery" {{ request('status') == 'on_delivery' ? 'selected' : '' }}>On Delivery</option>
-                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                <option value="offline" {{ request('status') == 'offline' ? 'selected' : '' }}>Inactive</option>
             </select>
         </div>
 

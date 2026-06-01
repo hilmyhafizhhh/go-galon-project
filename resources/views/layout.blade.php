@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>GoGalon Admin</title>
     @vite('resources/css/app.css')
 
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        [x-cloak] { display: none !important; }
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 
 </head>
+
 <body class="bg-gray-100 font-sans">
 
     <div class="flex min-h-screen">
@@ -25,21 +31,31 @@
             </div>
             <nav class="p-4">
                 <ul class="space-y-2">
-                    <li><a href="{{ route('admin.dashboard') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">🏠 Dashboard</a></li>
-                    <li><a href="{{ route('admin.orders') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">🧾 Pesanan</a></li>
-                    <li><a href="{{ route('admin.couriers.index') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">🚴 Kurir</a></li>
-                    <li><a href="{{ route('admin.inventory.index') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">📦 Inventory</a></li>
-                    <li><a href="{{ route('admin.reports') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">📊 Laporan</a></li>
-                    <li><a href="{{ route('admin.settings') }}" class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">⚙️ Pengaturan</a></li>
+                    <li><a href="{{ route('admin.dashboard') }}"
+                            class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">🏠 Dashboard</a>
+                    </li>
+                    <li><a href="{{ route('admin.orders') }}"
+                            class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">🧾 Pesanan</a></li>
+                    <li><a href="{{ route('admin.couriers.index') }}"
+                            class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">🚴 Kurir</a></li>
+                    <li><a href="{{ route('admin.inventory.index') }}"
+                            class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">📦 Inventory</a>
+                    </li>
+                    <li><a href="{{ route('admin.reports') }}"
+                            class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">📊 Laporan</a></li>
+                    <li><a href="{{ route('admin.settings') }}"
+                            class="block p-2 rounded hover:bg-blue-100 text-blue-600 font-semibold">⚙️ Pengaturan</a>
+                    </li>
                 </ul>
             </nav>
         </aside>
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col">
-            
+
             <!-- ✅ Top Navigation Bar -->
-            <header class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm sticky top-0 z-50">
+            <header
+                class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm sticky top-0 z-50">
                 <h1 class="text-lg font-semibold text-gray-700">Dashboard Admin</h1>
 
                 <!-- ✅ User Dropdown -->
@@ -55,23 +71,20 @@
                         <!-- Icon panah -->
                         <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 9l-7 7-7-7" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
 
                     <!-- Dropdown menu -->
-                    <div x-show="open" 
-                         x-cloak
-                         @click.away="open = false"
-                         x-transition:enter="transition ease-out duration-100"
-                         x-transition:enter-start="transform opacity-0 scale-95"
-                         x-transition:enter-end="transform opacity-100 scale-100"
-                         x-transition:leave="transition ease-in duration-75"
-                         x-transition:leave-start="transform opacity-100 scale-100"
-                         x-transition:leave-end="transform opacity-0 scale-95"
-                         class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 z-50">
-                    {{-- <div x-show="open" @click.away="open = false"dimatikan sementara
+                    <div x-show="open" x-cloak @click.away="open = false"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="transform opacity-100 scale-100"
+                        x-transition:leave-end="transform opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 z-50">
+                        {{-- <div x-show="open" @click.away="open = false"dimatikan sementara
                         class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 z-50"> --}}
                         <a href="{{ route('profile.edit') }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -102,4 +115,5 @@
     {{-- <script src="//unpkg.com/alpinejs" defer></script> --}}
 
 </body>
+
 </html>

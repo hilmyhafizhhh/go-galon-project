@@ -6,18 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('couriers', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('vehicle_info', 100)->nullable();
-            $table->string('status', 50)->default('available');
-            $table->decimal('last_known_lat', 10, 6)->nullable();
-            $table->decimal('last_known_lng', 10, 6)->nullable();
+            $table->string('order_code', 30)->nullable()->unique();
+            $table->decimal('total_amount', 10, 2)->nullable();
+            $table->string('payment_method', 50)->nullable();
+            $table->string('payment_status', 50)->default('pending');
+            $table->string('status', 50)->default('draft');
+            $table->foreignUuid('assigned_courier_id')->nullable()->constrained('couriers')->nullOnDelete();
+            $table->foreignUuid('address_id')->nullable()->constrained('addresses')->nullOnDelete();
+            $table->timestamp('delivered_at')->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void {
-        Schema::dropIfExists('couriers');
+        Schema::dropIfExists('orders');
     }
 };

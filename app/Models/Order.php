@@ -45,6 +45,7 @@ class Order extends Model
         'delivered_at',
         'note',
         'transaction_id',
+        'queue_number',
         // 'payment_token',
         // 'snap_url',
     ];

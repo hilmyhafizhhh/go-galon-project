@@ -13,8 +13,11 @@ class Task extends Model
     protected $guarded = [];
 
     // UUID setup (wajib kalau id tabel lain uuid)
-    protected $keyType = 'string';
-    public $incrementing = false;
+    // protected $keyType = 'string';
+    // public $incrementing = false;
+    // Hapus/ubah dua baris ini:
+    protected $keyType = 'int';     // ← sesuai migration
+    public $incrementing = true;    // ← karena pakai $table->id()
 
     public function order(): BelongsTo
     {

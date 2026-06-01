@@ -16,6 +16,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CustomerOrderController;
+use App\Http\Controllers\CourierTaskController;
 use App\Models\Order;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
@@ -60,6 +61,8 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
     Route::get('/reports/inventory', [ReportController::class, 'inventory'])->name('reports.inventory');
 
 
+    Route::post('/orders/{id}/validate', [DashboardController::class, 'validateOrder'])->name('orders.validate');
+
     // ⚙️ Pengaturan
     Route::get('/settings', [SettingController::class, 'index'])->name('settings');
 
@@ -72,29 +75,8 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
 
 // Route Courier
 Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name('courier.')->group(function () {
-    Route::get('/home', function () {
-        $today = Carbon::today();
-
-        // Ambil tugas kurir yang login, hanya hari ini
-        $tasks = Task::with(['order.customer', 'customer'])
-            ->where('courier_id', Auth::id())
-            ->where(function ($query) use ($today) {
-                $query->whereDate('created_at', $today)
-                    ->orWhereDate('pickup_date', $today);
-            })
-            ->latest()
-            ->get();
-        // Hitung statistik
-        $todayTasks     = $tasks->count();
-        $completedToday = $tasks->where('status', 'completed')->count();
-        $pendingToday   = $tasks->whereIn('status', ['pending', 'picked_up'])->count();
-        return view('courier.home', compact(
-            'tasks',
-            'todayTasks',
-            'completedToday',
-            'pendingToday'
-        ));
-    })->name('home');
+   
+    Route::get('/home', [CourierTaskController::class, 'index'])->name('home');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
     // Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     // Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
@@ -104,6 +86,10 @@ Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('/tasks', [CourierTaskController::class, 'index'])->name('tasks');
+    Route::post('/tasks/{taskId}/pickup', [CourierTaskController::class, 'pickup'])->name('task.pickup');
+    Route::post('/tasks/{taskId}/deliver', [CourierTaskController::class, 'deliver'])->name('task.deliver');
 });
 
 // Route Customer
@@ -122,7 +108,7 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-    Route::post('/cart/select-item',[CartController::class, 'selectItem']);
+    Route::post('/cart/select-item', [CartController::class, 'selectItem']);
     Route::post('/cart/update-qty', [CartController::class, 'updateQty'])->name('cart.update-qty');
     Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
@@ -138,7 +124,7 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/checkout/address-picker', [CheckoutController::class, 'addressPicker'])
-    ->name('checkout.address-picker');
+        ->name('checkout.address-picker');
     Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])
         ->name('checkout.success');
 
@@ -158,7 +144,7 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     });
 
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-    Route::post('/cart/remove', [CartController::class, 'removeBulk'])->name('cart.remove.bulk'); 
+    Route::post('/cart/remove', [CartController::class, 'removeBulk'])->name('cart.remove.bulk');
 
     // ── Profile ──
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
@@ -182,7 +168,6 @@ Route::get('/api/products/stock', function () {
         'id',
         'stock'
     )->get();
-
 });
 
 
