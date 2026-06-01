@@ -1,16 +1,467 @@
 <x-app-layout>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        .courier-app {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f0f4ff;
+            min-height: 100vh;
+            padding-bottom: 2rem;
+            color: #1e2d5a;
+        }
+
+        /* ── HEADER ── */
+        .courier-header {
+            background: linear-gradient(135deg, #1a56db 0%, #1e40af 100%);
+            padding: 1.25rem 1.25rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: .85rem;
+            color: #fff;
+            letter-spacing: .05em;
+        }
+
+        .header-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .header-sub {
+            font-size: .72rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 1px;
+        }
+
+        .online-badge {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 999px;
+            padding: .3rem .75rem;
+            font-size: .73rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 1.8s infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .5;
+                transform: scale(1.4);
+            }
+        }
+
+        /* ── STATS ── */
+        .stats-wrap {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+            transform: translateY(-1px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .65rem;
+            background: #fff;
+            border-radius: 18px;
+            padding: 1rem .85rem;
+            box-shadow: 0 4px 20px rgba(30, 64, 175, .12);
+        }
+
+        .stat-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .stat-card:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 1px;
+            background: #e5e7eb;
+        }
+
+        .stat-num {
+            font-size: 1.9rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: .2rem;
+        }
+
+        .stat-num.blue {
+            color: #1a56db;
+        }
+
+        .stat-num.green {
+            color: #059669;
+        }
+
+        .stat-num.amber {
+            color: #d97706;
+        }
+
+        .stat-label {
+            font-size: .67rem;
+            color: #9ca3af;
+            font-weight: 600;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+
+        /* ── SECTION ── */
+        .task-section {
+            padding: 1.25rem 1.25rem .5rem;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: .85rem;
+        }
+
+        /* ── TASK CARD ── */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+        }
+
+        .task-card {
+            background: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(30, 64, 175, .07);
+            border: 1px solid rgba(30, 64, 175, .08);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .task-card:active {
+            transform: scale(.99);
+        }
+
+        .status-strip {
+            height: 3px;
+            width: 100%;
+        }
+
+        .status-strip.pending {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+
+        .status-strip.picked_up {
+            background: linear-gradient(90deg, #1a56db, #60a5fa);
+        }
+
+        .status-strip.completed {
+            background: linear-gradient(90deg, #059669, #34d399);
+        }
+
+        .task-body {
+            padding: 1rem 1rem .85rem;
+        }
+
+        .task-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: .5rem;
+        }
+
+        .task-code {
+            font-size: .72rem;
+            font-weight: 700;
+            color: #9ca3af;
+            letter-spacing: .05em;
+            margin-bottom: .2rem;
+        }
+
+        .task-customer {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e2d5a;
+        }
+
+        .badge {
+            font-size: .63rem;
+            font-weight: 700;
+            padding: .25rem .65rem;
+            border-radius: 999px;
+            letter-spacing: .03em;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+
+        .badge.pending {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        .badge.picked_up {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+
+        .badge.completed {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .task-address {
+            display: flex;
+            align-items: flex-start;
+            gap: .35rem;
+            font-size: .77rem;
+            color: #6b7280;
+            margin-top: .4rem;
+            line-height: 1.45;
+        }
+
+        .task-address svg {
+            flex-shrink: 0;
+            margin-top: 1px;
+            color: #1a56db;
+        }
+
+        .card-divider {
+            height: 1px;
+            background: #f3f4f6;
+            margin: 0 1rem;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: .6rem;
+            align-items: center;
+            padding: .75rem 1rem;
+        }
+
+        .btn-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .4rem;
+            padding: .65rem 1rem;
+            border-radius: 12px;
+            font-size: .82rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all .2s ease;
+            letter-spacing: .02em;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-main:active {
+            transform: scale(.97);
+        }
+
+        .btn-main.pickup {
+            background: linear-gradient(135deg, #1a56db, #2563eb);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(26, 86, 219, .3);
+        }
+
+        .btn-main.pickup:hover {
+            box-shadow: 0 6px 20px rgba(26, 86, 219, .45);
+        }
+
+        .btn-main.pickup:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .btn-main.deliver {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(5, 150, 105, .25);
+        }
+
+        .btn-main.deliver:hover {
+            box-shadow: 0 6px 20px rgba(5, 150, 105, .4);
+        }
+
+        .btn-main.deliver:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .btn-main.done {
+            background: #f9fafb;
+            color: #9ca3af;
+            cursor: default;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all .2s ease;
+            text-decoration: none;
+        }
+
+        .btn-icon:active {
+            transform: scale(.93);
+        }
+
+        .btn-icon.wa {
+            background: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        .btn-icon.wa:hover {
+            background: #bbf7d0;
+        }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center;
+            padding: 3.5rem 1rem;
+            background: #fff;
+            border: 1px dashed #bfdbfe;
+            border-radius: 20px;
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            background: #eff6ff;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .empty-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: .35rem;
+        }
+
+        .empty-sub {
+            font-size: .82rem;
+            color: #9ca3af;
+        }
+
+        /* ── TOAST ── */
+        .toast-wrap {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: #1e2d5a;
+            color: #fff;
+            font-size: .82rem;
+            font-weight: 600;
+            padding: .6rem 1.25rem;
+            border-radius: 999px;
+            box-shadow: 0 8px 24px rgba(30, 45, 90, .25);
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all .3s ease;
+            pointer-events: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.success {
+            background: #065f46;
+        }
+
+        .toast.error {
+            background: #991b1b;
+        }
+    </style>
+
     <main class="courier-app">
 
         {{-- HEADER --}}
         <div class="courier-header">
             <div class="header-inner">
                 <div class="header-left">
-                    <div class="avatar">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                    </div>
+                    <div class="avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
                     <div>
                         <div class="header-name">{{ auth()->user()->name }}</div>
-                        {{-- <div class="header-role">Kurir Aktif · Area Selatan</div> --}}
+                        <div class="header-sub">Kurir Aktif</div>
                     </div>
                 </div>
                 <div class="online-badge">
@@ -21,18 +472,20 @@
         </div>
 
         {{-- STATISTIK --}}
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-num blue">{{ $todayTasks ?? 0 }}</div>
-                <div class="stat-label">Total Tugas</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-num green">{{ $completedToday ?? 0 }}</div>
-                <div class="stat-label">Selesai</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-num amber">{{ $pendingToday ?? 0 }}</div>
-                <div class="stat-label">Menunggu</div>
+        <div class="stats-wrap">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-num blue">{{ $todayTasks ?? 0 }}</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num green">{{ $completedToday ?? 0 }}</div>
+                    <div class="stat-label">Selesai</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num amber">{{ $pendingToday ?? 0 }}</div>
+                    <div class="stat-label">Menunggu</div>
+                </div>
             </div>
         </div>
 
@@ -43,21 +496,24 @@
             <div class="task-list">
                 @forelse($tasks as $task)
                     <div class="task-card">
-                        <div class="status-bar {{ $task->status }}"></div>
-                        <div class="task-top">
-                            <div class="task-header">
+                        <div class="status-strip {{ $task->status }}"></div>
+                        <div class="task-body">
+                            <div class="task-top-row">
                                 <div>
-                                    <div class="task-code">#{{ $task->order->code }}</div>
-                                    <div class="task-customer">{{ $task->customer->name }}</div>
+                                    <div class="task-code">
+                                        {{-- {{ $task->order->order_code ?? substr($task->order->id, 0, 8) }} --}}
+                                        {{ $task->order->order_code ?? '-' }}
+                                    </div>
+                                    <div class="task-customer">{{ $task->order->user->name ?? '-' }}</div>
                                     <div class="task-address">
                                         <svg width="13" height="13" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24" aria-hidden="true">
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
-                                        {{ Str::limit($task->order->address, 45) }}
+                                        {{ Str::limit($task->order->address->address ?? '-', 48) }}
                                     </div>
                                 </div>
                                 <span class="badge {{ $task->status }}">
@@ -76,30 +532,27 @@
 
                         <div class="task-actions">
                             @if ($task->status == 'pending')
-                                <button onclick="pickupTask({{ $task->id }})" class="btn-main pickup">
+                                <button onclick="pickupTask({{ $task->id }}, this)" class="btn-main pickup">
                                     <svg width="14" height="14" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24" aria-hidden="true"
-                                        style="vertical-align:-2px;margin-right:5px">
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                     </svg>
                                     Ambil Barang
                                 </button>
                             @elseif($task->status == 'picked_up')
-                                <button onclick="deliverTask({{ $task->id }})" class="btn-main deliver">
+                                <button onclick="deliverTask({{ $task->id }}, this)" class="btn-main deliver">
                                     <svg width="14" height="14" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24" aria-hidden="true"
-                                        style="vertical-align:-2px;margin-right:5px">
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
                                     </svg>
-                                    Antar ke Tujuan
+                                    Antar Sekarang
                                 </button>
                             @else
                                 <button class="btn-main done" disabled>
                                     <svg width="14" height="14" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24" aria-hidden="true"
-                                        style="vertical-align:-2px;margin-right:5px">
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -107,21 +560,15 @@
                                 </button>
                             @endif
 
-                            <a href="https://wa.me/{{ $task->customer->phone_clean ?? '62' . ltrim($task->customer->phone, '0') }}"
-                                target="_blank" class="btn-icon wa" aria-label="Hubungi via WhatsApp">
-                                <svg width="19" height="19" fill="currentColor" viewBox="0 0 24 24"
-                                    aria-hidden="true">
+                            @php
+                                $phone = $task->order->user->phone ?? '';
+                                $wa = '62' . ltrim($phone, '0');
+                            @endphp
+                            <a href="https://wa.me/{{ $wa }}" target="_blank" class="btn-icon wa"
+                                aria-label="WhatsApp">
+                                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
                                     <path
                                         d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                                </svg>
-                            </a>
-
-                            <a href="{{ route('courier.task.map', $task->id) }}" class="btn-icon map"
-                                aria-label="Lihat peta">
-                                <svg width="19" height="19" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                                 </svg>
                             </a>
                         </div>
@@ -129,21 +576,39 @@
                 @empty
                     <div class="empty-state">
                         <div class="empty-icon">
-                            <svg width="32" height="32" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24" style="color:#b4b2a9">
+                            <svg width="28" height="28" fill="none" stroke="#1a56db" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                             </svg>
                         </div>
                         <div class="empty-title">Tidak ada tugas hari ini</div>
-                        <div class="empty-sub">Nikmati hari kamu dulu 😊</div>
+                        <div class="empty-sub">Santai dulu, pesanan belum masuk 😊</div>
                     </div>
                 @endforelse
             </div>
         </div>
 
+        <div class="toast-wrap" id="toastWrap"></div>
+
         <script>
-            function pickupTask(taskId) {
+            function showToast(msg, type = 'success') {
+                const wrap = document.getElementById('toastWrap');
+                const t = document.createElement('div');
+                t.className = 'toast ' + type;
+                t.textContent = msg;
+                wrap.appendChild(t);
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => t.classList.add('show'));
+                });
+                setTimeout(() => {
+                    t.classList.remove('show');
+                    setTimeout(() => t.remove(), 350);
+                }, 2500);
+            }
+
+            function pickupTask(taskId, btn) {
+                btn.disabled = true;
+                btn.innerHTML = 'Memproses...';
                 fetch(`/courier/tasks/${taskId}/pickup`, {
                         method: 'POST',
                         headers: {
@@ -152,11 +617,26 @@
                         }
                     })
                     .then(res => res.json())
-                    .then(() => window.location.reload())
-                    .catch(err => console.error(err));
+                    .then(data => {
+                        if (data.success) {
+                            showToast('✓ Barang berhasil diambil!', 'success');
+                            setTimeout(() => window.location.reload(), 800);
+                        } else {
+                            showToast('Gagal: ' + (data.message ?? 'Coba lagi'), 'error');
+                            btn.disabled = false;
+                            btn.innerHTML = 'Ambil Barang';
+                        }
+                    })
+                    .catch(() => {
+                        showToast('Terjadi kesalahan', 'error');
+                        btn.disabled = false;
+                        btn.innerHTML = 'Ambil Barang';
+                    });
             }
 
-            function deliverTask(taskId) {
+            function deliverTask(taskId, btn) {
+                btn.disabled = true;
+                btn.innerHTML = 'Memproses...';
                 fetch(`/courier/tasks/${taskId}/deliver`, {
                         method: 'POST',
                         headers: {
@@ -165,8 +645,21 @@
                         }
                     })
                     .then(res => res.json())
-                    .then(() => window.location.reload())
-                    .catch(err => console.error(err));
+                    .then(data => {
+                        if (data.success) {
+                            showToast('✓ Pesanan berhasil diantarkan!', 'success');
+                            setTimeout(() => window.location.reload(), 800);
+                        } else {
+                            showToast('Gagal: ' + (data.message ?? 'Coba lagi'), 'error');
+                            btn.disabled = false;
+                            btn.innerHTML = 'Antar Sekarang';
+                        }
+                    })
+                    .catch(() => {
+                        showToast('Terjadi kesalahan', 'error');
+                        btn.disabled = false;
+                        btn.innerHTML = 'Antar Sekarang';
+                    });
             }
         </script>
     </main>
