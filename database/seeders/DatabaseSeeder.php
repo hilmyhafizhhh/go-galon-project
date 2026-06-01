@@ -83,8 +83,8 @@ class DatabaseSeeder extends Seeder
 
 //         'status' => fake()->randomElement([
 //             'available',
-//             'delivering',
-//             'offline',
+//             'unavailable',
+//             'on_delivery',
 //         ]),
 
 //         'last_known_lat' => fake()->randomFloat(

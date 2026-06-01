@@ -16,7 +16,7 @@
                 {{-- ── HERO BANNER ── --}}
                 <div class="ef-hero" data-reveal>
                     <div class="ef-hero__inner">
-                        <img src="{{ asset('assets/icons/luas.png') }}" alt="Banner Promosi" class="ef-hero__img">
+                        <img src="{{ asset('assets/icons/luas.webp') }}" alt="Banner Promosi" class="ef-hero__img">
                         <div class="ef-hero__overlay">
                             <span class="ef-hero__eyebrow">Promo Hari Ini</span>
                             <h1 class="ef-hero__title">Air Bersih,<br>Langsung ke Pintu Anda</h1>

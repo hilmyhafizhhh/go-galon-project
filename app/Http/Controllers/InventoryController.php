@@ -65,7 +65,7 @@ class InventoryController extends Controller
             'volume_l' => 'required|integer',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:10000',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10000',
         ]);
 
         $data = $request->all();
@@ -111,7 +111,7 @@ class InventoryController extends Controller
             'volume_l' => 'required|integer',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $product = Product::findOrFail($id);
