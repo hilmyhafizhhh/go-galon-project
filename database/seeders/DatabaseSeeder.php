@@ -145,32 +145,32 @@ class DatabaseSeeder extends Seeder
 |--------------------------------------------------------------------------
 */
 
-$confirmedOrders = Order::where('status', 'confirmed')
-    ->whereNotNull('assigned_courier_id')
-    ->get();
+// $confirmedOrders = Order::where('status', 'confirmed')
+//     ->whereNotNull('assigned_courier_id')
+//     ->get();
 
-foreach ($confirmedOrders as $order) {
+// foreach ($confirmedOrders as $order) {
 
-    $lat = -6.1413375;
-    $lng = 106.7869347;
+//     $lat = -6.1413375;
+//     $lng = 106.7869347;
 
-    $totalTracks = rand(5, 15);
+//     $totalTracks = rand(5, 15);
 
-    for ($i = 1; $i <= $totalTracks; $i++) {
+//     for ($i = 1; $i <= $totalTracks; $i++) {
 
-        $lat += fake()->randomFloat(6, 0.0001, 0.0010);
-        $lng += fake()->randomFloat(6, 0.0001, 0.0010);
+//         $lat += fake()->randomFloat(6, 0.0001, 0.0010);
+//         $lng += fake()->randomFloat(6, 0.0001, 0.0010);
 
-        TrackingLog::create([
-            'courier_id' => $order->assigned_courier_id,
-            'order_id' => $order->id,
-            'latitude' => $lat,
-            'longitude' => $lng,
-            'speed' => rand(15, 40),
-            'recorded_at' => now()->subMinutes(rand(10, 300)),
-        ]);
-    }
-}
+//         TrackingLog::create([
+//             'courier_id' => $order->assigned_courier_id,
+//             'order_id' => $order->id,
+//             'latitude' => $lat,
+//             'longitude' => $lng,
+//             'speed' => rand(15, 40),
+//             'recorded_at' => now()->subMinutes(rand(10, 300)),
+//         ]);
+//     }
+// }
 }
 
 }
