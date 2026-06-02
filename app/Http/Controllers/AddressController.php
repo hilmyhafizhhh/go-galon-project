@@ -35,8 +35,8 @@ class AddressController extends Controller
                 'user_id'    => $userId,
                 'label'      => $request->label,
                 'address'    => $request->address,
-                'latitude'   => $request->latitude  ?? null,
-                'longitude'  => $request->longitude ?? null,
+                'latitude' => round($request->latitude, 8),
+                'longitude' => round($request->longitude, 8),
                 'is_default' => $makeDefault,
             ]);
         });
@@ -77,8 +77,8 @@ class AddressController extends Controller
             $address->update([
                 'label'      => $request->label,
                 'address'    => $request->address,
-                'latitude'   => $request->latitude  ?? $address->latitude,
-                'longitude'  => $request->longitude ?? $address->longitude,
+                'latitude'   => round($request->latitude, 8) ?? $address->latitude,
+                'longitude'  => round($request->longitude, 8) ?? $address->longitude,
                 'is_default' => $makeDefault,
             ]);
         });

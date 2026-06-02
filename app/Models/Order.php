@@ -92,4 +92,9 @@ class Order extends Model
     {
         return $this->hasMany(TrackingLog::class);
     }
+
+    public function assignedCourier()
+    {
+        return $this->belongsTo(\App\Models\Courier::class, 'assigned_courier_id');
+    }
 }

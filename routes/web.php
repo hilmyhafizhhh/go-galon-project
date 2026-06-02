@@ -72,25 +72,41 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
 });
 
 
-
 // Route Courier
 Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name('courier.')->group(function () {
-   
+
     Route::get('/home', [CourierTaskController::class, 'index'])->name('home');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
-    // Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
-    // Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
     Route::get('/chat/user/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
-
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('/tasks', [CourierTaskController::class, 'index'])->name('tasks');
-    Route::post('/tasks/{taskId}/pickup', [CourierTaskController::class, 'pickup'])->name('task.pickup');
+    Route::post('/tasks/{taskId}/pickup',  [CourierTaskController::class, 'pickup'])->name('task.pickup');
     Route::post('/tasks/{taskId}/deliver', [CourierTaskController::class, 'deliver'])->name('task.deliver');
+    Route::post('/tasks/{taskId}/start-delivery', [CourierTaskController::class, 'startDelivery']);
+
+
+    // GPS update — dipanggil JS tiap ~5 detik saat status picked_up
+    Route::post('/tasks/{taskId}/location', [CourierTaskController::class, 'updateLocation'])->name('tasks.location');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Tracking publik — customer tanpa login, via order_code
+|--------------------------------------------------------------------------
+*/
+Route::get('/track/{orderCode}', [CourierTaskController::class, 'trackingPage'])->name('tracking.show');
+
+/*
+|--------------------------------------------------------------------------
+| API Polling — dipanggil JS dari halaman tracking tiap N detik
+| Menggunakan {order} = UUID dari orders.id
+|--------------------------------------------------------------------------
+*/
+Route::get('/api/tracking/{order}', [CourierTaskController::class, 'trackingData'])->name('api.tracking');
 
 // Route Customer
 Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->name('customer.')->group(function () {
