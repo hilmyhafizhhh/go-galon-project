@@ -117,6 +117,8 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     // })->name('order');
     Route::get('/order', [CustomerOrderController::class, 'index'])->name('order');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
+    Route::get('/order/status', [CustomerOrderController::class, 'getStatus'])->name('order.status');
+
     // Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     // Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
     Route::get('/chat/user/{receiver}', [ChatController::class, 'show'])->name('chat.show');
