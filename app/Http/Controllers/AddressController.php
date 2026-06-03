@@ -41,8 +41,15 @@ class AddressController extends Controller
             ]);
         });
 
-        return redirect()->route('customer.checkout')
-            ->with('success', 'Alamat berhasil ditambahkan');
+        // return redirect()->route('customer.checkout')
+        //     ->with('success', 'Alamat berhasil ditambahkan');
+        $from = $request->input('from', 'checkout');
+
+        return redirect()->route(
+            $from === 'address-picker'
+                ? 'customer.checkout.address-picker'
+                : 'customer.checkout'
+        )->with('success', 'Alamat berhasil ditambahkan');
     }
 
     public function edit(Address $address)
@@ -74,31 +81,68 @@ class AddressController extends Controller
                     ->update(['is_default' => false]);
             }
 
+
             $address->update([
                 'label'      => $request->label,
                 'address'    => $request->address,
-                'latitude'   => round($request->latitude, 8) ?? $address->latitude,
-                'longitude'  => round($request->longitude, 8) ?? $address->longitude,
+                'latitude'   => $request->filled('latitude') ? round($request->latitude, 8) : $address->latitude,
+                'longitude'  => $request->filled('longitude') ? round($request->longitude, 8) : $address->longitude,
                 'is_default' => $makeDefault,
             ]);
         });
 
-        return redirect()->route('customer.checkout')
-            ->with('success', 'Alamat berhasil diperbarui');
+        $from = $request->input('from', 'checkout');
+
+        // Selalu kembali ke address-picker kalau dari sana
+        if ($from === 'address-picker') {
+            return redirect()
+                ->route('customer.checkout.address-picker')
+                ->with('success', 'Alamat berhasil diperbarui')
+                ->with('highlight_address_id', $address->id);
+        }
+
+        // Kalau dari checkout langsung (edit via checkout), tetap ke address-picker
+        // supaya user bisa konfirmasi alamat sebelum lanjut checkout
+        return redirect()
+            ->route('customer.checkout.address-picker')
+            ->with('success', 'Alamat berhasil diperbarui')
+            ->with('highlight_address_id', $address->id);
     }
 
+    // public function destroy(Address $address)
+    // {
+    //     abort_if($address->user_id !== auth()->id(), 403);
+
+    //     $wasDefault = $address->is_default;
+    //     $userId     = auth()->id();
+
+    //     DB::transaction(function () use ($address, $wasDefault, $userId) {
+    //         $address->delete();
+
+    //         // Jika alamat yang dihapus adalah default,
+    //         // otomatis jadikan alamat terlama sebagai default baru
+    //         if ($wasDefault) {
+    //             Address::where('user_id', $userId)
+    //                 ->oldest()
+    //                 ->first()
+    //                 ?->update(['is_default' => true]);
+    //         }
+    //     });
+
+    //     return redirect()->route('customer.checkout')
+    //         ->with('success', 'Alamat berhasil dihapus');
+    // }
     public function destroy(Address $address)
     {
         abort_if($address->user_id !== auth()->id(), 403);
 
         $wasDefault = $address->is_default;
         $userId     = auth()->id();
+        $from       = request()->input('from', 'checkout');
 
         DB::transaction(function () use ($address, $wasDefault, $userId) {
             $address->delete();
 
-            // Jika alamat yang dihapus adalah default,
-            // otomatis jadikan alamat terlama sebagai default baru
             if ($wasDefault) {
                 Address::where('user_id', $userId)
                     ->oldest()
@@ -107,7 +151,14 @@ class AddressController extends Controller
             }
         });
 
-        return redirect()->route('customer.checkout')
+        if ($from === 'address-picker') {
+            return redirect()
+                ->route('customer.checkout.address-picker')
+                ->with('success', 'Alamat berhasil dihapus');
+        }
+
+        return redirect()
+            ->route('customer.checkout.address-picker')
             ->with('success', 'Alamat berhasil dihapus');
     }
 
