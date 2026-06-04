@@ -973,8 +973,8 @@
     <div class="ca-header">
         <div class="ca-header__inner">
             <a href="javascript:history.back()" class="ca-header__back" aria-label="Kembali">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"
-                    stroke-linejoin="round" viewBox="0 0 24 24">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3"
+                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
             </a>
@@ -983,8 +983,8 @@
                 <div class="ca-header__sub">Perbarui detail lokasi pengiriman</div>
             </div>
             <div class="ca-header__icon" aria-hidden="true">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" viewBox="0 0 24 24">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
                 </svg>
@@ -996,18 +996,25 @@
 
         @if ($errors->any())
             <div class="ca-error ca-reveal" data-delay="0">
-                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                    stroke-linejoin="round" viewBox="0 0 24 24" style="flex-shrink:0">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="flex-shrink:0">
                     <circle cx="12" cy="12" r="10" />
                     <path d="M12 8v4M12 16h.01" />
                 </svg>
                 {{ $errors->first() }}
             </div>
         @endif
-
+        {{-- 
         <form action="{{ route('customer.address.update', $address->id) }}" method="POST" id="caForm">
             @csrf
             @method('PUT')
+            <input type="hidden" name="from" value="{{ request()->query('from', 'checkout') }}"> --}}
+        <form action="{{ route('customer.address.update', $address->id) }}" method="POST" id="caForm">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="from" value="{{ request()->query('from', 'checkout') }}">
+            <input type="hidden" name="latitude" id="ca_lat" value="{{ $address->latitude }}">
+            <input type="hidden" name="longitude" id="ca_lng" value="{{ $address->longitude }}">
 
             {{-- Card 1: Detail Alamat --}}
             <div class="ca-section-label ca-reveal" data-delay="0">Detail Alamat</div>
@@ -1028,7 +1035,9 @@
                             class="ca-field__input {{ $errors->has('label') ? 'is-invalid' : '' }}"
                             placeholder="cth: Rumah, Kantor, Kos…" value="{{ old('label', $address->label) }}"
                             autocomplete="off">
-                        @error('label')<span class="ca-field__error">{{ $message }}</span>@enderror
+                        @error('label')
+                            <span class="ca-field__error">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
 
@@ -1060,8 +1069,9 @@
                     <div class="ca-map-expand" id="caMapExpand">
                         <div id="ca-map"></div>
                         <div class="ca-map-hint">
-                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                            <svg width="12" height="12" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"
+                                aria-hidden="true">
                                 <circle cx="12" cy="12" r="10" />
                                 <path d="M12 16v-4M12 8h.01" />
                             </svg>
@@ -1069,9 +1079,9 @@
                         </div>
                         <div class="ca-map-result" id="caMapResult">
                             <div class="ca-map-result__chip">
-                                <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"
-                                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"
-                                    aria-hidden="true">
+                                <svg width="10" height="10" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                                    viewBox="0 0 24 24" aria-hidden="true">
                                     <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
                                 </svg>
                                 Alamat Terdeteksi
@@ -1079,8 +1089,9 @@
                             <div class="ca-map-result__addr" id="caMapResultText">Mendeteksi lokasi…</div>
                         </div>
                         <button type="button" class="ca-map-confirm" id="caMapConfirm">
-                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                            <svg width="14" height="14" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                                viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="M20 6L9 17l-5-5" />
                             </svg>
                             Konfirmasi Lokasi Ini
@@ -1099,10 +1110,11 @@
                     </div>
                     <div class="ca-field__body">
                         <label class="ca-field__label" for="ca_address">Alamat Lengkap</label>
-                        <textarea id="ca_address" name="address"
-                            class="ca-field__textarea {{ $errors->has('address') ? 'is-invalid' : '' }}" rows="3"
-                            placeholder="Nama jalan, nomor, RT/RW, kelurahan, patokan…">{{ old('address', $address->address) }}</textarea>
-                        @error('address')<span class="ca-field__error">{{ $message }}</span>@enderror
+                        <textarea id="ca_address" name="address" class="ca-field__textarea {{ $errors->has('address') ? 'is-invalid' : '' }}"
+                            rows="3" placeholder="Nama jalan, nomor, RT/RW, kelurahan, patokan…">{{ old('address', $address->address) }}</textarea>
+                        @error('address')
+                            <span class="ca-field__error">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
 
@@ -1114,8 +1126,8 @@
                 <div class="ca-toggle-row">
                     <div class="ca-toggle-row__left">
                         <div class="ca-toggle-row__ico" aria-hidden="true">
-                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <svg width="15" height="15" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                                 <path
                                     d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                             </svg>
@@ -1126,7 +1138,8 @@
                         </div>
                     </div>
                     <label class="ca-switch" aria-label="Jadikan alamat utama">
-                        <input type="checkbox" name="is_default" value="1" {{ old('is_default', $address->is_default) ? 'checked' : '' }}>
+                        <input type="checkbox" name="is_default" value="1"
+                            {{ old('is_default', $address->is_default) ? 'checked' : '' }}>
                         <div class="ca-switch__track"></div>
                         <div class="ca-switch__thumb"></div>
                     </label>
@@ -1161,9 +1174,14 @@
         </form>
 
         {{-- Hidden delete form --}}
+        {{-- <form action="{{ route('customer.address.destroy', $address->id) }}" method="POST" id="caDeleteForm">
+            @csrf
+            @method('DELETE')
+        </form> --}}
         <form action="{{ route('customer.address.destroy', $address->id) }}" method="POST" id="caDeleteForm">
             @csrf
             @method('DELETE')
+            <input type="hidden" name="from" value="{{ request()->query('from', 'checkout') }}">
         </form>
 
     </div>
@@ -1173,8 +1191,8 @@
         <div class="ca-footer__inner">
             <button type="submit" form="caForm" class="ca-footer__btn">
                 Simpan Perubahan
-                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"
-                    stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3"
+                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
             </button>
@@ -1186,8 +1204,8 @@
         <div class="ca-dialog__backdrop" id="caDialogBackdrop"></div>
         <div class="ca-dialog__box">
             <div class="ca-dialog__icon" aria-hidden="true">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                    stroke-linejoin="round" viewBox="0 0 24 24">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                     <polyline points="3 6 5 6 21 6" />
                     <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
                     <path d="M10 11v6M14 11v6" />
@@ -1196,9 +1214,11 @@
             </div>
             <div class="ca-dialog__title" id="caDialogTitle">Hapus alamat ini?</div>
             <div class="ca-dialog__body">Tindakan ini tidak bisa dibatalkan. Alamat
-                <strong>{{ $address->label }}</strong> akan dihapus permanen.</div>
+                <strong>{{ $address->label }}</strong> akan dihapus permanen.
+            </div>
             <div class="ca-dialog__actions">
-                <button type="button" class="ca-dialog__btn ca-dialog__btn--cancel" id="caDialogCancel">Batal</button>
+                <button type="button" class="ca-dialog__btn ca-dialog__btn--cancel"
+                    id="caDialogCancel">Batal</button>
                 <button type="button" class="ca-dialog__btn ca-dialog__btn--del" id="caDialogConfirm">
                     <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
@@ -1236,7 +1256,12 @@
             const existingLng = {{ $address->longitude ?? 'null' }};
 
             trigger.addEventListener('click', () => expand.classList.contains('open') ? closeMap() : openMap());
-            trigger.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); trigger.click(); } });
+            trigger.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    trigger.click();
+                }
+            });
 
             function openMap() {
                 expand.classList.add('open');
@@ -1244,6 +1269,7 @@
                 chevron.style.transform = 'rotate(90deg)';
                 if (!mapReady) initMap();
             }
+
             function closeMap() {
                 expand.classList.remove('open');
                 trigger.setAttribute('aria-expanded', 'false');
@@ -1255,16 +1281,32 @@
                 const defLat = existingLat || -6.2088;
                 const defLng = existingLng || 106.8456;
 
-                map = L.map('ca-map', { center: [defLat, defLng], zoom: 16, zoomControl: true, attributionControl: false });
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+                map = L.map('ca-map', {
+                    center: [defLat, defLng],
+                    zoom: 16,
+                    zoomControl: true,
+                    attributionControl: false
+                });
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19
+                }).addTo(map);
 
-                const pinSvg = `<div style="width:36px;height:36px;position:relative;transform:translate(-50%,-100%)"><svg viewBox="0 0 36 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 0C9.163 0 2 7.163 2 16c0 11.084 14.08 25.764 15.297 26.996a.97.97 0 001.406 0C19.92 41.764 34 27.084 34 16 34 7.163 26.837 0 18 0z" fill="#2563eb"/><circle cx="18" cy="16" r="6" fill="#fff"/></svg><div style="position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:6px;height:6px;background:rgba(37,99,235,.3);border-radius:50%;animation:caPinShadow 1.2s ease-in-out infinite"></div></div>`;
+                const pinSvg =
+                    `<div style="width:36px;height:36px;position:relative;transform:translate(-50%,-100%)"><svg viewBox="0 0 36 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 0C9.163 0 2 7.163 2 16c0 11.084 14.08 25.764 15.297 26.996a.97.97 0 001.406 0C19.92 41.764 34 27.084 34 16 34 7.163 26.837 0 18 0z" fill="#2563eb"/><circle cx="18" cy="16" r="6" fill="#fff"/></svg><div style="position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:6px;height:6px;background:rgba(37,99,235,.3);border-radius:50%;animation:caPinShadow 1.2s ease-in-out infinite"></div></div>`;
                 const pinStyle = document.createElement('style');
-                pinStyle.textContent = '@keyframes caPinShadow{0%,100%{transform:translateX(-50%) scale(1);opacity:.4}50%{transform:translateX(-50%) scale(1.4);opacity:.15}}';
+                pinStyle.textContent =
+                    '@keyframes caPinShadow{0%,100%{transform:translateX(-50%) scale(1);opacity:.4}50%{transform:translateX(-50%) scale(1.4);opacity:.15}}';
                 document.head.appendChild(pinStyle);
 
-                const pinIcon = L.divIcon({ className: '', html: pinSvg, iconSize: [36, 44], iconAnchor: [18, 44] });
-                marker = L.marker([defLat, defLng], { icon: pinIcon }).addTo(map);
+                const pinIcon = L.divIcon({
+                    className: '',
+                    html: pinSvg,
+                    iconSize: [36, 44],
+                    iconAnchor: [18, 44]
+                });
+                marker = L.marker([defLat, defLng], {
+                    icon: pinIcon
+                }).addTo(map);
 
                 map.on('moveend', () => {
                     const c = map.getCenter();
@@ -1284,6 +1326,7 @@
             }
 
             let gcTimer;
+
             function reverseGeocode(lat, lng) {
                 mapResult.classList.add('show');
                 resultText.textContent = 'Mendeteksi alamat…';
@@ -1291,7 +1334,12 @@
                 clearTimeout(gcTimer);
                 gcTimer = setTimeout(async () => {
                     try {
-                        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=id`, { headers: { 'User-Agent': 'EcomApp/1.0' } });
+                        const r = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=id`, {
+                                headers: {
+                                    'User-Agent': 'EcomApp/1.0'
+                                }
+                            });
                         const d = await r.json();
                         const addr = d.display_name || 'Alamat tidak ditemukan';
                         resultText.textContent = addr;
@@ -1303,9 +1351,19 @@
                 }, 800);
             }
 
+            // confirmBtn.addEventListener('click', () => {
+            //     const addr = confirmBtn._addr || '';
+            //     addrInput.value = addr;
+            //     detected.textContent = '📍 ' + (addr.length > 48 ? addr.slice(0, 48) + '…' : addr);
+            //     detected.classList.add('show');
+            //     closeMap();
+            // });
             confirmBtn.addEventListener('click', () => {
                 const addr = confirmBtn._addr || '';
+                const latlng = map.getCenter();
                 addrInput.value = addr;
+                document.getElementById('ca_lat').value = latlng.lat;
+                document.getElementById('ca_lng').value = latlng.lng;
                 detected.textContent = '📍 ' + (addr.length > 48 ? addr.slice(0, 48) + '…' : addr);
                 detected.classList.add('show');
                 closeMap();
@@ -1325,11 +1383,14 @@
             confirmDel.addEventListener('click', () => deleteForm.submit());
 
             /* ── Submit loading ── */
-            document.getElementById('caForm').addEventListener('submit', function () {
+            document.getElementById('caForm').addEventListener('submit', function() {
                 const btn = document.querySelector('.ca-footer__btn');
                 btn.disabled = true;
-                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="animation:caSpin .7s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Menyimpan…`;
-                const s = document.createElement('style'); s.textContent = '@keyframes caSpin{to{transform:rotate(360deg)}}'; document.head.appendChild(s);
+                btn.innerHTML =
+                    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="animation:caSpin .7s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Menyimpan…`;
+                const s = document.createElement('style');
+                s.textContent = '@keyframes caSpin{to{transform:rotate(360deg)}}';
+                document.head.appendChild(s);
             });
         });
     </script>

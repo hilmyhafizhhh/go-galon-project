@@ -766,7 +766,7 @@
         <div class="task-section">
             <div class="section-header">
                 <span class="section-title">Tugas Hari Ini</span>
-                @if($tasks->count() > 0)
+                @if ($tasks->count() > 0)
                     <span class="task-count-pill">{{ $tasks->count() }} aktif</span>
                 @endif
             </div>
@@ -789,7 +789,8 @@
                                     <div class="task-code">{{ $task->order->order_code ?? '-' }}</div>
                                     <div class="task-customer">{{ $task->order->user->name ?? '-' }}</div>
                                     <div class="task-address">
-                                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg width="12" height="12" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -799,9 +800,12 @@
                                     </div>
                                 </div>
                                 <span class="badge {{ $task->status }}">
-                                    @if($task->status === 'pending') Menunggu
-                                    @elseif($task->status === 'picked_up') Diantar
-                                    @else Selesai
+                                    @if ($task->status === 'pending')
+                                        Menunggu
+                                    @elseif($task->status === 'picked_up')
+                                        Diantar
+                                    @else
+                                        Selesai
                                     @endif
                                 </span>
                             </div>
@@ -810,29 +814,30 @@
                         <div class="card-divider"></div>
 
                         <div class="task-actions">
-                            @if($task->status === 'pending')
+                            @if ($task->status === 'pending')
                                 <button onclick="pickupTask({{ $task->id }}, this)" class="btn-main pickup">
-                                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg width="13" height="13" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
                                             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                     </svg>
                                     Ambil Barang
                                 </button>
-
                             @elseif($task->status === 'picked_up')
                                 <button
                                     onclick="openDeliveryMap({{ $task->id }}, {{ $destLat ?? 'null' }}, {{ $destLng ?? 'null' }})"
                                     class="btn-main show-map" id="btn-start-{{ $task->id }}">
-                                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg width="13" height="13" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
                                             d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                                     </svg>
                                     Mulai Antar
                                 </button>
-
                             @else
                                 <button class="btn-main done" disabled>
-                                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg width="13" height="13" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
                                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -840,17 +845,41 @@
                                 </button>
                             @endif
 
-                            <a href="https://wa.me/{{ $wa }}" target="_blank" class="btn-wa"
+                            {{-- <a href="https://wa.me/{{ $wa }}" target="_blank" class="btn-wa"
                                 aria-label="Hubungi via WhatsApp">
                                 <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24">
                                     <path
                                         d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                                 </svg>
-                            </a>
+                            </a> --}}
+                            @php
+                                $phone = $task->order->user->phone ?? '';
+                                $cleanPhone = preg_replace('/\D/', '', $phone);
+                                $isValidWa = preg_match('/^(08|628|8)\d{8,11}$/', $cleanPhone);
+                                $wa = '62' . ltrim($cleanPhone, '08');
+                            @endphp
+
+                            @if ($isValidWa)
+                                <a href="https://wa.me/{{ $wa }}" target="_blank" class="btn-wa"
+                                    aria-label="Hubungi via WhatsApp">
+                                    <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                                    </svg>
+                                </a>
+                            @else
+                                <div class="btn-wa" style="cursor:default;opacity:.5;" title="Nomor tidak valid">
+                                    <svg width="17" height="17" fill="none" stroke="currentColor"
+                                        stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                </div>
+                            @endif
                         </div>
 
                         {{-- Map panel — only picked_up --}}
-                        @if($task->status === 'picked_up')
+                        @if ($task->status === 'picked_up')
                             <div class="map-panel" id="map-panel-{{ $task->id }}">
 
                                 <div class="map-status-bar">
@@ -884,7 +913,8 @@
 
                                 <div class="confirm-bar">
                                     <div class="confirm-hint">
-                                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg width="13" height="13" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
@@ -892,7 +922,8 @@
                                     </div>
                                     <button onclick="deliverTask({{ $task->id }}, this)" class="btn-confirm"
                                         id="btn-deliver-{{ $task->id }}">
-                                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg width="15" height="15" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
                                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
@@ -919,17 +950,17 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         /* ═══════════════════════════════════════════════
-           COURIER — Production JS
-        ═══════════════════════════════════════════════ */
+                   COURIER — Production JS
+                ═══════════════════════════════════════════════ */
         const DEPOT_LAT = -6.1413375;
         const DEPOT_LNG = 106.7869347;
         const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
-        const maps = {};   // taskId → L.Map
-        const markers = {};   // taskId → L.Marker (kurir)
-        const routes = {};   // taskId → L.Polyline[]
-        const gpsTimers = {};   // taskId → intervalId
-        const osrmTimer = {};   // taskId → last fetch timestamp
+        const maps = {}; // taskId → L.Map
+        const markers = {}; // taskId → L.Marker (kurir)
+        const routes = {}; // taskId → L.Polyline[]
+        const gpsTimers = {}; // taskId → intervalId
+        const osrmTimer = {}; // taskId → last fetch timestamp
 
         /* ── Toast ─────────────────────────────────── */
         function toast(msg, type = 'info') {
@@ -939,7 +970,10 @@
             el.innerHTML = msg;
             wrap.appendChild(el);
             requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
-            setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 320); }, 3200);
+            setTimeout(() => {
+                el.classList.remove('show');
+                setTimeout(() => el.remove(), 320);
+            }, 3200);
         }
 
         /* ── Pickup ────────────────────────────────── */
@@ -948,9 +982,12 @@
             btn.innerHTML = '⏳ Memproses…';
 
             fetch(`/courier/tasks/${id}/pickup`, {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
-            })
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    }
+                })
                 .then(r => r.json())
                 .then(d => {
                     if (d.success) {
@@ -976,35 +1013,52 @@
                 return;
             }
             const btn = document.getElementById('btn-start-' + id);
-            if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Memulai…'; }
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Memulai…';
+            }
 
             fetch(`/courier/tasks/${id}/start-delivery`, {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
-            })
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    }
+                })
                 .then(r => r.json())
                 .then(d => {
                     if (!d.success) {
                         toast('Gagal memulai: ' + (d.message ?? ''), 'error');
-                        if (btn) { btn.disabled = false; btn.innerHTML = 'Mulai Antar'; }
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerHTML = 'Mulai Antar';
+                        }
                         return;
                     }
                     const panel = document.getElementById('map-panel-' + id);
                     panel.classList.add('open');
                     if (btn) btn.style.display = 'none';
                     if (!maps[id]) initMap(id, dLat, dLng);
-                    setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 180);
+                    setTimeout(() => panel.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    }), 180);
                     toast('📍 GPS aktif — navigasi ke tujuan', 'info');
                 })
                 .catch(() => {
                     toast('Kesalahan koneksi', 'error');
-                    if (btn) { btn.disabled = false; btn.innerHTML = 'Mulai Antar'; }
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = 'Mulai Antar';
+                    }
                 });
         }
 
         /* ── Init Leaflet ──────────────────────────── */
         function initMap(id, dLat, dLng) {
-            const map = L.map('map-' + id, { zoomControl: true })
+            const map = L.map('map-' + id, {
+                    zoomControl: true
+                })
                 .setView([DEPOT_LAT, DEPOT_LNG], 13);
             maps[id] = map;
 
@@ -1014,11 +1068,15 @@
             }).addTo(map);
 
             // Depot
-            L.marker([DEPOT_LAT, DEPOT_LNG], { icon: mkIcon('🏪', '#2563eb') })
+            L.marker([DEPOT_LAT, DEPOT_LNG], {
+                    icon: mkIcon('🏪', '#2563eb')
+                })
                 .addTo(map).bindPopup('<b>Depot / Toko</b>');
 
             // Tujuan
-            L.marker([dLat, dLng], { icon: mkIcon('📦', '#dc2626') })
+            L.marker([dLat, dLng], {
+                    icon: mkIcon('📦', '#dc2626')
+                })
                 .addTo(map).bindPopup('<b>Tujuan Customer</b>');
 
             // Kurir — mulai di depot
@@ -1028,8 +1086,9 @@
             }).addTo(map).bindPopup('<b>Posisi Anda</b>');
 
             map.fitBounds(
-                L.latLngBounds([DEPOT_LAT, DEPOT_LNG], [dLat, dLng]),
-                { padding: [52, 52] }
+                L.latLngBounds([DEPOT_LAT, DEPOT_LNG], [dLat, dLng]), {
+                    padding: [52, 52]
+                }
             );
 
             // Rute awal depot → tujuan
@@ -1045,7 +1104,8 @@
             return L.divIcon({
                 className: '',
                 html: `<div style="background:${color};width:${s}px;height:${s}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${large ? 20 : 16}px;box-shadow:0 2px 10px rgba(0,0,0,.25);border:2.5px solid #fff;">${emoji}</div>`,
-                iconSize: [s, s], iconAnchor: [s / 2, s / 2],
+                iconSize: [s, s],
+                iconAnchor: [s / 2, s / 2],
             });
         }
 
@@ -1055,7 +1115,9 @@
             if (osrmTimer[id] && now - osrmTimer[id] < 8000) return;
             osrmTimer[id] = now;
 
-            fetch(`https://router.project-osrm.org/route/v1/driving/${fLng},${fLat};${tLng},${tLat}?overview=full&geometries=geojson`)
+            fetch(
+                    `https://router.project-osrm.org/route/v1/driving/${fLng},${fLat};${tLng},${tLat}?overview=full&geometries=geojson`
+                    )
                 .then(r => r.json())
                 .then(data => {
                     if (!data.routes?.length) return;
@@ -1072,13 +1134,18 @@
 
                     // Glow + solid line
                     const glow = L.polyline(coords, {
-                        color: 'rgba(37,99,235,.18)', weight: 9,
-                        lineCap: 'round', lineJoin: 'round',
+                        color: 'rgba(37,99,235,.18)',
+                        weight: 9,
+                        lineCap: 'round',
+                        lineJoin: 'round',
                     }).addTo(map);
 
                     const line = L.polyline(coords, {
-                        color: '#2563eb', weight: 4, opacity: .85,
-                        lineCap: 'round', lineJoin: 'round',
+                        color: '#2563eb',
+                        weight: 4,
+                        opacity: .85,
+                        lineCap: 'round',
+                        lineJoin: 'round',
                     }).addTo(map);
 
                     routes[id] = [glow, line];
@@ -1094,15 +1161,24 @@
                     // Update ETA chip
                     const chip = document.getElementById('eta-chip-' + id);
                     const val = document.getElementById('eta-val-' + id);
-                    if (chip && val) { chip.classList.add('show'); val.textContent = etaMins + ' mnt'; }
+                    if (chip && val) {
+                        chip.classList.add('show');
+                        val.textContent = etaMins + ' mnt';
+                    }
                 })
                 .catch(() => {
                     // Fallback: garis lurus
                     const map = maps[id];
                     if (!map) return;
                     (routes[id] || []).forEach(l => map.removeLayer(l));
-                    const fb = L.polyline([[fLat, fLng], [tLat, tLng]], {
-                        color: '#2563eb', weight: 3, opacity: .55, dashArray: '7, 5'
+                    const fb = L.polyline([
+                        [fLat, fLng],
+                        [tLat, tLng]
+                    ], {
+                        color: '#2563eb',
+                        weight: 3,
+                        opacity: .55,
+                        dashArray: '7, 5'
                     }).addTo(map);
                     routes[id] = [fb];
                 });
@@ -1119,7 +1195,11 @@
 
             function send() {
                 navigator.geolocation.getCurrentPosition(pos => {
-                    const { latitude: lat, longitude: lng, speed: spd } = pos.coords;
+                    const {
+                        latitude: lat,
+                        longitude: lng,
+                        speed: spd
+                    } = pos.coords;
 
                     // Geser marker kurir
                     if (markers[id]) markers[id].setLatLng([lat, lng]);
@@ -1133,14 +1213,18 @@
 
                     // Kirim ke server
                     fetch(`/courier/tasks/${id}/location`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': CSRF,
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({ latitude: lat, longitude: lng, speed: spd }),
-                    })
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': CSRF,
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                latitude: lat,
+                                longitude: lng,
+                                speed: spd
+                            }),
+                        })
                         .then(r => r.json())
                         .then(d => {
                             if (d.success) {
@@ -1156,7 +1240,11 @@
                 }, err => {
                     dot.classList.remove('on');
                     label.textContent = 'GPS error: ' + err.message;
-                }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                });
             }
 
             send();
@@ -1170,13 +1258,19 @@
             btn.innerHTML = '⏳ Memproses…';
 
             fetch(`/courier/tasks/${id}/deliver`, {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
-            })
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    }
+                })
                 .then(r => r.json())
                 .then(d => {
                     if (d.success) {
-                        if (gpsTimers[id]) { clearInterval(gpsTimers[id]); delete gpsTimers[id]; }
+                        if (gpsTimers[id]) {
+                            clearInterval(gpsTimers[id]);
+                            delete gpsTimers[id];
+                        }
                         toast('🎉 Pesanan berhasil diantarkan!', 'success');
                         setTimeout(() => location.reload(), 1000);
                     } else {
@@ -1191,5 +1285,28 @@
                     btn.innerHTML = 'Konfirmasi Sudah Terkirim';
                 });
         }
+        // Real-time polling setiap 10 detik
+        setInterval(() => {
+            fetch('/courier/tasks/poll', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF
+                    }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    // Update stats
+                    document.querySelector('.stat-num.blue').textContent = data.todayTasks;
+                    document.querySelector('.stat-num.green').textContent = data.completedToday;
+                    document.querySelector('.stat-num.amber').textContent = data.pendingToday;
+
+                    // Kalau jumlah task berubah, reload halaman
+                    const currentCount = document.querySelectorAll('.task-card').length;
+                    if (data.taskCount !== currentCount) {
+                        location.reload();
+                    }
+                })
+                .catch(() => {});
+        }, 10000);
     </script>
 </x-app-layout>

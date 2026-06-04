@@ -232,4 +232,30 @@ class CourierTaskController extends Controller
 
         return response()->json(['success' => true]);
     }
+    
+    public function poll()
+    {
+        $courierId = Auth::id();
+        $today     = Carbon::today();
+
+        $taskCount = Task::where('courier_id', $courierId)
+            ->join('orders', 'tasks.order_id', '=', 'orders.id')
+            ->whereIn('tasks.status', ['pending', 'picked_up'])
+            ->where(function ($q) use ($today) {
+                $q->whereDate('tasks.created_at', $today)
+                    ->orWhereDate('tasks.pickup_date', $today);
+            })
+            ->count();
+
+        $todayTasks     = Task::where('courier_id', $courierId)->whereDate('created_at', $today)->count();
+        $completedToday = Task::where('courier_id', $courierId)->whereDate('created_at', $today)->where('status', 'completed')->count();
+        $pendingToday   = Task::where('courier_id', $courierId)->whereDate('created_at', $today)->whereIn('status', ['pending', 'picked_up'])->count();
+
+        return response()->json([
+            'taskCount'      => $taskCount,
+            'todayTasks'     => $todayTasks,
+            'completedToday' => $completedToday,
+            'pendingToday'   => $pendingToday,
+        ]);
+    }
 }
