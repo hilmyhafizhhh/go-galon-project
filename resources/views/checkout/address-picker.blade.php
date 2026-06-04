@@ -99,10 +99,7 @@
     </div>
 
     <script>
-        // // Baca alamat dari checkout, fallback ke default
-        // const checkoutSelectedId = sessionStorage.getItem('checkout_selected_address');
-        // let selectedId = checkoutSelectedId ||
-        //     '{{ $addresses->where('is_default', true)->first()?->id ?? $addresses->first()?->id }}';
+
         document.addEventListener('DOMContentLoaded', () => {
 
             const serverHighlight = '{{ session('highlight_address_id') }}' || null;
@@ -145,39 +142,12 @@
                 selectedId = id;
             }
 
-            // window.confirmAddress = function() {
-            //     if (!selectedId) return;
-            //     sessionStorage.removeItem('checkout_selected_address');
-            //     sessionStorage.setItem('chosen_address_id', selectedId);
-            //     window.history.back();
-            // }
-            // window.confirmAddress = function() {
-            //     if (!selectedId) return;
-            //     sessionStorage.setItem('chosen_address_id', selectedId);
-            //     sessionStorage.setItem('checkout_selected_address', selectedId); // simpan untuk next time
-            //     window.history.back();
-            // }
-            // window.confirmAddress = function() {
-            //     if (!selectedId) return;
-            //     sessionStorage.setItem('chosen_address_id', selectedId);
-            //     sessionStorage.setItem('checkout_selected_address', selectedId);
-            //     window.history.back();
-            // }
-
             window.confirmAddress = function() {
                 if (!selectedId) return;
                 sessionStorage.setItem('chosen_address_id', selectedId);
                 sessionStorage.setItem('checkout_selected_address', selectedId);
                 window.location.href = '{{ route('customer.checkout') }}';
             }
-            // Back button — simpan selectedId sebelum kembali
-            // document.getElementById('apBackBtn').addEventListener('click', function() {
-            //     if (selectedId) {
-            //         sessionStorage.setItem('chosen_address_id', selectedId);
-            //         sessionStorage.setItem('checkout_selected_address', selectedId);
-            //     }
-            //     window.history.back();
-            // });
             document.getElementById('apBackBtn').addEventListener('click', function() {
                 if (selectedId) {
                     sessionStorage.setItem('chosen_address_id', selectedId);

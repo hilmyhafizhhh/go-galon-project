@@ -84,6 +84,7 @@ Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('/tasks', [CourierTaskController::class, 'index'])->name('tasks');
+    Route::get('/tasks/poll', [CourierTaskController::class, 'poll'])->name('task.poll');
     Route::post('/tasks/{taskId}/pickup',  [CourierTaskController::class, 'pickup'])->name('task.pickup');
     Route::post('/tasks/{taskId}/deliver', [CourierTaskController::class, 'deliver'])->name('task.deliver');
     Route::post('/tasks/{taskId}/start-delivery', [CourierTaskController::class, 'startDelivery']);
