@@ -17,6 +17,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\CourierTaskController;
+use App\Http\Controllers\GpsSimulatorController;
 use App\Models\Order;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
@@ -107,6 +108,21 @@ Route::get('/track/{orderCode}', [CourierTaskController::class, 'trackingPage'])
 |--------------------------------------------------------------------------
 */
 Route::get('/api/tracking/{order}', [CourierTaskController::class, 'trackingData'])->name('api.tracking');
+
+/*
+|--------------------------------------------------------------------------
+| GPS Simulator — Demo / TA only
+| Akses: /simulator
+|--------------------------------------------------------------------------
+*/
+Route::prefix('simulator')
+    ->middleware(['auth', 'verified'])  // cukup auth, tidak perlu role tertentu
+    ->name('simulator.')
+    ->group(function () {
+        Route::get('/',           [GpsSimulatorController::class, 'index'])->name('index');
+        Route::get('/route',      [GpsSimulatorController::class, 'getRoute'])->name('route');
+        Route::post('/inject',    [GpsSimulatorController::class, 'injectPoint'])->name('inject');
+    });
 
 // Route Customer
 Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->name('customer.')->group(function () {

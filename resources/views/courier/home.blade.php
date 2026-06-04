@@ -1113,7 +1113,7 @@
             if (!navigator.geolocation) {
                 document.getElementById('gps-label-' + id).textContent = 'GPS tidak tersedia';
                 return;
-            }
+            }   
             const dot = document.getElementById('gps-dot-' + id);
             const label = document.getElementById('gps-label-' + id);
 

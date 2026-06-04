@@ -33,45 +33,103 @@
                             <span class="ef-section__dot"></span>
                             Rekomendasi untuk Anda
                         </div>
-                        <span class="ef-section__hint">Berdasarkan preferensi Anda</span>
+                        <span class="ef-section__hint">
+                            @auth
+                                @if(auth()->user()->orders()->whereNotIn('status', ['draft', 'cancelled'])->exists())
+                                    Berdasarkan preferensi Anda
+                                @else
+                                    Produk terpopuler hari ini
+                                @endif
+                            @endauth
+                        </span>
                     </div>
 
                     <div class="ef-grid ef-grid--3">
-                        @foreach ($products->take(3) as $i => $product)
+                        @foreach ($recommended as $i => $product)
                             <article class="ef-card ef-card--featured" data-reveal data-delay="{{ $i * 80 }}">
                                 <div class="ef-card__badges">
                                     <span class="ef-badge ef-badge--primary">⭐ Rekomendasi</span>
-                                    <span class="ef-badge ef-badge--hot">Paling Laris 🔥</span>
+                                    {{-- Label dinamis dari service --}}
+                                    <span class="ef-badge ef-badge--hot">
+                                        {{ $product->recommendation_reason ?? 'Pilihan terbaik' }}
+                                    </span>
                                 </div>
 
                                 <div class="ef-card__img-wrap">
                                     <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('assets/icons/no-image.png') }}"
                                         alt="{{ $product->name }}" class="ef-card__img">
-
                                     <div class="ef-card__img-glow"></div>
                                 </div>
 
                                 <div class="ef-card__body">
                                     <h3 class="ef-card__name">{{ $product->name }}</h3>
-
                                     <p class="ef-card__price">
                                         Rp{{ number_format($product->price, 0, ',', '.') }}
                                     </p>
 
-                                    <button class="ef-btn ef-btn--primary" onclick="addToCart(this)"
-                                        data-id="{{ $product->id }}" data-product="{{ $product->name }}">
-                                        Pesan Sekarang
-
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2.5">
-                                            <path d="M5 12h14M12 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
+                                    @if($product->stock > 0)
+                                        <button class="ef-btn ef-btn--primary" onclick="addToCart(this)"
+                                            data-id="{{ $product->id }}" data-product="{{ $product->name }}">
+                                            Pesan Sekarang
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2.5">
+                                                <path d="M5 12h14M12 5l7 7-7 7" />
+                                            </svg>
+                                        </button>
+                                    @else
+                                        <button class="ef-btn ef-btn--disabled" disabled>Stok Habis</button>
+                                    @endif
                                 </div>
                             </article>
                         @endforeach
                     </div>
                 </section>
+                
+                {{-- Cara 1 — Debug panel di halaman home (paling cepat) --}}
+                @if(config('app.debug'))
+                    <div
+                        style="background:#1e1e1e;color:#d4d4d4;padding:1rem;border-radius:8px;font-size:12px;font-family:monospace;margin-top:1rem">
+                        <strong style="color:#9cdcfe">🔍 Debug Rekomendasi</strong>
+                        <br><br>
+
+                        <strong style="color:#4ec9b0">User Profile (vektor preferensi):</strong>
+                        @php
+                            $history = \App\Models\OrderItem::with('product')
+                                ->whereHas('order', fn($q) => $q->where('user_id', auth()->id())
+                                    ->whereIn('status', ['delivered', 'completed', 'confirmed', 'on_delivery']))
+                                ->get();
+                            $totalQty = $history->sum('quantity') ?: 1;
+                            $avgVolume = $history->sum(fn($i) => ($i->product->volume_l ?? 0) * $i->quantity) / $totalQty;
+                            $avgPrice = $history->sum(fn($i) => ($i->product->price ?? 0) * $i->quantity) / $totalQty;
+                        @endphp
+                        <br>— Rata-rata volume: <span style="color:#ce9178">{{ number_format($avgVolume, 1) }} L</span>
+                        <br>— Rata-rata harga: <span
+                            style="color:#ce9178">Rp{{ number_format($avgPrice, 0, ',', '.') }}</span>
+                        <br>— Dari {{ $history->count() }} item order
+                        <br><br>
+
+                        <strong style="color:#4ec9b0">Produk yang direkomendasikan:</strong>
+                        @foreach($recommended as $p)
+                            <br>• {{ $p->name }}
+                            | {{ $p->volume_l }}L
+                            | Rp{{ number_format($p->price, 0, ',', '.') }}
+                            | score: <span style="color:#dcdcaa">{{ $p->recommendation_score }}</span>
+                            | alasan: <span style="color:#ce9178">{{ $p->recommendation_reason }}</span>
+                        @endforeach
+
+                        <br><br>
+                        <strong style="color:#4ec9b0">Riwayat pembelian user:</strong>
+                        @forelse($history->groupBy('product_id') as $productId => $items)
+                            @php $prod = $items->first()->product @endphp
+                            <br>• {{ $prod->name ?? '?' }}
+                            | {{ $prod->volume_l ?? '?' }}L
+                            | Rp{{ number_format($prod->price ?? 0, 0, ',', '.') }}
+                            | dibeli {{ $items->sum('quantity') }}x
+                        @empty
+                            <br><span style="color:#f44747">Belum ada riwayat → cold start (Rule-Based aktif)</span>
+                        @endforelse
+                    </div>
+                @endif
 
                 {{-- ── SEMUA PRODUK ── --}}
                 <section class="ef-section" data-reveal>
@@ -125,8 +183,8 @@
             </div>
 
             {{-- ============================================================
-RIGHT SIDEBAR
-============================================================ --}}
+            RIGHT SIDEBAR
+            ============================================================ --}}
             <aside class="ef-sidebar">
 
                 {{-- ── INFO CARD ── --}}
@@ -170,8 +228,8 @@ RIGHT SIDEBAR
 
                     <div class="ef-inforow">
                         <div class="ef-inforow__icon ef-inforow__icon--orange">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
                                 <rect x="1" y="3" width="15" height="13" />
                                 <path d="M16 8h4l3 3v5h-7V8zM5.5 21a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
                                 <circle cx="18.5" cy="21" r="1.5" />
@@ -259,16 +317,16 @@ RIGHT SIDEBAR
 
                             <div class="ef-order__meta">
                                 <div class="ef-order__meta-item">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
                                         <circle cx="12" cy="7" r="4" />
                                     </svg>
                                     Kurir: <strong>{{ $activeOrder->courier->user->name ?? 'Belum assigned' }}</strong>
                                 </div>
                                 <div class="ef-order__meta-item">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <path d="M9 11l3 3L22 4" />
                                         <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
                                     </svg>
@@ -277,8 +335,8 @@ RIGHT SIDEBAR
                             </div>
 
                             <a href="{{ route('customer.order') }}" class="ef-btn ef-btn--track">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
                                     <circle cx="12" cy="12" r="10" />
                                     <polyline points="12 6 12 12 16 14" />
                                 </svg>
@@ -288,8 +346,7 @@ RIGHT SIDEBAR
                     @else
                         <div class="text-center py-6">
                             <p class="text-gray-400 text-sm mb-3">Tidak ada pesanan aktif</p>
-                            <a href="{{ route('customer.home') }}" class="ef-btn ef-btn--primary"
-                                style="font-size:.8rem">
+                            <a href="{{ route('customer.home') }}" class="ef-btn ef-btn--primary" style="font-size:.8rem">
                                 Pesan Sekarang
                             </a>
                         </div>
@@ -304,8 +361,8 @@ RIGHT SIDEBAR
 
             </aside>
             {{-- ============================================================
-        SCRIPTS
-        ============================================================ --}}
+            SCRIPTS
+            ============================================================ --}}
             <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
@@ -488,7 +545,7 @@ RIGHT SIDEBAR
                     }
 
                     // ── Add to Cart ────────────────────────────────────────────
-                    window.addToCart = function(btn) {
+                    window.addToCart = function (btn) {
                         const id = btn.dataset.id;
                         const name = btn.dataset.product;
 
@@ -496,16 +553,16 @@ RIGHT SIDEBAR
                         btn.classList.add('ef-btn--loading');
 
                         fetch('/customer/cart/add', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                                },
-                                body: JSON.stringify({
-                                    product_id: id,
-                                    quantity: 1
-                                })
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                product_id: id,
+                                quantity: 1
                             })
+                        })
                             // .then(r => {
                             //     if (!r.ok) throw new Error();
                             //     return r.json();
@@ -548,8 +605,8 @@ RIGHT SIDEBAR
             </script>
 
             {{-- ============================================================
-        STYLES
-        ============================================================ --}}
+            STYLES
+            ============================================================ --}}
 
 
     </main>
