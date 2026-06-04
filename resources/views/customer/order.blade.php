@@ -93,7 +93,7 @@
 
                 {{-- Tambah data-order-id untuk update JS --}}
                 <article class="ef-order-card" data-order-id="{{ $order->id }}"
-                    data-current-status="{{ $order->status }}" data-reveal data-delay="{{ $loop->index * 70 }}">
+                    data-current-status="{{ $order->status }}" data-reveal data-delay="{{ $loop->index * 70 }}"> 
 
                     {{-- Icon dengan data attribute --}}
                     <div class="ef-order-card__icon ef-order-card__icon--{{ $display['color'] }}"
@@ -296,6 +296,28 @@
                         data.orders.forEach(order => {
                             const display = statusDisplay[order.status];
                             if (!display) return;
+
+                            // Cek apakah status berubah yang mengharuskan pindah tab
+                            const card = document.querySelector(
+                                `[data-order-id="${order.id}"]`);
+                            if (card) {
+                                const currentStatus = card.dataset.currentStatus;
+                                const statusToTab = {
+                                    'pending': 'pending',
+                                    'confirmed': 'pending',
+                                    'on_delivery': 'shipping',
+                                    'completed': 'completed',
+                                    'cancelled': 'cancelled',
+                                };
+                                const newTab = statusToTab[order.status];
+                                const currentTabName = '{{ $activeTab }}';
+                                if (currentStatus && currentStatus !== order.status &&
+                                    newTab !== currentTabName) {
+                                    location.reload();
+                                    return;
+                                }
+                                card.dataset.currentStatus = order.status;
+                            }
 
                             // Update badge status
                             const badge = document.querySelector(
