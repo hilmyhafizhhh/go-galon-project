@@ -15,6 +15,17 @@
                     </p>
                 </div>
                 <div class="ef-chat__header-icon">
+                    {{-- Tombol aktifkan notifikasi --}}
+                    <button onclick="window.NotifSystem?.requestPermission()" id="notifPermBtn"
+                        title="Aktifkan notifikasi" style="background:none;border:none;cursor:pointer;
+                                color:#94a3b8;padding:4px;border-radius:8px;
+                                transition:color .15s;display:flex;align-items:center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.73 21a2 2 0 01-3.46 0" />
+                        </svg>
+                    </button>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
@@ -218,6 +229,15 @@
                         const senderId = String(e.sender_id);
                         const item = document.querySelector(`a[href*="${senderId}"].ef-chat__item`);
                         if (!item) return;
+
+                        const senderName = e.chat.sender?.name ?? 'Seseorang';
+
+                        // Sound + push
+                        window.NotifSystem?.notify(
+                            `Pesan dari ${senderName}`,
+                            e.chat.message ?? '',
+                        );
+
 
                         item.classList.remove('ef-chat__item--unread');
                         item.querySelector('.ef-chat__name')?.classList.remove('ef-chat__name--unread');

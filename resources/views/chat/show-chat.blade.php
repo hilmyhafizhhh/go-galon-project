@@ -235,9 +235,10 @@
                 .listen('.chat.sent', (e) => {
                     appendMessage(e.chat, e.chat.sender_id === authId);
 
-                    // Kalau pesan dari receiver (bukan kita), langsung mark-read
                     if (e.chat.sender_id !== authId) {
                         markAsRead([e.chat.id]);
+                        // Sound saja (sudah di room, tidak perlu push)
+                        window.NotifSystem?.playSound();
                     }
                 });
 
