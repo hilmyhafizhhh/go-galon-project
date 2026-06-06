@@ -588,3 +588,10 @@
     float: right;
     margin-left: 6px;
 }
+
+.ef-chatshow__input,
+.ef-chatshow__input:focus,
+.ef-chatshow__input:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
