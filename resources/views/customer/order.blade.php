@@ -93,7 +93,7 @@
 
                 {{-- Tambah data-order-id untuk update JS --}}
                 <article class="ef-order-card" data-order-id="{{ $order->id }}"
-                    data-current-status="{{ $order->status }}" data-reveal data-delay="{{ $loop->index * 70 }}"> 
+                    data-current-status="{{ $order->status }}" data-reveal data-delay="{{ $loop->index * 70 }}">
 
                     {{-- Icon dengan data attribute --}}
                     <div class="ef-order-card__icon ef-order-card__icon--{{ $display['color'] }}"
@@ -218,7 +218,6 @@
             @endif
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -236,8 +235,8 @@
             });
             els.forEach(el => ro.observe(el));
 
-            // ── Status mapping ──
-            const statusDisplay = {
+            // ── Config ──
+            const STATUS_DISPLAY = {
                 'pending': {
                     text: 'Menunggu Konfirmasi',
                     color: 'yellow',
@@ -265,104 +264,216 @@
                 },
             };
 
-            const infoText = {
+            const INFO_TEXT = {
                 'confirmed': '✅ Pesanan kamu sudah dikonfirmasi dan akan segera disiapkan oleh kurir.',
                 'on_delivery': '🚴 Pesanan kamu sedang dalam perjalanan menuju lokasi kamu.',
             };
 
-            const infoStyle = {
+            const INFO_STYLE = {
                 'confirmed': 'background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 12px;margin:8px 0;font-size:.75rem;color:#1d4ed8;',
                 'on_delivery': 'background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 12px;margin:8px 0;font-size:.75rem;color:#c2410c;',
             };
 
-            // ── Real-time polling tanpa kedip ──
-            const currentTab = new URLSearchParams(window.location.search).get('tab') || 'pending';
+            // Status → tab mapping
+            const STATUS_TO_TAB = {
+                'pending': 'pending',
+                'confirmed': 'pending',
+                'on_delivery': 'shipping',
+                'completed': 'completed',
+                'cancelled': 'cancelled',
+            };
 
-            setInterval(() => {
-                fetch(`/customer/order/status?tab=${currentTab}`)
+            // ── State ──
+            let currentTab = new URLSearchParams(window.location.search).get('tab') || 'pending';
+
+            // Cache semua order dari SEMUA tab di memori
+            // key: order.id, value: order object
+            let allOrdersCache = {};
+
+            // ── Helpers ──
+            function renderCard(order) {
+                const display = STATUS_DISPLAY[order.status] ?? {
+                    text: order.status,
+                    color: 'gray',
+                    icon: '?'
+                };
+                const itemSummary = (order.items || []).map(i => `${i.quantity} ${i.name}`).join(', ');
+                const infoBanner = INFO_TEXT[order.status] ?
+                    `<div style="${INFO_STYLE[order.status]}">${INFO_TEXT[order.status]}</div>` :
+                    '';
+                const queueBadge = order.queue_number ?
+                    `<p class="ef-order-card__queue" data-order-queue="${order.id}">
+                <span style="background:#1e293b;color:#fff;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:999px;">
+                    Antrean #${order.queue_number}
+                </span></p>` :
+                    `<p class="ef-order-card__queue" data-order-queue="${order.id}" style="display:none"></p>`;
+
+                const dotBadge = display.color === 'orange' ?
+                    `<span class="ef-order-card__badge-dot"></span>${display.text}` :
+                    display.text;
+
+                let actionBtn = '';
+                if (order.status === 'completed') {
+                    actionBtn = `<button class="ef-order-card__btn ef-order-card__btn--green">Pesan Lagi</button>`;
+                } else if (order.status === 'on_delivery') {
+                    actionBtn =
+                        `<a href="/tracking/${order.order_code}" class="ef-order-card__btn ef-order-card__btn--orange" style="text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;">📍 Lacak</a>`;
+                }
+
+                return `
+            <article class="ef-order-card ef-revealed" data-order-id="${order.id}" data-current-status="${order.status}">
+                <div class="ef-order-card__icon ef-order-card__icon--${display.color}" data-order-icon="${order.id}">
+                    ${display.icon}
+                </div>
+                <div class="ef-order-card__body">
+                    <div class="ef-order-card__top">
+                        <div>
+                            <p class="ef-order-card__store">${order.address_label}</p>
+                            <p class="ef-order-card__id">#${order.order_code} · ${order.created_at}</p>
+                            ${queueBadge}
+                        </div>
+                        <span class="ef-order-card__badge ef-order-card__badge--${display.color}" data-order-badge="${order.id}">
+                            ${dotBadge}
+                        </span>
+                    </div>
+                    <div data-order-info="${order.id}">${infoBanner}</div>
+                    <div class="ef-order-card__divider"></div>
+                    <div class="ef-order-card__bottom">
+                        <div class="ef-order-card__item">${itemSummary}</div>
+                        <div class="ef-order-card__right">
+                            <span class="ef-order-card__price">Rp${parseInt(order.total_amount).toLocaleString('id-ID')}</span>
+                            ${actionBtn}
+                        </div>
+                    </div>
+                </div>
+            </article>`;
+            }
+
+            function renderEmpty(tab) {
+                const icons = {
+                    shipping: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
+                    cancelled: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+                    pending: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+                    completed: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+                };
+                return `
+            <div class="ef-orders__empty" data-reveal>
+                <div class="ef-orders__empty-icon">${icons[tab] || icons.completed}</div>
+                <p class="ef-orders__empty-title">Belum ada pesanan</p>
+                <p class="ef-orders__empty-sub">Pesanan di kategori ini akan muncul di sini.</p>
+                <a href="/customer/home" class="ef-orders__empty-btn">Belanja Sekarang</a>
+            </div>`;
+            }
+
+            function updateTabBadges(countByTab) {
+                Object.keys(countByTab).forEach(tab => {
+                    const badge = document.querySelector(`[data-tab-count="${tab}"]`);
+                    if (!badge) return;
+                    const count = countByTab[tab];
+                    badge.innerText = count;
+                    badge.style.display = count > 0 ? '' : 'none';
+                });
+            }
+
+            function switchTabUI(tab) {
+                currentTab = tab;
+                window.history.pushState({}, '', `?tab=${tab}`);
+                document.querySelectorAll('.ef-tab').forEach(el => {
+                    const isActive = el.getAttribute('href') === `?tab=${tab}`;
+                    el.classList.toggle('ef-tab--active', isActive);
+                    el.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                    const countBadge = el.querySelector('[data-tab-count]');
+                    if (countBadge) countBadge.classList.toggle('ef-tab__count--active', isActive);
+                });
+            }
+
+            function renderCurrentTab() {
+                const list = document.querySelector('.ef-orders__list');
+                const ordersForTab = Object.values(allOrdersCache)
+                    .filter(o => STATUS_TO_TAB[o.status] === currentTab);
+
+                if (ordersForTab.length === 0) {
+                    list.innerHTML = renderEmpty(currentTab);
+                } else {
+                    list.innerHTML = ordersForTab.map(o => renderCard(o)).join('');
+                }
+            }
+
+            // ── Polling — fetch semua order sekaligus (tab=all) ──
+            // Kalau backend belum support tab=all, ganti dengan tab=${currentTab}
+            // tapi pastikan response tetap punya countByTab untuk semua tab
+            function poll() {
+                fetch(`/customer/order/full-status?tab=all`)
                     .then(r => r.json())
                     .then(data => {
+                        updateTabBadges(data.countByTab);
 
-                        // Update badge count di tab
-                        Object.keys(data.countByTab).forEach(tab => {
-                            const badge = document.querySelector(`[data-tab-count="${tab}"]`);
-                            if (!badge) return;
-                            const count = data.countByTab[tab];
-                            badge.innerText = count;
-                            badge.style.display = count > 0 ? '' : 'none';
-                        });
+                        let needsTabSwitch = false;
+                        let needsRerender = false;
 
-                        // Update status tiap card tanpa replace HTML
+                        // Update cache dan deteksi perubahan
                         data.orders.forEach(order => {
-                            const display = statusDisplay[order.status];
-                            if (!display) return;
+                            const cached = allOrdersCache[order.id];
+                            if (!cached) {
+                                // Order baru masuk cache
+                                allOrdersCache[order.id] = order;
+                                if (STATUS_TO_TAB[order.status] === currentTab) needsRerender = true;
+                            } else if (cached.status !== order.status) {
+                                // Status berubah — update cache DULU
+                                allOrdersCache[order.id] = order;
 
-                            // Cek apakah status berubah yang mengharuskan pindah tab
-                            const card = document.querySelector(
-                                `[data-order-id="${order.id}"]`);
-                            if (card) {
-                                const currentStatus = card.dataset.currentStatus;
-                                const statusToTab = {
-                                    'pending': 'pending',
-                                    'confirmed': 'pending',
-                                    'on_delivery': 'shipping',
-                                    'completed': 'completed',
-                                    'cancelled': 'cancelled',
-                                };
-                                const newTab = statusToTab[order.status];
-                                const currentTabName = '{{ $activeTab }}';
-                                if (currentStatus && currentStatus !== order.status &&
-                                    newTab !== currentTabName) {
-                                    location.reload();
-                                    return;
+                                const wasInCurrentTab = STATUS_TO_TAB[cached.status] === currentTab;
+                                const nowInCurrentTab = STATUS_TO_TAB[order.status] === currentTab;
+
+                                if (wasInCurrentTab && !nowInCurrentTab) {
+                                    // Order pindah KELUAR dari tab ini
+                                    needsRerender = true;
+                                    // Kalau tab ini bakal kosong, perlu switch tab
+                                    const remaining = Object.values(allOrdersCache)
+                                        .filter(o => STATUS_TO_TAB[o.status] === currentTab);
+                                    if (remaining.length === 0) needsTabSwitch = true;
+                                } else if (!wasInCurrentTab && nowInCurrentTab) {
+                                    // Order baru masuk ke tab ini
+                                    needsRerender = true;
+                                } else if (wasInCurrentTab && nowInCurrentTab) {
+                                    // Status berubah tapi masih di tab yang sama (misalnya pending→confirmed)
+                                    needsRerender = true;
                                 }
-                                card.dataset.currentStatus = order.status;
-                            }
-
-                            // Update badge status
-                            const badge = document.querySelector(
-                                `[data-order-badge="${order.id}"]`);
-                            if (badge) {
-                                badge.className =
-                                    `ef-order-card__badge ef-order-card__badge--${display.color}`;
-                                badge.innerHTML = display.color === 'orange' ?
-                                    `<span class="ef-order-card__badge-dot"></span>${display.text}` :
-                                    display.text;
-                            }
-
-                            // Update icon
-                            const icon = document.querySelector(
-                                `[data-order-icon="${order.id}"]`);
-                            if (icon) {
-                                icon.className =
-                                    `ef-order-card__icon ef-order-card__icon--${display.color}`;
-                                icon.innerText = display.icon;
-                            }
-
-                            // Update nomor antrean
-                            const queue = document.querySelector(
-                                `[data-order-queue="${order.id}"]`);
-                            if (queue && order.queue_number) {
-                                queue.style.display = '';
-                                queue.innerHTML =
-                                    `<span style="background:#1e293b;color:#fff;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:999px;">Antrean #${order.queue_number}</span>`;
-                            }
-
-                            // Update info banner
-                            const info = document.querySelector(
-                                `[data-order-info="${order.id}"]`);
-                            if (info) {
-                                if (infoText[order.status]) {
-                                    info.innerHTML =
-                                        `<div style="${infoStyle[order.status]}">${infoText[order.status]}</div>`;
-                                } else {
-                                    info.innerHTML = '';
+                            } else {
+                                // Update data lain (queue_number, dll) tanpa ubah status
+                                if (cached.queue_number !== order.queue_number) {
+                                    allOrdersCache[order.id] = order;
+                                    needsRerender = true;
                                 }
                             }
                         });
+
+                        if (needsTabSwitch) {
+                            // Cari tab yang paling relevan (ada isinya)
+                            const tabPriority = {
+                                'pending': ['shipping', 'completed', 'cancelled'],
+                                'shipping': ['completed', 'pending', 'cancelled'],
+                                'completed': ['pending', 'shipping', 'cancelled'],
+                                'cancelled': ['pending', 'shipping', 'completed'],
+                            };
+                            const candidates = tabPriority[currentTab] || ['pending'];
+                            const nextTab = candidates.find(t => (data.countByTab[t] ?? 0) > 0) || candidates[
+                            0];
+                            switchTabUI(nextTab); // switch tab dulu (instant)
+                            // renderCurrentTab() akan jalan di bawah karena needsRerender = true
+                        }
+
+                        if (needsRerender) {
+                            renderCurrentTab(); // render dari cache, TANPA fetch lagi
+                        }
                     })
-                    .catch(() => {}); // silent fail, tidak perlu alert
-            }, 5000); // polling setiap 15 detik
+                    .catch(() => {});
+            }
+
+            // Mulai polling
+            setInterval(poll, 5000);
+            // Langsung poll sekali saat load untuk isi cache awal
+            poll();
         });
     </script>
 </x-app-layout>
