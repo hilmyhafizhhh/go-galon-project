@@ -29,3 +29,7 @@ Broadcast::channel('chat.{userA}.{userB}', function ($user, $userA, $userB) {
     return (int)$user->id === (int)$userA
         || (int)$user->id === (int)$userB;
 });
+
+Broadcast::channel('user.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});

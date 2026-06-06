@@ -30,34 +30,33 @@
                 {{-- Tab Filter --}}
                 <div class="ef-tabs" role="tablist">
                     @foreach ($tabs as $key => $tab)
-                        <a href="?tab={{ $key }}"
-                            class="ef-tab {{ $activeTab === $key ? 'ef-tab--active' : '' }}" role="tab"
-                            aria-selected="{{ $activeTab === $key ? 'true' : 'false' }}">
+                        <a href="?tab={{ $key }}" class="ef-tab {{ $activeTab === $key ? 'ef-tab--active' : '' }}"
+                            role="tab" aria-selected="{{ $activeTab === $key ? 'true' : 'false' }}">
 
                             @if ($tab['icon'] === 'history')
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.2">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2">
                                     <circle cx="12" cy="12" r="10" />
                                     <polyline points="12 6 12 12 16 14" />
                                 </svg>
                             @elseif ($tab['icon'] === 'truck')
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.2">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2">
                                     <rect x="1" y="3" width="15" height="13" />
                                     <path d="M16 8h4l3 3v5h-7V8z" />
                                     <circle cx="5.5" cy="18.5" r="2.5" />
                                     <circle cx="18.5" cy="18.5" r="2.5" />
                                 </svg>
                             @elseif ($tab['icon'] === 'draft')
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.2">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2">
                                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
                                     <polyline points="14 2 14 8 20 8" />
                                     <line x1="9" y1="13" x2="15" y2="13" />
                                 </svg>
                             @else
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.2">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2">
                                     <circle cx="12" cy="12" r="10" />
                                     <line x1="15" y1="9" x2="9" y2="15" />
                                     <line x1="9" y1="9" x2="15" y2="15" />
@@ -68,8 +67,7 @@
 
                             {{-- Badge count dengan data attribute untuk update JS --}}
                             <span class="ef-tab__count {{ $activeTab === $key ? 'ef-tab__count--active' : '' }}"
-                                data-tab-count="{{ $key }}"
-                                style="{{ empty($countByTab[$key]) ? 'display:none' : '' }}">
+                                data-tab-count="{{ $key }}" style="{{ empty($countByTab[$key]) ? 'display:none' : '' }}">
                                 {{ $countByTab[$key] ?? 0 }}
                             </span>
                         </a>
@@ -92,8 +90,8 @@
                 @endphp
 
                 {{-- Tambah data-order-id untuk update JS --}}
-                <article class="ef-order-card" data-order-id="{{ $order->id }}"
-                    data-current-status="{{ $order->status }}" data-reveal data-delay="{{ $loop->index * 70 }}"> 
+                <article class="ef-order-card" data-order-id="{{ $order->id }}" data-current-status="{{ $order->status }}"
+                    data-reveal data-delay="{{ $loop->index * 70 }}">
 
                     {{-- Icon dengan data attribute --}}
                     <div class="ef-order-card__icon ef-order-card__icon--{{ $display['color'] }}"
@@ -143,16 +141,92 @@
                         {{-- Info banner dengan data attribute --}}
                         <div data-order-info="{{ $order->id }}">
                             @if ($order->status === 'confirmed')
-                                <div
-                                    style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 12px;margin:8px 0;font-size:.75rem;color:#1d4ed8;">
-                                    ✅ Pesanan kamu sudah dikonfirmasi dan akan segera disiapkan oleh kurir.
+                                <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;
+                                                        padding:8px 12px;margin:8px 0;font-size:.75rem;color:#1d4ed8;">
+                                    ✅ Pesanan dikonfirmasi dan sedang disiapkan.
+                                    @if($order->task?->courier)
+                                        <br>
+                                        <span style="margin-top:4px;display:block;font-weight:600;">
+                                            🛵 Kurir: {{ $order->task->courier->name }}
+                                        </span>
+                                    @endif
                                 </div>
                             @elseif($order->status === 'on_delivery')
-                                <div
-                                    style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 12px;margin:8px 0;font-size:.75rem;color:#c2410c;">
-                                    🚴 Pesanan kamu sedang dalam perjalanan menuju lokasi kamu.
+                                <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;
+                                                        padding:8px 12px;margin:8px 0;font-size:.75rem;color:#c2410c;">
+                                    🚴 Pesanan sedang dalam perjalanan menuju lokasi kamu.
+                                    @if($order->task?->courier)
+                                        <span style="display:block;margin-top:4px;font-weight:600;">
+                                            🛵 Kurir: {{ $order->task->courier->name }}
+                                        </span>
+                                    @endif
                                 </div>
                             @endif
+                        </div>
+
+                        {{-- Tombol aksi --}}
+                        <div class="ef-order-card__bottom">
+                            <div class="ef-order-card__item">{{ $itemSummary }}</div>
+                            <div class="ef-order-card__right">
+                                <span class="ef-order-card__price">
+                                    Rp{{ number_format($order->total_amount, 0, ',', '.') }}
+                                </span>
+
+                                @if ($order->status === 'completed')
+                                    <button class="ef-order-card__btn ef-order-card__btn--green">Pesan Lagi</button>
+
+                                @elseif ($order->status === 'confirmed' && $order->task?->courier)
+                                                    {{-- Sejak confirmed, customer sudah bisa chat kurir --}}
+                                                    <a href="{{ route('customer.chat.show', ['receiver' => $order->task->courier->id]) }}"
+                                                        class="ef-order-card__btn" id="chat-btn-order-{{ $order->id }}"
+                                                        data-courier-id="{{ $order->task->courier->id }}" style="text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;
+                                       background:#eff6ff;color:#2563eb;border:1px solid #dbeafe;position:relative;">
+                                                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                                                        </svg>
+                                                        Chat Kurir
+                                                        <span id="chat-badge-order-{{ $order->task->courier->id }}" style="display:none;position:absolute;top:-6px;right:-6px;
+                                             background:#ef4444;color:#fff;font-size:.55rem;font-weight:700;
+                                             min-width:16px;height:16px;border-radius:999px;
+                                             align-items:center;justify-content:center;
+                                             padding:0 3px;border:2px solid #fff;line-height:1;">
+                                                        </span>
+                                                    </a>
+
+
+                                @elseif ($order->status === 'on_delivery')
+                                    <div style="display:flex;gap:.4rem;align-items:center;">
+                                        <a href="{{ route('tracking.show', $order->order_code) }}"
+                                            class="ef-order-card__btn ef-order-card__btn--orange"
+                                            style="text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;">
+                                            📍 Lacak
+                                        </a>
+                                        @if($order->task?->courier)
+                                                                                    <a href="{{ route('customer.chat.show', ['receiver' => $order->task->courier->id]) }}"
+                                                class="ef-order-card__btn"
+                                                id="chat-btn-order-{{ $order->id }}"
+                                                data-courier-id="{{ $order->task->courier->id }}"
+                                                style="text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;
+                                                       background:#eff6ff;color:#2563eb;border:1px solid #dbeafe;position:relative;">
+                                                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                                                </svg>
+                                                Chat Kurir
+                                                <span id="chat-badge-order-{{ $order->task->courier->id }}"
+                                                      style="display:none;position:absolute;top:-6px;right:-6px;
+                                                             background:#ef4444;color:#fff;font-size:.55rem;font-weight:700;
+                                                             min-width:16px;height:16px;border-radius:999px;
+                                                             align-items:center;justify-content:center;
+                                                             padding:0 3px;border:2px solid #fff;line-height:1;">
+                                                </span>
+                                            </a>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
                         </div>
 
                         <div class="ef-order-card__divider"></div>
@@ -166,12 +240,35 @@
                                 @if ($order->status === 'completed')
                                     <button class="ef-order-card__btn ef-order-card__btn--green">Pesan Lagi</button>
                                 @elseif ($order->status === 'on_delivery')
-                                    {{-- ✅ Ganti jadi link ke halaman tracking --}}
-                                    <a href="{{ route('tracking.show', $order->order_code) }}"
-                                        class="ef-order-card__btn ef-order-card__btn--orange"
-                                        style="text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;">
-                                        📍 Lacak
-                                    </a>
+                                    <div style="display:flex;gap:.4rem;align-items:center;">
+                                        <a href="{{ route('tracking.show', $order->order_code) }}"
+                                            class="ef-order-card__btn ef-order-card__btn--orange"
+                                            style="text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;">
+                                            📍 Lacak
+                                        </a>
+
+                                        @if($order->task?->courier)
+                                                                                    <a href="{{ route('customer.chat.show', ['receiver' => $order->task->courier->id]) }}"
+                                                class="ef-order-card__btn"
+                                                id="chat-btn-order-{{ $order->id }}"
+                                                data-courier-id="{{ $order->task->courier->id }}"
+                                                style="text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;
+                                                       background:#eff6ff;color:#2563eb;border:1px solid #dbeafe;position:relative;">
+                                                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                                                </svg>
+                                                Chat Kurir
+                                                <span id="chat-badge-order-{{ $order->task->courier->id }}"
+                                                      style="display:none;position:absolute;top:-6px;right:-6px;
+                                                             background:#ef4444;color:#fff;font-size:.55rem;font-weight:700;
+                                                             min-width:16px;height:16px;border-radius:999px;
+                                                             align-items:center;justify-content:center;
+                                                             padding:0 3px;border:2px solid #fff;line-height:1;">
+                                                </span>
+                                            </a>
+                                        @endif
+                                    </div>
                                 @endif
                             </div>
                         </div>
@@ -180,7 +277,7 @@
             @endforeach
 
             @if ($shown === 0)
-                <div class="ef-orders__empty" data-reveal>
+                <div class="ef-orders__empty" data-reveal>x`
                     <div class="ef-orders__empty-icon">
                         @if ($activeTab === 'shipping')
                             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -191,21 +288,21 @@
                                 <circle cx="18.5" cy="18.5" r="2.5" />
                             </svg>
                         @elseif ($activeTab === 'cancelled')
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="1.5">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="15" y1="9" x2="9" y2="15" />
                                 <line x1="9" y1="9" x2="15" y2="15" />
                             </svg>
                         @elseif ($activeTab === 'pending')
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="1.5">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5">
                                 <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
                                 <polyline points="14 2 14 8 20 8" />
                             </svg>
                         @else
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="1.5">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5">
                                 <circle cx="12" cy="12" r="10" />
                                 <polyline points="12 6 12 12 16 14" />
                             </svg>
@@ -349,20 +446,103 @@
                             }
 
                             // Update info banner
-                            const info = document.querySelector(
-                                `[data-order-info="${order.id}"]`);
-                            if (info) {
-                                if (infoText[order.status]) {
-                                    info.innerHTML =
-                                        `<div style="${infoStyle[order.status]}">${infoText[order.status]}</div>`;
-                                } else {
-                                    info.innerHTML = '';
+                            const info = document.querySelector(`[data-order-info="${order.id}"]`);
+                            if (info && order.courier_name) {
+                                const courierSpan = info.querySelector('.courier-name');
+                                if (courierSpan) {
+                                    courierSpan.textContent = `🛵 Kurir: ${order.courier_name}`;
+                                    courierSpan.style.display = 'block';
                                 }
+                            }
+
+                            // Munculkan tombol chat kurir kalau status confirmed dan ada kurir
+                            const chatBtn = document.querySelector(`[data-chat-courier="${order.id}"]`);
+                            if (chatBtn && order.courier_id &&
+                                (order.status === 'confirmed' || order.status === 'on_delivery')) {
+                                chatBtn.style.display = 'inline-flex';
+                                chatBtn.href = `/customer/chat/user/${order.courier_id}`;
                             }
                         });
                     })
-                    .catch(() => {}); // silent fail, tidak perlu alert
+                    .catch(() => { }); // silent fail, tidak perlu alert
             }, 5000); // polling setiap 15 detik
         });
+
+        (function () {
+    const authId = @json(auth()->id());
+
+    function waitForEcho(cb) {
+        let attempts = 0;
+        const interval = setInterval(() => {
+            attempts++;
+            if (window.Echo) { clearInterval(interval); cb(); }
+            if (attempts > 50) clearInterval(interval);
+        }, 100);
+    }
+
+    // Init unread count dari server per courier
+    const unreadMap = {};
+
+    @foreach($orders as $order)
+        @if($order->task?->courier)
+            @php
+                $courierId = $order->task->courier->id;
+                $unreadFromCourier = \App\Models\Chat::where('sender_id', $courierId)
+                    ->where('receiver_id', auth()->id())
+                    ->whereNull('read_at')
+                    ->count();
+            @endphp
+            unreadMap['{{ $courierId }}'] = {{ $unreadFromCourier }};
+        @endif
+    @endforeach
+
+    function renderBadge(courierId, count) {
+        const badge = document.getElementById('chat-badge-order-' + courierId);
+        if (!badge) return;
+        badge.textContent = count > 9 ? '9+' : count;
+        badge.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+
+    // Init render semua badge
+    Object.entries(unreadMap).forEach(([courierId, count]) => {
+        renderBadge(courierId, count);
+    });
+
+    waitForEcho(() => {
+        window.Echo.private(`user.${authId}`)
+            .listen('.chat.sent', (e) => {
+                const senderId = String(e.chat.sender_id);
+                if (e.chat.receiver_id !== authId) return;
+
+                unreadMap[senderId] = (unreadMap[senderId] || 0) + 1;
+                renderBadge(senderId, unreadMap[senderId]);
+
+                // Toast notifikasi
+                toast(`💬 Pesan baru dari kurir ${e.chat.sender?.name ?? ''}`, 'info');
+            });
+    });
+
+    // Toast function — kalau belum ada di halaman ini
+    if (typeof toast === 'undefined') {
+        window.toast = function(msg, type = 'info') {
+            if (window.showToast) {
+                window.showToast(msg, type === 'error' ? 'error' : 'success');
+                return;
+            }
+            // Fallback sederhana
+            const el = document.createElement('div');
+            el.style.cssText = `
+                position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
+                background:#eff6ff;color:#1d4ed8;border:1px solid #dbeafe;
+                padding:.65rem 1.1rem;border-radius:12px;font-size:.78rem;
+                font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(15,23,42,.15);
+                display:flex;align-items:center;gap:.5rem;
+            `;
+            el.textContent = msg;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
+        };
+    }
+})();
     </script>
 </x-app-layout>

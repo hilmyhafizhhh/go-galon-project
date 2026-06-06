@@ -15,9 +15,17 @@
                     <x-nav-link :href="route('courier.home')" :active="request()->routeIs('courier.home*')">
                         {{ __('Home') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('courier.chat')" :active="request()->routeIs('courier.chat*')">
-                        {{ __('Chat') }}
-                    </x-nav-link>
+                    <div class="relative">
+                        <x-nav-link :href="route('courier.chat')" :active="request()->routeIs('courier.chat*')">
+                            {{ __('Chat') }}
+                        </x-nav-link>
+
+                        <span id="chat-badge-desktop" class="hidden absolute -top-1 -right-3 bg-red-500 text-white text-[10px]
+               font-bold min-w-[18px] h-[18px] rounded-full
+               flex items-center justify-center px-1">
+                            0
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -94,9 +102,18 @@
                 {{ __('Home') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('courier.chat')" :active="request()->routeIs('courier.chat*')">
-                {{ __('Chat') }}
-            </x-responsive-nav-link>
+            <div class="relative">
+                <x-responsive-nav-link :href="route('courier.chat')" :active="request()->routeIs('courier.chat*')">
+                    {{ __('Chat') }}
+                </x-responsive-nav-link>
+
+                <span id="chat-badge-mobile" class="hidden absolute top-1/2 right-4 -translate-y-1/2
+               bg-red-500 text-white text-[10px]
+               font-bold min-w-[18px] h-[18px]
+               rounded-full flex items-center justify-center px-1">
+                    0
+                </span>
+            </div>
 
             <x-responsive-nav-link :href="route('courier.profile')">
                 {{ __('Profile') }}

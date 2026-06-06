@@ -72,6 +72,70 @@
         };
     </script>
 
+    @auth
+        <script>
+            (function () {
+                const role = @json(auth()->user()?->getRoleNames()->first() ?? '');
+                if (!role || role === 'admin') return;
+
+                const authId = @json(auth()->id());
+                const onChatPage = window.location.pathname.includes('/chat');
+
+                const badges = ['chat-badge-desktop', 'chat-badge-mobile']
+                    .map(id => document.getElementById(id))
+                    .filter(Boolean);
+
+                function updateBadge(count) {
+                    badges.forEach(el => {
+                        el.textContent = count > 99 ? '99+' : count;
+                        el.style.display = count > 0 ? 'inline-flex' : 'none';
+                    });
+                }
+
+                // Fetch initial unread count
+                const endpoint = role === 'courier' ? '/courier/chat/unread' : '/customer/chat/unread';
+                if (!onChatPage) {
+                    fetch(endpoint, {
+                        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                        .then(r => r.json())
+                        .then(d => updateBadge(d.count ?? 0))
+                        .catch(() => { });
+                }
+
+                // ← Tunggu Echo siap, cek setiap 100ms sampai max 5 detik
+                function waitForEchoAndListen() {
+                    let attempts = 0;
+                    const interval = setInterval(() => {
+                        attempts++;
+                        if (window.Echo) {
+                            clearInterval(interval);
+                            subscribeEcho();
+                        }
+                        if (attempts > 50) clearInterval(interval); // timeout 5 detik
+                    }, 100);
+                }
+
+                function subscribeEcho() {
+                    window.Echo.private(`user.${authId}`)
+                        .listen('.chat.sent', (e) => {
+                            if (e.chat.receiver_id !== authId) return;
+
+                            const currentPath = window.location.pathname;
+                            const senderId = e.chat.sender_id;
+                            // Kalau sedang buka room chat dengan sender ini, skip badge
+                            if (onChatPage && currentPath.includes(senderId)) return;
+
+                            const current = parseInt(badges[0]?.textContent) || 0;
+                            updateBadge(current + 1);
+                        });
+                }
+
+                waitForEchoAndListen();
+            })();
+        </script>
+    @endauth
+
     <script defer>
         document.addEventListener('alpine:init', () => {
             Alpine.data('profileEditor', () => ({

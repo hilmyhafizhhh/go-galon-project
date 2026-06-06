@@ -80,6 +80,7 @@ Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
     Route::get('/chat/user/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
+    Route::post('/chat/mark-read', [ChatController::class, 'markRead'])->name('chat.mark-read');
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -93,6 +94,9 @@ Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name
 
     // GPS update — dipanggil JS tiap ~5 detik saat status picked_up
     Route::post('/tasks/{taskId}/location', [CourierTaskController::class, 'updateLocation'])->name('tasks.location');
+
+    Route::get('/chat/unread', [ChatController::class, 'unreadCount'])->name('chat.unread');
+
 });
 
 /*
@@ -140,6 +144,8 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     // Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
     Route::get('/chat/user/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
+    Route::get('/chat/unread', [ChatController::class, 'unreadCount'])->name('chat.unread');
+    Route::post('/chat/mark-read', [ChatController::class, 'markRead'])->name('chat.mark-read');
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');

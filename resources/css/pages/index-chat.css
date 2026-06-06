@@ -352,3 +352,53 @@
 .dark .ef-chat__item:hover .ef-chat__chevron {
     color: #60a5fa;
 }
+
+/* ── Unread conversation state ──────────────────── */
+.ef-chat__item--unread {
+    background: #fafbff;
+    border-left: 3px solid var(--blue, #2563eb);
+}
+
+.ef-chat__name--unread {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.ef-chat__preview--unread {
+    font-weight: 600;
+    color: #334155;
+}
+
+.ef-chat__time--unread {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+/* Dot hijau di avatar */
+.ef-chat__avatar-unread-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background: #2563eb;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+/* Badge unread count per conversation */
+.ef-chat__unread-pill {
+    flex-shrink: 0;
+    background: #2563eb;
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    line-height: 1;
+}

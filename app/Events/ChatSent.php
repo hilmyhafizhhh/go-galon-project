@@ -24,13 +24,16 @@ class ChatSent implements ShouldBroadcastNow
     }
 
     // Channel privat antar 2 orang (urutkan ID biar konsisten)
-    public function broadcastOn(): Channel
-{
-    $userA = min($this->chat->sender_id, $this->chat->receiver_id);
-    $userB = max($this->chat->sender_id, $this->chat->receiver_id);
+    public function broadcastOn(): array
+    {
+        $userA = min($this->chat->sender_id, $this->chat->receiver_id);
+        $userB = max($this->chat->sender_id, $this->chat->receiver_id);
 
-    return new PrivateChannel("chat.$userA.$userB");
-}
+        return [
+            new PrivateChannel("chat.{$userA}.{$userB}"),
+            new PrivateChannel("user.{$this->chat->receiver_id}"), // ← untuk badge notifikasi
+        ];
+    }
 
 
     public function broadcastAs(): string

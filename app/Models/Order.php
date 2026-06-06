@@ -95,6 +95,11 @@ class Order extends Model
 
     public function assignedCourier()
     {
-        return $this->belongsTo(\App\Models\Courier::class, 'assigned_courier_id');
+        return $this->belongsTo(Courier::class, 'assigned_courier_id');
+    }
+
+    public function task()
+    {
+        return $this->hasOne(Task::class);
     }
 }

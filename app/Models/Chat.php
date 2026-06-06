@@ -56,5 +56,10 @@ class Chat extends Model
             ? $this->receiver
             : $this->sender;
     }
+
+    public function scopeUnreadFor($query, $userId)
+    {
+        return $query->where('receiver_id', $userId)->whereNull('read_at');
+    }
     
 }

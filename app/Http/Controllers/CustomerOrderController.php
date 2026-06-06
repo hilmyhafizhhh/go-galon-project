@@ -31,6 +31,9 @@ class CustomerOrderController extends Controller
                 ->count();
         }
 
+        $orders = $orders->load(['items.product', 'address', 'task.courier']);
+
+
         return view('customer.order', compact('orders', 'activeTab', 'countByTab'));
     }
 
@@ -45,7 +48,8 @@ class CustomerOrderController extends Controller
             'cancelled' => ['cancelled'],
         ];
 
-        $orders = Order::where('user_id', auth()->id())
+        $orders = Order::with('task.courier')  // ← tambah ini
+            ->where('user_id', auth()->id())
             ->whereIn('status', $statusMap[$activeTab] ?? [])
             ->latest()
             ->get()
@@ -53,6 +57,8 @@ class CustomerOrderController extends Controller
                 'id'           => $o->id,
                 'status'       => $o->status,
                 'queue_number' => $o->queue_number,
+                'courier_name' => $o->task?->courier?->name,   // ← tambah ini
+                'courier_id'   => $o->task?->courier?->id,     // ← tambah ini
             ]);
 
         $countByTab = [];

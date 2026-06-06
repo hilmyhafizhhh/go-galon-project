@@ -21,7 +21,7 @@ window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 // window.axios.defaults.withCredentials = true;
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "http://127.0.0.1:8000";
+// axios.defaults.baseURL = "http://127.0.0.1:8000";
 
 const token = document.querySelector('meta[name="csrf-token"]');
 if (token) {
