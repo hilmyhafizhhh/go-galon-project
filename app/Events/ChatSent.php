@@ -24,13 +24,22 @@ class ChatSent implements ShouldBroadcastNow
     }
 
     // Channel privat antar 2 orang (urutkan ID biar konsisten)
-    public function broadcastOn(): Channel
-{
-    $userA = min($this->chat->sender_id, $this->chat->receiver_id);
-    $userB = max($this->chat->sender_id, $this->chat->receiver_id);
+    public function broadcastOn(): array
+    {
+        $userA = min($this->chat->sender_id, $this->chat->receiver_id);
+        $userB = max($this->chat->sender_id, $this->chat->receiver_id);
 
-    return new PrivateChannel("chat.$userA.$userB");
-}
+        $channels = [
+            new PrivateChannel("chat.{$userA}.{$userB}"),
+            new PrivateChannel("user.{$this->chat->receiver_id}"),
+        ];
+
+        if ($this->chat->order_id) {
+            $channels[] = new PrivateChannel("order.{$this->chat->order_id}");
+        }
+
+        return $channels;
+    }
 
 
     public function broadcastAs(): string
@@ -45,6 +54,7 @@ class ChatSent implements ShouldBroadcastNow
             'sender_id' => $this->chat->sender_id,
             'receiver_id' => $this->chat->receiver_id,
             'message' => $this->chat->message,
+            'order_id'    => $this->chat->order_id,  // ← tambah ini
             // 'created_at' => $this->chat->created_at,
             'created_at' => $this->chat->created_at->format('H:i'),
             'sender' => $this->chat->sender,

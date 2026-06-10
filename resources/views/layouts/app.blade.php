@@ -72,6 +72,77 @@
         };
     </script>
 
+    @auth
+        <script>
+            (function () {
+                const role = @json(auth()->user()?->getRoleNames()->first() ?? '');
+                if (!role || role === 'admin') return;
+
+                const authId = @json(auth()->id());
+                const onChatPage = window.location.pathname.includes('/chat');
+
+                const badges = ['chat-badge-desktop', 'chat-badge-mobile']
+                    .map(id => document.getElementById(id))
+                    .filter(Boolean);
+
+                function updateBadge(count) {
+                    badges.forEach(el => {
+                        el.textContent = count > 99 ? '99+' : count;
+                        el.style.display = count > 0 ? 'inline-flex' : 'none';
+                    });
+                }
+
+                // Fetch initial unread count
+                const endpoint = role === 'courier' ? '/courier/chat/unread' : '/customer/chat/unread';
+                if (!onChatPage) {
+                    fetch(endpoint, {
+                        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                        .then(r => r.json())
+                        .then(d => updateBadge(d.count ?? 0))
+                        .catch(() => { });
+                }
+
+                // ← Tunggu Echo siap, cek setiap 100ms sampai max 5 detik
+                function waitForEchoAndListen() {
+                    let attempts = 0;
+                    const interval = setInterval(() => {
+                        attempts++;
+                        if (window.Echo) {
+                            clearInterval(interval);
+                            subscribeEcho();
+                        }
+                        if (attempts > 50) clearInterval(interval); // timeout 5 detik
+                    }, 100);
+                }
+
+                function subscribeEcho() {
+                    window.Echo.private(`user.${authId}`)
+                        .listen('.chat.sent', (e) => {
+                            if (e.chat.receiver_id !== authId) return;
+
+                            const currentPath = window.location.pathname;
+                            const senderId = e.chat.sender_id;
+                            if (onChatPage && currentPath.includes(senderId)) return;
+
+                            // Sound + push notification
+                            const senderName = e.chat.sender?.name ?? 'Seseorang';
+                            const message = e.chat.message ?? '';
+                            window.NotifSystem?.notify(
+                                `Pesan dari ${senderName}`,
+                                message.length > 60 ? message.substring(0, 60) + '…' : message,
+                            );
+
+                            const current = parseInt(badges[0]?.textContent) || 0;
+                            updateBadge(current + 1);
+                        });
+                }
+
+                waitForEchoAndListen();
+            })();
+        </script>
+    @endauth
+
     <script defer>
         document.addEventListener('alpine:init', () => {
             Alpine.data('profileEditor', () => ({
@@ -124,6 +195,71 @@
             }));
         });
     </script>
+
+    @auth
+        <script>
+            // ── Notification & Sound System ──────────────────────
+            window.NotifSystem = (function () {
+                const SOUND_URL = '/sounds/notif.mp3';
+                let audio = null;
+                let permission = Notification.permission;
+
+                // Request permission saat pertama kali
+                function requestPermission() {
+                    if (permission === 'default') {
+                        Notification.requestPermission().then(p => { permission = p; });
+                    }
+                }
+
+                // Play sound
+                function playSound() {
+                    try {
+                        if (!audio) audio = new Audio(SOUND_URL);
+                        audio.currentTime = 0;
+                        audio.volume = 0.6;
+                        audio.play().catch(() => { });
+                    } catch (e) { }
+                }
+
+                // Show browser push notification
+                function showPush(title, body, icon = '/assets/icons/logo.svg') {
+                    if (permission !== 'granted') return;
+                    // Kalau tab sedang aktif, skip push — cukup sound + in-app toast
+                    if (document.visibilityState === 'visible' && document.hasFocus()) return;
+
+                    try {
+                        const notif = new Notification(title, {
+                            body,
+                            icon,
+                            badge: '/assets/icons/logo.svg',
+                            tag: 'gogalon-chat', // replace agar tidak spam
+                            renotify: true,
+                        });
+
+                        // Auto close setelah 5 detik
+                        setTimeout(() => notif.close(), 5000);
+
+                        // Klik notif → fokus ke tab
+                        notif.onclick = () => {
+                            window.focus();
+                            notif.close();
+                        };
+                    } catch (e) { }
+                }
+
+                // Main trigger — panggil ini dari mana saja
+                function notify(title, body, icon) {
+                    playSound();
+                    showPush(title, body, icon);
+                }
+
+                // Auto request permission saat load
+                requestPermission();
+
+                return { notify, playSound, showPush, requestPermission };
+            })();
+        </script>
+    @endauth
 </body>
 
 </html>

@@ -36,12 +36,20 @@
                     </a>
 
                     <a href="{{ route('customer.chat') }}"
-                        class="ef-nav__link {{ request()->routeIs('customer.chat*') ? 'ef-nav__link--active' : '' }}">
+                        class="ef-nav__link {{ request()->routeIs('customer.chat*') ? 'ef-nav__link--active' : '' }}"
+                        style="position:relative;">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
                         </svg>
                         Chat
+                        <span id="chat-badge-desktop" style="display:none;position:absolute;top:-4px;right:-8px;
+               background:#ef4444;color:#fff;font-size:.55rem;font-weight:700;
+               min-width:16px;height:16px;border-radius:999px;
+               display:none;align-items:center;justify-content:center;
+               padding:0 4px;line-height:1;border:2px solid #fff;">
+                            0
+                        </span>
                     </a>
                 </div>
             </div>
@@ -184,12 +192,19 @@
             </a>
 
             <a href="{{ route('customer.chat') }}"
-                class="ef-drawer__link {{ request()->routeIs('customer.chat*') ? 'ef-drawer__link--active' : '' }}">
+                class="ef-drawer__link {{ request()->routeIs('customer.chat*') ? 'ef-drawer__link--active' : '' }}"
+                style="position:relative;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
                 </svg>
                 Chat
+                <span id="chat-badge-mobile" style="display:none;position:absolute;top:50%;right:1rem;transform:translateY(-50%);
+               background:#ef4444;color:#fff;font-size:.6rem;font-weight:700;
+               min-width:18px;height:18px;border-radius:999px;
+               align-items:center;justify-content:center;padding:0 5px;">
+                    0
+                </span>
             </a>
 
             <div class="ef-drawer__divider"></div>

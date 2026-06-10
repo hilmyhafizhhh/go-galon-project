@@ -55,7 +55,7 @@
 
                     {{-- Mobile logo --}}
                     <div class="ef-reg__mobile-logo">
-                        <img src="{{ asset('assets/icons/Frame 44.png') }}" alt="Logo" class="ef-reg__mobile-logo-img">
+                        <img src="{{ asset('assets/icons/Frame 44.webp') }}" alt="Logo" class="ef-reg__mobile-logo-img">
                     </div>
 
                     <div class="ef-reg__card-header">

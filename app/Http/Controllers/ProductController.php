@@ -5,35 +5,43 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\Address;
+use App\Services\RecommendationService;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(RecommendationService $recommender)
     {
-        $products = Product::where('stock', '>', 0)->get();
-
-        // Ambil pesanan aktif terakhir pelanggan
-        $activeOrder = Order::with(['items.product', 'address', 'courier.user'])
-            ->where('user_id', auth()->id())
-            ->whereIn('status', ['pending', 'confirmed', 'on_delivery'])
-            ->latest()
-            ->first();
-
-        // Ambil alamat default pelanggan
-        $defaultAddress = Address::where('user_id', auth()->id())
+        $products = Product::where('stock', '>=', 0)
+            ->whereNull('deleted_at')
+            ->orderBy('name')
+            ->get();
+    
+        $defaultAddress = auth()->user()
+            ->addresses()
             ->where('is_default', true)
             ->first();
-
-        // Hitung total item aktif
+    
+        $activeOrder = Order::where('user_id', auth()->id())
+            ->whereIn('status', ['pending', 'confirmed', 'on_delivery'])
+            ->with('courier.user')
+            ->latest()
+            ->first();
+    
         $totalActiveItems = $activeOrder
-            ? $activeOrder->items->sum('quantity')
+            ? $activeOrder->items()->sum('quantity')
             : 0;
-
+    
+        // ── REKOMENDASI ─────────────────────────────────────────────
+        // Otomatis: CBF untuk returning user, Rule-Based untuk cold start
+        $recommended = $recommender->recommend(auth()->id(), 3);
+        // ────────────────────────────────────────────────────────────
+    
         return view('customer.home', compact(
             'products',
-            'activeOrder',
             'defaultAddress',
-            'totalActiveItems'
+            'activeOrder',
+            'totalActiveItems',
+            'recommended',          // ← tambahkan ini
         ));
     }
 }

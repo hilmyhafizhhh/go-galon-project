@@ -42,6 +42,11 @@
         <form action="{{ route('customer.address.store') }}" method="POST" id="caForm">
             @csrf
 
+            {{-- ── Hidden: koordinat dari peta ── --}}
+            {{-- Diisi otomatis via JS saat user konfirmasi lokasi --}}
+            <input type="hidden" name="latitude" id="ca_lat" value="{{ old('latitude') }}">
+            <input type="hidden" name="longitude" id="ca_lng" value="{{ old('longitude') }}">
+
             {{-- ── Card 1: Detail Alamat ── --}}
             <div class="ca-section-label ca-reveal" data-delay="0">Detail Alamat</div>
             <div class="ca-card ca-reveal" data-delay="40">
@@ -1007,6 +1012,8 @@
             const confirmBtn = document.getElementById('caMapConfirm');
             const addrInput = document.getElementById('ca_address');
             const detected = document.getElementById('caMapDetected');
+            const latInput = document.getElementById('ca_lat');
+            const lngInput = document.getElementById('ca_lng');
 
             let map, marker, mapReady = false;
 
@@ -1058,13 +1065,26 @@
 
                 map.on('moveend', () => {
                     const c = map.getCenter();
+
                     marker.setLatLng(c);
+
+                    latInput.value = c.lat;
+                    lngInput.value = c.lng;
+
                     reverseGeocode(c.lat, c.lng);
                 });
 
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
-                        pos => { map.setView([pos.coords.latitude, pos.coords.longitude], 17); },
+                        pos => {
+                            const lat = pos.coords.latitude;
+                            const lng = pos.coords.longitude;
+
+                            latInput.value = lat;
+                            lngInput.value = lng;
+
+                            map.setView([lat, lng], 17);
+                        },
                         () => reverseGeocode(defLat, defLng)
                     );
                 } else {
@@ -1096,14 +1116,29 @@
             }
 
             confirmBtn.addEventListener('click', () => {
+
+                const center = map.getCenter();
+
+                latInput.value = center.lat;
+                lngInput.value = center.lng;
+
                 const addr = confirmBtn._addr || '';
                 addrInput.value = addr;
+
                 const preview = addr.length > 48 ? addr.slice(0, 48) + '…' : addr;
+
                 detected.textContent = '📍 ' + preview;
                 detected.classList.add('show');
+
                 closeMap();
-                addrInput.parentElement.parentElement.style.background = 'rgba(37,99,235,.04)';
-                setTimeout(() => addrInput.parentElement.parentElement.style.background = '', 900);
+
+                addrInput.parentElement.parentElement.style.background =
+                    'rgba(37,99,235,.04)';
+
+                setTimeout(() =>
+                    addrInput.parentElement.parentElement.style.background = '',
+                    900
+                );
             });
 
             /* ── Footer submit loading state ── */

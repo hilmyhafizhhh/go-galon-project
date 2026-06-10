@@ -15,6 +15,7 @@ class Chat extends Model
         'receiver_id',
         'sender_role',
         'receiver_role',
+        'order_id',
         'message',
     ];
 
@@ -55,6 +56,11 @@ class Chat extends Model
         return $this->sender_id == $user->id
             ? $this->receiver
             : $this->sender;
+    }
+
+    public function scopeUnreadFor($query, $userId)
+    {
+        return $query->where('receiver_id', $userId)->whereNull('read_at');
     }
     
 }

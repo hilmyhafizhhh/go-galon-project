@@ -24,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
          // 🔹 Broadcast (punya kamu)
+
+         if (config('app.env') === 'local') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     Broadcast::routes([
         'middleware' => ['web', 'auth'],
     ]);

@@ -17,6 +17,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\CourierTaskController;
+use App\Http\Controllers\GpsSimulatorController;
 use App\Models\Order;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
@@ -72,25 +73,61 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
 });
 
 
-
 // Route Courier
 Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name('courier.')->group(function () {
-   
+
     Route::get('/home', [CourierTaskController::class, 'index'])->name('home');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
-    // Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
-    // Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
     Route::get('/chat/user/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
-
+    Route::post('/chat/mark-read', [ChatController::class, 'markRead'])->name('chat.mark-read');
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('/tasks', [CourierTaskController::class, 'index'])->name('tasks');
-    Route::post('/tasks/{taskId}/pickup', [CourierTaskController::class, 'pickup'])->name('task.pickup');
+    Route::get('/tasks/poll', [CourierTaskController::class, 'poll'])->name('task.poll');
+    Route::post('/tasks/{taskId}/pickup',  [CourierTaskController::class, 'pickup'])->name('task.pickup');
     Route::post('/tasks/{taskId}/deliver', [CourierTaskController::class, 'deliver'])->name('task.deliver');
+    Route::post('/tasks/{taskId}/start-delivery', [CourierTaskController::class, 'startDelivery']);
+
+
+    // GPS update — dipanggil JS tiap ~5 detik saat status picked_up
+    Route::post('/tasks/{taskId}/location', [CourierTaskController::class, 'updateLocation'])->name('tasks.location');
+
+    Route::get('/chat/unread', [ChatController::class, 'unreadCount'])->name('chat.unread');
+
 });
+
+/*
+|--------------------------------------------------------------------------
+| Tracking publik — customer tanpa login, via order_code
+|--------------------------------------------------------------------------
+*/
+Route::get('/track/{orderCode}', [CourierTaskController::class, 'trackingPage'])->name('tracking.show');
+
+/*
+|--------------------------------------------------------------------------
+| API Polling — dipanggil JS dari halaman tracking tiap N detik
+| Menggunakan {order} = UUID dari orders.id
+|--------------------------------------------------------------------------
+*/
+Route::get('/api/tracking/{order}', [CourierTaskController::class, 'trackingData'])->name('api.tracking');
+
+/*
+|--------------------------------------------------------------------------
+| GPS Simulator — Demo / TA only
+| Akses: /simulator
+|--------------------------------------------------------------------------
+*/
+Route::prefix('simulator')
+    ->middleware(['auth', 'verified'])  // cukup auth, tidak perlu role tertentu
+    ->name('simulator.')
+    ->group(function () {
+        Route::get('/',           [GpsSimulatorController::class, 'index'])->name('index');
+        Route::get('/route',      [GpsSimulatorController::class, 'getRoute'])->name('route');
+        Route::post('/inject',    [GpsSimulatorController::class, 'injectPoint'])->name('inject');
+    });
 
 // Route Customer
 Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->name('customer.')->group(function () {
@@ -101,10 +138,16 @@ Route::prefix('customer')->middleware(['auth', 'verified', 'role:customer'])->na
     // })->name('order');
     Route::get('/order', [CustomerOrderController::class, 'index'])->name('order');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
+    Route::get('/order/status', [CustomerOrderController::class, 'getStatus'])->name('order.status');
+    Route::get('/order/full-status', [CustomerOrderController::class, 'getFullStatus'])->name('order.full-status');
+
+
     // Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     // Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
     Route::get('/chat/user/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/send', [ChatController::class, 'sendChat'])->name('chat.send');
+    Route::get('/chat/unread', [ChatController::class, 'unreadCount'])->name('chat.unread');
+    Route::post('/chat/mark-read', [ChatController::class, 'markRead'])->name('chat.mark-read');
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
