@@ -780,10 +780,11 @@
                         $cleanPhone = preg_replace('/\D/', '', $phone);
                         $isValidWa = preg_match('/^(08|628|8)\d{8,11}$/', $cleanPhone);
                         $wa = '62' . ltrim($cleanPhone, '08');
-                        $chatUrl = route('courier.chat.show', $task->order->user->id);  // ← ini
+                        $chatUrl = route('courier.chat.show', $task->order->user->id) . '?order_id=' . $task->order->id;
                         $customerId = $task->order->user->id;                            // ← dan ini
                         $unreadFromCustomer = \App\Models\Chat::where('sender_id', $task->order->user->id)
                             ->where('receiver_id', auth()->id())
+                            ->where('order_id', $task->order->id)  // ← filter by order
                             ->whereNull('read_at')
                             ->count();
                     @endphp
@@ -885,11 +886,11 @@
                                         d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
                                 </svg>
                                 {{-- ID unik per customer untuk di-update JS --}}
-                                <span id="chat-badge-task-{{ $customerId }}" style="display:none;position:absolute;top:-5px;right:-5px;
-                         background:#ef4444;color:#fff;font-size:.55rem;font-weight:700;
-                         min-width:16px;height:16px;border-radius:999px;
-                         align-items:center;justify-content:center;
-                         padding:0 3px;border:2px solid #fff;line-height:1;">
+                                <span id="chat-badge-task-{{ $task->order->id }}" style="display:none;position:absolute;top:-5px;right:-5px;
+                                     background:#ef4444;color:#fff;font-size:.55rem;font-weight:700;
+                                     min-width:16px;height:16px;border-radius:999px;
+                                     align-items:center;justify-content:center;
+                                     padding:0 3px;border:2px solid #fff;line-height:1;">
                                 </span>
                             </a>
                         </div>
@@ -963,6 +964,19 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+       let hiddenAt = null;
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                hiddenAt = Date.now();
+            } else if (document.visibilityState === 'visible') {
+                // Reload kalau sudah lebih dari 3 detik meninggalkan halaman
+                if (hiddenAt && Date.now() - hiddenAt > 3000) {
+                    window.location.reload();
+                }
+            }
+        });
+
         /* ═══════════════════════════════════════════════
                    COURIER — Production JS
                 ═══════════════════════════════════════════════ */
@@ -1301,53 +1315,77 @@
         }
 
         (function () {
-    const authId = @json(auth()->id());
+            const authId = @json(auth()->id());
 
-    function waitForEcho(cb) {
-        let attempts = 0;
-        const interval = setInterval(() => {
-            attempts++;
-            if (window.Echo) { clearInterval(interval); cb(); }
-            if (attempts > 50) clearInterval(interval);
-        }, 100);
-    }
+            function waitForEcho(cb) {
+                let attempts = 0;
+                const interval = setInterval(() => {
+                    attempts++;
 
-    const unreadMap = {};
+                    if (window.Echo) {
+                        clearInterval(interval);
+                        cb();
+                    }
 
-    @foreach($tasks as $task)
-        @php
-            $unreadCount = \App\Models\Chat::where('sender_id', $task->order->user->id)
-                ->where('receiver_id', auth()->id())
-                ->whereNull('read_at')
-                ->count();
-        @endphp
-        unreadMap['{{ $task->order->user->id }}'] = {{ $unreadCount }};
-    @endforeach
+                    if (attempts > 50) {
+                        clearInterval(interval);
+                    }
+                }, 100);
+            }
 
-    function renderBadge(customerId, count) {
-        const badge = document.getElementById('chat-badge-task-' + customerId);
-        if (!badge) return;
-        badge.textContent = count > 9 ? '9+' : count;
-        badge.style.display = count > 0 ? 'inline-flex' : 'none';
-    }
+            const unreadMap = {};
 
-    Object.entries(unreadMap).forEach(([customerId, count]) => {
-        renderBadge(customerId, count);
-    });
+            @foreach($tasks as $task)
+                @php
+                    $unreadCount = \App\Models\Chat::where('sender_id', $task->order->user->id)
+                        ->where('receiver_id', auth()->id())
+                        ->where('order_id', $task->order->id)
+                        ->whereNull('read_at')
+                        ->count();
+                @endphp
 
-    waitForEcho(() => {
-        window.Echo.private(`user.${authId}`)
-            .listen('.chat.sent', (e) => {
-                const senderId = String(e.chat.sender_id);
-                if (e.chat.receiver_id !== authId) return;
+                unreadMap['{{ $task->order->id }}'] = {{ $unreadCount }};
+            @endforeach
 
-                unreadMap[senderId] = (unreadMap[senderId] || 0) + 1;
-                renderBadge(senderId, unreadMap[senderId]);
+            function renderBadge(orderId, count) {
+                const badge = document.getElementById('chat-badge-task-' + orderId);
 
-                toast(`💬 Pesan baru dari ${e.chat.sender?.name ?? 'Customer'}`, 'info');
+                if (!badge) return;
+
+                badge.textContent = count > 9 ? '9+' : count;
+                badge.style.display = count > 0 ? 'inline-flex' : 'none';
+            }
+
+            Object.entries(unreadMap).forEach(([orderId, count]) => {
+                renderBadge(orderId, count);
             });
-    });
-})();
+
+        waitForEcho(() => {
+
+            window.Echo
+                .private('user.{{ auth()->id() }}')
+                .listen('.chat.sent', (e) => {
+
+                    console.log('CHAT MASUK', e);
+
+                    if (String(e.chat.sender_id) === String(authId)) {
+                        return;
+                    }
+
+                    const orderId = String(e.chat.order_id);
+
+                    unreadMap[orderId] = (unreadMap[orderId] || 0) + 1;
+
+                    renderBadge(orderId, unreadMap[orderId]);
+
+                    toast(
+                        `💬 Pesan baru dari ${e.chat.sender?.name ?? 'Customer'}`,
+                        'info'
+                    );
+                });
+
+        });
+        })();
 
         // Real-time polling setiap 10 detik
         setInterval(() => {

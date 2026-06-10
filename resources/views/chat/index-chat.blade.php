@@ -142,6 +142,19 @@
         </div>
     </div>
     <script>
+        let hiddenAt = null;
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                hiddenAt = Date.now();
+            } else if (document.visibilityState === 'visible') {
+                // Reload kalau sudah lebih dari 3 detik meninggalkan halaman
+                if (hiddenAt && Date.now() - hiddenAt > 3000) {
+                    window.location.reload();
+                }
+            }
+        });
+        
         document.addEventListener('DOMContentLoaded', () => {
 
             // ── Scroll Reveal ──

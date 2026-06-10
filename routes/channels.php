@@ -33,3 +33,15 @@ Broadcast::channel('chat.{userA}.{userB}', function ($user, $userA, $userB) {
 Broadcast::channel('user.{userId}', function ($user, $userId) {
     return (int) $user->id === (int) $userId;
 });
+
+Broadcast::channel('order.{orderId}', function ($user, $orderId) {
+    $order = \App\Models\Order::find($orderId);
+    if (!$order) return false;
+
+    return $user->id === $order->user_id
+        || $user->id === optional($order->task)->courier_id;
+});
+
+Broadcast::channel('user.{id}', function ($user, $id) {
+    return (string) $user->id === (string) $id;
+});

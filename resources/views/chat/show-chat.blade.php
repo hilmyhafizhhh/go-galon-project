@@ -198,8 +198,22 @@
     </div>
 
     <script>
+           let hiddenAt = null;
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') {
+                    hiddenAt = Date.now();
+                } else if (document.visibilityState === 'visible') {
+                    // Reload kalau sudah lebih dari 3 detik meninggalkan halaman
+                    if (hiddenAt && Date.now() - hiddenAt > 3000) {
+                        window.location.reload();
+                    }
+                }
+            });
+
         document.addEventListener('DOMContentLoaded', () => {
             const authId = @json(auth()->id());
+            const orderId = @json($order?->id ?? null);
             const receiverId = @json($receiver->id);
             const [id1, id2] = [authId, receiverId].sort();
 
@@ -213,12 +227,11 @@
             window.sendChat = function (message = null) {
                 const msg = message ?? input.value.trim();
                 if (!msg) return;
-
                 sendBtn.disabled = true;
 
                 axios.post(
-                    '{{ auth()->user()->hasRole('customer') ? route('customer.chat.send') : route('courier.chat.send') }}',
-                    { receiver_id: receiverId, message: msg }
+                    '{{ auth()->user()->hasRole('customer') ? '/customer/chat/send' : '/courier/chat/send' }}',
+                    { receiver_id: receiverId, message: msg, order_id: orderId }
                 ).then(res => {
                     appendMessage(res.data.chat, true);
                     if (!message) input.value = '';
@@ -228,28 +241,24 @@
                 });
             };
 
-            // ── Realtime chat masuk ────────────────────────────────────
             if (!window.Echo) { console.error('Laravel Echo belum ada'); return; }
 
-            window.Echo.private(`chat.${id1}.${id2}`)
-                .listen('.chat.sent', (e) => {
-                    appendMessage(e.chat, e.chat.sender_id === authId);
+            // ── Realtime: pakai channel order kalau ada, fallback ke user-pair ──
+            const chatChannel = orderId
+                ? window.Echo.private(`order.${orderId}`)
+                : window.Echo.private(`chat.${id1}.${id2}`);
 
-                    if (e.chat.sender_id !== authId) {
-                        markAsRead([e.chat.id]);
-                        // Sound saja (sudah di room, tidak perlu push)
-                        window.NotifSystem?.playSound();
-                    }
-                });
+            chatChannel.listen('.chat.sent', (e) => {
+                // Skip pesan sendiri (karena broadcast toOthers, seharusnya tidak ada)
+                // tapi tetap guard untuk keamanan
+                if (String(e.chat.sender_id) === String(authId)) return;
 
-            function markAsRead(chatIds) {
-                axios.post(
-                    '{{ auth()->user()->hasRole('customer') ? '/customer/chat/mark-read' : '/courier/chat/mark-read' }}',
-                    { chat_ids: chatIds }
-                ).catch(() => { });
-            }
+                appendMessage(e.chat, false);
+                markAsRead([e.chat.id]);
+                window.NotifSystem?.playSound();
+            });
 
-            // ── Realtime read receipt ──────────────────────────────────
+            // ── Read receipt: listen ke channel user sendiri ──
             window.Echo.private(`user.${authId}`)
                 .listen('.chat.read', (e) => {
                     (e.chat_ids ?? []).forEach(chatId => {
@@ -266,7 +275,13 @@
                     });
                 });
 
-            // ── Append ────────────────────────────────────────────────
+            function markAsRead(chatIds) {
+                axios.post(
+                    '{{ auth()->user()->hasRole('customer') ? '/customer/chat/mark-read' : '/courier/chat/mark-read' }}',
+                    { chat_ids: chatIds }
+                ).catch(() => { });
+            }
+
             function appendMessage(chat, isMine) {
                 const div = document.createElement('div');
                 div.className = `ef-msg ${isMine ? 'ef-msg--mine' : 'ef-msg--theirs'} ef-msg--new`;
@@ -283,10 +298,7 @@
                 div.innerHTML = `
             <div class="ef-msg__bubble ${isMine ? 'ef-msg__bubble--mine' : 'ef-msg__bubble--theirs'}">
                 <p class="ef-msg__text">${chat.message}</p>
-                <span class="ef-msg__time">
-                    ${chat.created_at}
-                    ${receipt}
-                </span>
+                <span class="ef-msg__time">${chat.created_at}${receipt}</span>
             </div>`;
 
                 chatBox.appendChild(div);
@@ -295,13 +307,12 @@
             }
         });
 
-        // ── Quick Reply ───────────────────────────────────
+        // ── Quick Reply ──────────────────────────────────────
         function toggleQR() {
             const sheet = document.getElementById('qrSheet');
             const toggle = document.getElementById('qrToggle');
             const chevron = document.getElementById('qrChevron');
             const isOpen = sheet.classList.contains('open');
-
             sheet.classList.toggle('open', !isOpen);
             toggle.classList.toggle('active', !isOpen);
             chevron.classList.toggle('rotated', !isOpen);

@@ -29,10 +29,16 @@ class ChatSent implements ShouldBroadcastNow
         $userA = min($this->chat->sender_id, $this->chat->receiver_id);
         $userB = max($this->chat->sender_id, $this->chat->receiver_id);
 
-        return [
+        $channels = [
             new PrivateChannel("chat.{$userA}.{$userB}"),
-            new PrivateChannel("user.{$this->chat->receiver_id}"), // ← untuk badge notifikasi
+            new PrivateChannel("user.{$this->chat->receiver_id}"),
         ];
+
+        if ($this->chat->order_id) {
+            $channels[] = new PrivateChannel("order.{$this->chat->order_id}");
+        }
+
+        return $channels;
     }
 
 
@@ -48,6 +54,7 @@ class ChatSent implements ShouldBroadcastNow
             'sender_id' => $this->chat->sender_id,
             'receiver_id' => $this->chat->receiver_id,
             'message' => $this->chat->message,
+            'order_id'    => $this->chat->order_id,  // ← tambah ini
             // 'created_at' => $this->chat->created_at,
             'created_at' => $this->chat->created_at->format('H:i'),
             'sender' => $this->chat->sender,

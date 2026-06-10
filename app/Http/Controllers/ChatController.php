@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Events\ChatSent;
+use App\Events\ChatRead;
 use App\Models\Chat;
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -26,13 +28,12 @@ class ChatController extends Controller
                     ? $chat->receiver_id
                     : $chat->sender_id;
             })
-            ->map(function ($group) use ($user) {           // ← ganti bagian ini
+            ->map(function ($group) use ($user) {
                 $chat = $group->first();
                 $chat->other_user_id = $chat->sender_id == $user->id
                     ? $chat->receiver_id
                     : $chat->sender_id;
 
-                // Hitung unread dari seluruh group, bukan hanya pesan pertama
                 $chat->unread_count = $group->filter(fn($c) =>
                     $c->receiver_id == $user->id && is_null($c->read_at)
                 )->count();
@@ -48,59 +49,74 @@ class ChatController extends Controller
         return view('chat.index-chat', compact('chats', 'depotContact'));
     }
 
-    public function show($receiverId)
+    public function show($receiverId, Request $request)
     {
-        $sender = Auth::user();
+        $sender   = Auth::user();
         $receiver = User::findOrFail($receiverId);
+        $orderId  = $request->query('order_id');
 
-        // Ambil semua unread sebelum di-update
-        $unread = Chat::where('sender_id', $receiver->id)
+        // Scope pesan berdasarkan order_id
+        $query = Chat::where(function ($q) use ($sender, $receiver) {
+            $q->where(function ($q2) use ($sender, $receiver) {
+                $q2->where('sender_id', $sender->id)
+                    ->where('receiver_id', $receiver->id);
+            })->orWhere(function ($q2) use ($sender, $receiver) {
+                $q2->where('sender_id', $receiver->id)
+                    ->where('receiver_id', $sender->id);
+            });
+        });
+
+        if ($orderId) {
+            $query->where('order_id', $orderId);
+        }
+
+        // Mark read
+        $unread = (clone $query)
             ->where('receiver_id', $sender->id)
             ->whereNull('read_at')
             ->get();
 
         if ($unread->isNotEmpty()) {
-            // Update semua sekaligus
-            Chat::whereIn('id', $unread->pluck('id'))
-                ->update(['read_at' => now()]);
+            Chat::whereIn('id', $unread->pluck('id'))->update(['read_at' => now()]);
 
-            // Broadcast langsung — bukan toOthers() agar tidak delay
-            broadcast(new \App\Events\ChatRead([
+            broadcast(new ChatRead([
                 'reader_id' => $sender->id,
                 'sender_id' => $receiver->id,
+                'order_id'  => $orderId,
                 'chat_ids'  => $unread->pluck('id')->toArray(),
             ]));
         }
 
-        $chats = Chat::where(function ($q) use ($sender, $receiver) {
-                $q->where('sender_id', $sender->id)->where('receiver_id', $receiver->id);
-            })
-            ->orWhere(function ($q) use ($sender, $receiver) {
-                $q->where('sender_id', $receiver->id)->where('receiver_id', $sender->id);
-            })
-            ->orderBy('created_at')
-            ->get();
+        $chats = $query->orderBy('created_at')->get();
+        $order = $orderId ? Order::find($orderId) : null;
 
-        return view('chat.show-chat', compact('chats', 'receiver'));
+        // dd(
+        //     $orderId,
+        //     $query->count(),
+        //     $query->pluck('message', 'order_id')
+        // );
+
+        return view('chat.show-chat', compact('chats', 'receiver', 'order'));
     }
 
     public function sendChat(Request $request)
     {
         $request->validate([
             'receiver_id' => 'required',
-            'message' => 'required',
+            'message'     => 'required',
+            'order_id'    => 'nullable|exists:orders,id',
         ]);
 
-        $sender = Auth::user();
+        $sender   = Auth::user();
         $receiver = User::findOrFail($request->receiver_id);
 
-        // setiap pesan harus create row baru
         $chat = Chat::create([
-            'sender_id' => $sender->id,
-            'receiver_id' => $receiver->id,
-            'sender_role' => $sender->getRoleNames()->first(),
+            'sender_id'     => $sender->id,
+            'receiver_id'   => $receiver->id,
+            'order_id'      => $request->order_id ?? null,
+            'sender_role'   => $sender->getRoleNames()->first(),
             'receiver_role' => $receiver->getRoleNames()->first(),
-            'message' => $request->message,
+            'message'       => $request->message,
         ]);
 
         broadcast(new ChatSent($chat))->toOthers();
@@ -110,17 +126,19 @@ class ChatController extends Controller
                 'id'          => $chat->id,
                 'sender_id'   => $chat->sender_id,
                 'receiver_id' => $chat->receiver_id,
+                'order_id'    => $chat->order_id,
                 'message'     => $chat->message,
                 'created_at'  => $chat->created_at->format('H:i'),
-                'read_at'     => $chat->read_at, // ← tambah ini
+                'read_at'     => $chat->read_at,
             ]
         ]);
     }
 
-    // API endpoint untuk polling unread count
     public function unreadCount()
     {
-        $count = Chat::unreadFor(auth()->id())->count();
+        $count = Chat::where('receiver_id', auth()->id())
+            ->whereNull('read_at')
+            ->count();
         return response()->json(['count' => $count]);
     }
 
@@ -139,9 +157,10 @@ class ChatController extends Controller
 
         Chat::whereIn('id', $chats->pluck('id'))->update(['read_at' => now()]);
 
-        broadcast(new \App\Events\ChatRead([
+        broadcast(new ChatRead([
             'reader_id' => $user->id,
             'sender_id' => $chats->first()->sender_id,
+            'order_id'  => $chats->first()->order_id,
             'chat_ids'  => $chats->pluck('id')->toArray(),
         ]));
 
