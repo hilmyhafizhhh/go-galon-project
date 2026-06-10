@@ -232,30 +232,43 @@ class CourierTaskController extends Controller
 
         return response()->json(['success' => true]);
     }
-    
     public function poll()
     {
         $courierId = Auth::id();
         $today     = Carbon::today();
 
-        $taskCount = Task::where('courier_id', $courierId)
+        $todayTasks     = Task::where('courier_id', $courierId)->whereDate('created_at', $today)->count();
+        $completedToday = Task::where('courier_id', $courierId)->whereDate('created_at', $today)->where('status', 'completed')->count();
+        $pendingToday   = Task::where('courier_id', $courierId)->whereDate('created_at', $today)->whereIn('status', ['pending', 'picked_up'])->count();
+
+        $tasks = Task::with(['order.user', 'order.address'])
+            ->where('courier_id', $courierId)
             ->join('orders', 'tasks.order_id', '=', 'orders.id')
             ->whereIn('tasks.status', ['pending', 'picked_up'])
             ->where(function ($q) use ($today) {
                 $q->whereDate('tasks.created_at', $today)
                     ->orWhereDate('tasks.pickup_date', $today);
             })
-            ->count();
-
-        $todayTasks     = Task::where('courier_id', $courierId)->whereDate('created_at', $today)->count();
-        $completedToday = Task::where('courier_id', $courierId)->whereDate('created_at', $today)->where('status', 'completed')->count();
-        $pendingToday   = Task::where('courier_id', $courierId)->whereDate('created_at', $today)->whereIn('status', ['pending', 'picked_up'])->count();
+            ->select('tasks.*') // penting karena ada join, hindari ambiguous column
+            ->latest('tasks.created_at')
+            ->get()
+            ->map(fn($t) => [
+                'id'            => $t->id,
+                'status'        => $t->status,
+                'order_code'    => $t->order->order_code ?? '-',
+                'customer_name' => $t->order->user->name ?? '-',
+                'address'       => \Str::limit($t->order->address->address ?? '-', 52),
+                'phone'         => $t->order->user->phone ?? '',
+                'dest_lat'      => $t->order->address->latitude ?? null,
+                'dest_lng'      => $t->order->address->longitude ?? null,
+            ]);
 
         return response()->json([
-            'taskCount'      => $taskCount,
+            'taskCount'      => $tasks->count(),
             'todayTasks'     => $todayTasks,
             'completedToday' => $completedToday,
             'pendingToday'   => $pendingToday,
+            'tasks'          => $tasks,
         ]);
     }
 }
