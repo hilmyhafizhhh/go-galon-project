@@ -4,8 +4,7 @@
         {{-- ── Header ── --}}
         <div class="ef-chatshow__header">
             <div class="ef-chatshow__header-inner">
-                <a href="{{ auth()->user()->hasRole('customer') ? route('customer.chat') : route('courier.chat') }}"
-                    class="ef-chatshow__back">
+                <a href="{{ url()->previous() }}" class="ef-chatshow__back">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 12H5M12 5l-7 7 7 7" />
@@ -76,140 +75,184 @@
 
                 {{-- Input --}}
                 {{-- Input --}}
-                <div class="ef-chatshow__input-bar">
-                    <div class="ef-chatshow__input-wrap" style="display:flex;align-items:center;gap:.5rem;">
 
-                        {{-- Quick Reply — hanya untuk kurir --}}
-                        @if(auth()->user()->hasRole('courier'))
-                            <div class="qr-wrap">
-                                <button class="qr-toggle" id="qrToggle" onclick="toggleQR()" title="Pesan Cepat">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                                    </svg>
-                                </button>
+                @if($chatLocked)
+                    <div style="
+                                            padding: 1rem 1.25rem;
+                                            background: #f8fafc;
+                                            border-top: 1px solid #e8ecf4;
+                                            display: flex;
+                                            align-items: center;
+                                            gap: .75rem;
+                                        ">
+                        <div style="
+                                                width: 36px;
+                                                height: 36px;
+                                                border-radius: 10px;
+                                                background: #f1f5f9;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                flex-shrink: 0;
+                                            ">
+                            🔒
+                        </div>
 
-                                <div class="qr-sheet" id="qrSheet">
-                                    <div class="qr-header">
-                                        <span class="qr-title">
-                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                                stroke-linejoin="round">
-                                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                                            </svg>
-                                            Pesan Cepat
-                                        </span>
-                                        <svg class="qr-chevron" id="qrChevron" width="14" height="14" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                            stroke-linejoin="round" onclick="toggleQR()">
-                                            <path d="M18 15l-6-6-6 6" />
-                                        </svg>
-                                    </div>
-                                    <div class="qr-list">
-                                        @php
-                                            $quickReplies = [
-                                                '👋 Halo! Pesanan Anda sedang saya proses.',
-                                                '🚴 Saya sedang dalam perjalanan menuju lokasi Anda.',
-                                                '📍 Saya sudah tiba di depan lokasi Anda.',
-                                                '⏳ Mohon ditunggu, saya sedang mengambil pesanan galon Anda.',
-                                                '🪣 Galon sudah saya angkat, segera diantar.',
-                                                '🏠 Apakah pesanan bisa saya taruh di depan pintu?',
-                                                '📞 Tidak bisa menemukan lokasi, bisa hubungi saya?',
-                                                '✅ Pesanan sudah diterima, terima kasih sudah memesan!',
-                                                '🔄 Apakah galon lama ingin ditukar sekarang?',
-                                                '💧 Stok galon tersedia, pesanan segera dikirim.',
-                                            ];
-                                        @endphp
-
-                                        @foreach($quickReplies as $reply)
-                                            <div class="qr-item" onclick="useQuickReply({{ json_encode($reply) }})">
-                                                {{ $reply }}
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
+                        <div>
+                            <div style="
+                                                    font-size: .78rem;
+                                                    font-weight: 600;
+                                                    color: #475569;
+                                                ">
+                                Chat Ditutup
                             </div>
-                        @elseif(auth()->user()->hasRole('customer'))
-                            <div class="qr-wrap">
-                                <button class="qr-toggle" id="qrToggle" onclick="toggleQR()" title="Pesan Cepat">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                                    </svg>
-                                </button>
 
-                                <div class="qr-sheet" id="qrSheet">
-                                    <div class="qr-header">
-                                        <span class="qr-title">
-                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                                stroke-linejoin="round">
-                                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                                            </svg>
-                                            Pesan Cepat
-                                        </span>
-                                        <svg class="qr-chevron" id="qrChevron" width="14" height="14" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                            stroke-linejoin="round" onclick="toggleQR()">
-                                            <path d="M18 15l-6-6-6 6" />
-                                        </svg>
-                                    </div>
-                                    <div class="qr-list">
-                                        @php
-                                            $quickReplies = [
-                                                '📍 Saya ada di dalam, tolong taruh di depan pintu ya.',
-                                                '🏠 Titip di depan pintu aja, makasih!',
-                                                '📞 Bisa telepon saya saat sudah sampai?',
-                                                '⏳ Ditunggu ya, saya segera ke bawah.',
-                                                '🔔 Tolong pencet bel kalau sudah sampai.',
-                                                '🗺️ Lokasi saya sudah benar, lanjut aja ya.',
-                                                '💧 Galon lamanya siap untuk ditukar.',
-                                                '🛗 Naik lift lantai 3, unit 302.',
-                                                '🚗 Taruh di depan pos satpam ya bang.',
-                                                '✅ Oke, saya tunggu. Makasih!',
-                                            ];
-                                        @endphp
-
-                                        @foreach($quickReplies as $reply)
-                                            <div class="qr-item" onclick="useQuickReply({{ json_encode($reply) }})">
-                                                {{ $reply }}
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
+                            <div style="
+                                                    font-size: .68rem;
+                                                    color: #94a3b8;
+                                                    margin-top: 2px;
+                                                ">
+                                {{ $lockedReason }}
                             </div>
-                        @endif
-
-                        <input id="messageInput" type="text" placeholder="Tulis pesan..." class="ef-chatshow__input"
-                            style="flex:1;" onkeydown="if(event.key==='Enter')sendChat()">
-
-                        <button onclick="sendChat()" class="ef-chatshow__send" id="sendBtn">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="22" y1="2" x2="11" y2="13" />
-                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                            </svg>
-                        </button>
+                        </div>
                     </div>
-                </div>
+
+                @else
+                    <div class="ef-chatshow__input-bar">
+                        <div class="ef-chatshow__input-wrap" style="display:flex;align-items:center;gap:.5rem;">
+
+                            {{-- Quick Reply — hanya untuk kurir --}}
+                            @if(auth()->user()->hasRole('courier'))
+                                <div class="qr-wrap">
+                                    <button class="qr-toggle" id="qrToggle" onclick="toggleQR()" title="Pesan Cepat">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                                        </svg>
+                                    </button>
+
+                                    <div class="qr-sheet" id="qrSheet">
+                                        <div class="qr-header">
+                                            <span class="qr-title">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                                                    stroke-linejoin="round">
+                                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                                                </svg>
+                                                Pesan Cepat
+                                            </span>
+                                            <svg class="qr-chevron" id="qrChevron" width="14" height="14" viewBox="0 0 24 24"
+                                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                                stroke-linejoin="round" onclick="toggleQR()">
+                                                <path d="M18 15l-6-6-6 6" />
+                                            </svg>
+                                        </div>
+                                        <div class="qr-list">
+                                            @php
+                                                $quickReplies = [
+                                                    '👋 Halo! Pesanan Anda sedang saya proses.',
+                                                    '🚴 Saya sedang dalam perjalanan menuju lokasi Anda.',
+                                                    '📍 Saya sudah tiba di depan lokasi Anda.',
+                                                    '⏳ Mohon ditunggu, saya sedang mengambil pesanan galon Anda.',
+                                                    '🪣 Galon sudah saya angkat, segera diantar.',
+                                                    '🏠 Apakah pesanan bisa saya taruh di depan pintu?',
+                                                    '📞 Tidak bisa menemukan lokasi, bisa hubungi saya?',
+                                                    '✅ Pesanan sudah diterima, terima kasih sudah memesan!',
+                                                    '🔄 Apakah galon lama ingin ditukar sekarang?',
+                                                    '💧 Stok galon tersedia, pesanan segera dikirim.',
+                                                ];
+                                            @endphp
+
+                                            @foreach($quickReplies as $reply)
+                                                <div class="qr-item" onclick="useQuickReply({{ json_encode($reply) }})">
+                                                    {{ $reply }}
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif(auth()->user()->hasRole('customer'))
+                                <div class="qr-wrap">
+                                    <button class="qr-toggle" id="qrToggle" onclick="toggleQR()" title="Pesan Cepat">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                                        </svg>
+                                    </button>
+
+                                    <div class="qr-sheet" id="qrSheet">
+                                        <div class="qr-header">
+                                            <span class="qr-title">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                                                    stroke-linejoin="round">
+                                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                                                </svg>
+                                                Pesan Cepat
+                                            </span>
+                                            <svg class="qr-chevron" id="qrChevron" width="14" height="14" viewBox="0 0 24 24"
+                                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                                stroke-linejoin="round" onclick="toggleQR()">
+                                                <path d="M18 15l-6-6-6 6" />
+                                            </svg>
+                                        </div>
+                                        <div class="qr-list">
+                                            @php
+                                                $quickReplies = [
+                                                    '📍 Saya ada di dalam, tolong taruh di depan pintu ya.',
+                                                    '🏠 Titip di depan pintu aja, makasih!',
+                                                    '📞 Bisa telepon saya saat sudah sampai?',
+                                                    '⏳ Ditunggu ya, saya segera ke bawah.',
+                                                    '🔔 Tolong pencet bel kalau sudah sampai.',
+                                                    '🗺️ Lokasi saya sudah benar, lanjut aja ya.',
+                                                    '💧 Galon lamanya siap untuk ditukar.',
+                                                    '🛗 Naik lift lantai 3, unit 302.',
+                                                    '🚗 Taruh di depan pos satpam ya bang.',
+                                                    '✅ Oke, saya tunggu. Makasih!',
+                                                ];
+                                            @endphp
+
+                                            @foreach($quickReplies as $reply)
+                                                <div class="qr-item" onclick="useQuickReply({{ json_encode($reply) }})">
+                                                    {{ $reply }}
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <input id="messageInput" type="text" placeholder="Tulis pesan..." class="ef-chatshow__input"
+                                style="flex:1;" onkeydown="if(event.key==='Enter')sendChat()">
+
+                            <button onclick="sendChat()" class="ef-chatshow__send" id="sendBtn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13" />
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                @endif
 
             </div>
         </div>
     </div>
 
     <script>
-           let hiddenAt = null;
+        let hiddenAt = null;
 
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'hidden') {
-                    hiddenAt = Date.now();
-                } else if (document.visibilityState === 'visible') {
-                    // Reload kalau sudah lebih dari 3 detik meninggalkan halaman
-                    if (hiddenAt && Date.now() - hiddenAt > 3000) {
-                        window.location.reload();
-                    }
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                hiddenAt = Date.now();
+            } else if (document.visibilityState === 'visible') {
+                // Reload kalau sudah lebih dari 3 detik meninggalkan halaman
+                if (hiddenAt && Date.now() - hiddenAt > 3000) {
+                    window.location.reload();
                 }
-            });
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             const authId = @json(auth()->id());
@@ -231,14 +274,33 @@
 
                 axios.post(
                     '{{ auth()->user()->hasRole('customer') ? '/customer/chat/send' : '/courier/chat/send' }}',
-                    { receiver_id: receiverId, message: msg, order_id: orderId }
-                ).then(res => {
-                    appendMessage(res.data.chat, true);
-                    if (!message) input.value = '';
-                }).finally(() => {
-                    sendBtn.disabled = false;
-                    input.focus();
-                });
+                    {
+                        receiver_id: receiverId,
+                        message: msg,
+                        order_id: orderId
+                    }
+                )
+                    .then(res => {
+                        appendMessage(res.data.chat, true);
+
+                        if (!message) {
+                            input.value = '';
+                        }
+                    })
+                    .catch(err => {
+                        if (err.response?.status === 403) {
+                            alert(err.response.data.message);
+
+                            window.location.reload();
+                        }
+                    })
+                    .finally(() => {
+                        sendBtn.disabled = false;
+
+                        if (input) {
+                            input.focus();
+                        }
+                    });
             };
 
             if (!window.Echo) { console.error('Laravel Echo belum ada'); return; }

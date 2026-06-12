@@ -11,3 +11,7 @@ Artisan::command('inspire', function () {
 Schedule::command('orders:cancel-expired')
     ->dailyAt('00:00')
     ->timezone('Asia/Jakarta');
+
+Schedule::command('chats:cleanup')
+    ->dailyAt('00:00')
+    ->timezone('Asia/Jakarta');
