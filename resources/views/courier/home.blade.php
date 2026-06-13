@@ -718,6 +718,59 @@
             font-size: .58rem !important;
             background: rgba(255, 255, 255, .85) !important;
         }
+
+        .delivery-popup {
+            width: 500px;
+            border-radius: 24px;
+            padding: 24px;
+        }
+        
+        .delivery-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #dcfce7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .delivery-icon i {
+            font-size: 36px;
+            color: #22c55e;
+        }
+        
+        .delivery-text {
+            margin-top: 10px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+        
+        .delivery-confirm {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 14px;
+            background: #22c55e;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .delivery-confirm:hover {
+            background: #16a34a;
+        }
+        
+        .delivery-cancel {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 14px;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+        }
     </style>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -977,6 +1030,7 @@
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
        let hiddenAt = null;
 
@@ -1294,11 +1348,38 @@
         }
 
         /* ── Deliver ───────────────────────────────── */
-        function deliverTask(id, btn) {
-            if (!confirm('Konfirmasi: barang sudah diserahkan ke customer?')) return;
+        /* ── Deliver ───────────────────────────────── */
+        async function deliverTask(id, btn) {
+            
+            const result = await Swal.fire({
+                title: 'Pesanan Sudah Diterima?',
+                html: `
+                <div class="delivery-icon">
+                    <i class="fas fa-box-open"></i>
+                    </div>
+                    <p class="delivery-text">
+                        Pastikan pesanan telah diterima oleh customer.
+                        Status pesanan akan diubah menjadi <b>Selesai</b>.
+                    </p>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-check"></i> Ya, Pesanan Diterima',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#22c55e',
+                cancelButtonColor: '#f1f5f9',
+                customClass: {
+                    popup: 'delivery-popup',
+                    confirmButton: 'delivery-confirm',
+                    cancelButton: 'delivery-cancel'
+                },
+                buttonsStyling: false
+            });
+            
+            if (!result.isConfirmed) return;
+            
             btn.disabled = true;
-            btn.innerHTML = '⏳ Memproses…';
-
+            btn.innerHTML = '⏳ Memproses...';
+            
             fetch(`/courier/tasks/${id}/deliver`, {
                 method: 'POST',
                 headers: {
@@ -1306,27 +1387,74 @@
                     'Accept': 'application/json'
                 }
             })
-                .then(r => r.json())
-                .then(d => {
-                    if (d.success) {
-                        if (gpsTimers[id]) {
-                            clearInterval(gpsTimers[id]);
-                            delete gpsTimers[id];
-                        }
-                        toast('🎉 Pesanan berhasil diantarkan!', 'success');
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        toast('Gagal: ' + (d.message ?? 'Coba lagi'), 'error');
-                        btn.disabled = false;
-                        btn.innerHTML = 'Konfirmasi Sudah Terkirim';
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    
+                    if (gpsTimers[id]) {
+                        clearInterval(gpsTimers[id]);
+                        delete gpsTimers[id];
                     }
-                })
-                .catch(() => {
-                    toast('Kesalahan koneksi', 'error');
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: 'Pesanan berhasil diantarkan.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    
+                    setTimeout(() => location.reload(), 1500);
+                
+                } else {
+                    
+                    toast('Gagal: ' + (d.message ?? 'Coba lagi'), 'error');
+                    
                     btn.disabled = false;
                     btn.innerHTML = 'Konfirmasi Sudah Terkirim';
-                });
+                }
+            })
+            .catch(() => {
+                
+                toast('Kesalahan koneksi', 'error');
+                
+                btn.disabled = false;
+                btn.innerHTML = 'Konfirmasi Sudah Terkirim';
+            });
         }
+        // function deliverTask(id, btn) {
+        //     if (!confirm('Konfirmasi: barang sudah diserahkan ke customer?')) return;
+        //     btn.disabled = true;
+        //     btn.innerHTML = '⏳ Memproses…';
+
+        //     fetch(`/courier/tasks/${id}/deliver`, {
+        //         method: 'POST',
+        //         headers: {
+        //             'X-CSRF-TOKEN': CSRF,
+        //             'Accept': 'application/json'
+        //         }
+        //     })
+        //         .then(r => r.json())
+        //         .then(d => {
+        //             if (d.success) {
+        //                 if (gpsTimers[id]) {
+        //                     clearInterval(gpsTimers[id]);
+        //                     delete gpsTimers[id];
+        //                 }
+        //                 toast('🎉 Pesanan berhasil diantarkan!', 'success');
+        //                 setTimeout(() => location.reload(), 1000);
+        //             } else {
+        //                 toast('Gagal: ' + (d.message ?? 'Coba lagi'), 'error');
+        //                 btn.disabled = false;
+        //                 btn.innerHTML = 'Konfirmasi Sudah Terkirim';
+        //             }
+        //         })
+        //         .catch(() => {
+        //             toast('Kesalahan koneksi', 'error');
+        //             btn.disabled = false;
+        //             btn.innerHTML = 'Konfirmasi Sudah Terkirim';
+        //         });
+        // }
 
         (function () {
             const authId = @json(auth()->id());

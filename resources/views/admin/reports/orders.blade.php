@@ -21,10 +21,25 @@
         <tbody>
             @foreach ($orders as $order)
             <tr>
-                <td class="border px-4 py-2">{{ $order->id }}</td>
-                <td class="border px-4 py-2">{{ $order->customer_name }}</td>
+                <td class="border px-4 py-2">{{ $order->order_code }}</td>
+                {{-- <td class="border px-4 py-2">{{ $order->customer_name }}</td>
                 <td class="border px-4 py-2">{{ $order->product->name }}</td>
-                <td class="border px-4 py-2">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                <td class="border px-4 py-2">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td> --}}
+                <td class="border px-4 py-2">
+                    {{ $order->user->name ?? '-' }}
+                </td>
+                
+                <td class="border px-4 py-2">
+                    @foreach($order->items as $item)
+                    {{ $item->product->name ?? '-' }}
+                    @if(!$loop->last), @endif
+                    @endforeach
+                </td>
+                
+                <td class="border px-4 py-2">
+                    Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                </td>
+
                 <td class="border px-4 py-2">{{ ucfirst($order->status) }}</td>
                 <td class="border px-4 py-2">{{ $order->created_at->format('d M Y') }}</td>
             </tr>

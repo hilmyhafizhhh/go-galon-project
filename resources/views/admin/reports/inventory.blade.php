@@ -11,11 +11,11 @@
             <thead class="bg-gray-200">
                 <tr>
                     <th class="px-4 py-2">Nama Produk</th>
-                    <th class="px-4 py-2">Kategori</th>
                     <th class="px-4 py-2">Volume</th>
                     <th class="px-4 py-2">Harga</th>
                     <th class="px-4 py-2">Stok</th>
-                    <th class="px-4 py-2">Status</th>
+                    {{-- <th class="px-4 py-2">Stok</th>
+                    <th class="px-4 py-2">Status</th> --}}
                 </tr>
             </thead>
             <tbody>
@@ -23,10 +23,10 @@
                     <tr>
                         <td class="border px-4 py-2">{{ $product->name }}</td>
                         {{-- <td class="border px-4 py-2">{{ $product->category }}</td> --}}
-                        <td class="border px-4 py-2">{{ $product->volume_l }} ml</td>
+                        <td class="border px-4 py-2">{{ $product->volume_l }} L</td>
                         <td class="border px-4 py-2">Rp {{ number_format($product->price, 0, ',', '.') }}</td>
                         <td class="border px-4 py-2">{{ $product->stock }}</td>
-                        <td class="border px-4 py-2">{{ ucfirst($product->status) }}</td>
+                        {{-- <td class="border px-4 py-2">{{ ucfirst($product->status) }}</td> --}}
                     </tr>
                 @endforeach
             </tbody>

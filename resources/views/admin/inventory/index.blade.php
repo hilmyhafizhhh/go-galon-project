@@ -8,12 +8,12 @@
 <h1 class="text-2xl font-bold text-gray-800 mb-6">INVENTORY</h1>
 
 {{-- BLOK NOTIFIKASI MULAI DI SINI --}}
-@if(session('success'))
+{{-- @if(session('success'))
     <div class="mb-6 px-4 py-3 bg-green-100 border border-green-400 text-green-700 rounded relative" role="alert">
         <strong class="font-bold">Berhasil!</strong>
         <span class="block sm:inline">{{ session('success') }}</span>
     </div>
-@endif
+@endif --}}
 {{-- BLOK NOTIFIKASI SELESAI --}}
 
 <div class="mb-4 flex justify-between">
@@ -50,7 +50,7 @@
             <tr>
                 <th class="px-4 py-2 text-left">Gambar</th>
                 <th class="px-4 py-2 text-left">Nama Barang</th>
-                <th class="px-4 py-2 text-left">Kategori</th>
+                {{-- <th class="px-4 py-2 text-left">Kategori</th> --}}
                 <th class="px-4 py-2 text-left">Volume (L)</th>
                 <th class="px-4 py-2 text-left">Stok</th>
                 <th class="px-4 py-2 text-left">Harga</th>
@@ -65,7 +65,7 @@
                     class="w-16 h-16 object-cover rounded">
                 </td>
                 <td class="border px-4 py-2">{{ $p->name }}</td>
-                <td class="border px-4 py-2">{{ $p->category }}</td>
+                {{-- <td class="border px-4 py-2">{{ $p->category }}</td> --}}
                 <td class="border px-4 py-2">{{ $p->volume_l }}</td>
                 <td class="border px-4 py-2">{{ $p->stock }}</td>
                 <td class="border px-4 py-2">Rp {{ number_format($p->price, 0, ',', '.') }}</td>
@@ -73,12 +73,26 @@
                     <a href="{{ route('admin.inventory.edit', $p->id) }}"
                        class="bg-yellow-500 text-white px-3 py-1 rounded">Edit</a>
 
-                    <form action="{{ route('admin.inventory.destroy', $p->id) }}" method="POST"
+                       <form id="delete-form-{{ $p->id }}"
+      action="{{ route('admin.inventory.destroy', $p->id) }}"
+      method="POST"
+      class="inline">
+    @csrf
+    @method('DELETE')
+
+    <button type="button"
+            onclick="confirmDelete('{{ $p->id }}')"
+            class="bg-red-600 text-white px-3 py-1 rounded">
+        Hapus
+    </button>
+</form>
+
+                    {{-- <form action="{{ route('admin.inventory.destroy', $p->id) }}" method="POST"
                           onsubmit="return confirm('Hapus barang ini?');">
                         @csrf
                         @method('DELETE')
                         <button class="bg-red-600 text-white px-3 py-1 rounded">Hapus</button>
-                    </form>
+                    </form> --}}
                 </td>
             </tr>
             @empty
@@ -95,4 +109,63 @@
         {{ $products->links() }}
     </div>
 </div>
+
+<script>
+function confirmDelete(id) {
+    Swal.fire({
+        title: 'Hapus Produk?',
+        html: `
+            <div style="font-size:14px;color:#6b7280">
+                Produk yang dihapus tidak dapat dikembalikan.
+            </div>
+        `,
+        // text: 'Produk yang dihapus tidak dapat dikembalikan!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        borderRadius: '20px'
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+            Swal.fire({
+                title: 'Menghapus...',
+                text: 'Mohon tunggu',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            document.getElementById('delete-form-' + id).submit();
+        }
+    });
+}
+</script>
+
+@if(session('success'))
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: '{{ session('success') }}',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#ffffff',
+        color: '#111827',
+        width: '420px',
+        customClass: {
+            popup: 'shadow-lg rounded-xl'
+        }
+    });
+});
+</script>
+@endif
 @endsection

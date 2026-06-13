@@ -24,6 +24,9 @@
                                 <span class="ef-chatshow__status-dot"></span>Online
                             @endif
                         </p>
+                        {{-- <p class="ef-chatshow__peer-status">
+                            <span class="ef-chatshow__status-dot"></span>Online
+                        </p> --}}
                     </div>
                 </div>
             </div>

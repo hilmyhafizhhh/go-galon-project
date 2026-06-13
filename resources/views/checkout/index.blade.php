@@ -461,6 +461,9 @@
             background: var(--surface);
             padding: 16px 20px 18px;
             border-bottom: 1px solid var(--border);
+
+            max-width: 760px; /* sesuaikan */
+            margin: 0 auto;
         }
 
         .co-progress {
