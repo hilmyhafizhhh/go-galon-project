@@ -103,21 +103,6 @@
     box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
 }
 
-.ef-chatshow__online-dot {
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    width: 10px;
-    height: 10px;
-    background: #22c55e;
-    border-radius: 50%;
-    border: 2px solid white;
-}
-
-.dark .ef-chatshow__online-dot {
-    border-color: #0b1120;
-}
-
 .ef-chatshow__peer-text {
     min-width: 0;
     display: flex;
@@ -144,7 +129,7 @@
     align-items: center;
     gap: 4px;
     font-size: 0.68rem;
-    color: #22c55e;
+    color: #94a3b8;
     font-weight: 600;
     line-height: 1;
 }

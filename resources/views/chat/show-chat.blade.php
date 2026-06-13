@@ -14,12 +14,15 @@
                 <div class="ef-chatshow__peer">
                     <div class="ef-chatshow__avatar">
                         {{ strtoupper(substr($receiver->name, 0, 1)) }}
-                        <span class="ef-chatshow__online-dot"></span>
                     </div>
                     <div class="ef-chatshow__peer-text">
                         <p class="ef-chatshow__peer-name">{{ $receiver->name }}</p>
                         <p class="ef-chatshow__peer-status">
-                            <span class="ef-chatshow__status-dot"></span>Online
+                            @if($order)
+                                #{{ $order->order_code }}
+                            @else
+                                <span class="ef-chatshow__status-dot"></span>Online
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -78,40 +81,40 @@
 
                 @if($chatLocked)
                     <div style="
-                                            padding: 1rem 1.25rem;
-                                            background: #f8fafc;
-                                            border-top: 1px solid #e8ecf4;
-                                            display: flex;
-                                            align-items: center;
-                                            gap: .75rem;
-                                        ">
+                                                    padding: 1rem 1.25rem;
+                                                    background: #f8fafc;
+                                                    border-top: 1px solid #e8ecf4;
+                                                    display: flex;
+                                                    align-items: center;
+                                                    gap: .75rem;
+                                                ">
                         <div style="
-                                                width: 36px;
-                                                height: 36px;
-                                                border-radius: 10px;
-                                                background: #f1f5f9;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                                flex-shrink: 0;
-                                            ">
+                                                        width: 36px;
+                                                        height: 36px;
+                                                        border-radius: 10px;
+                                                        background: #f1f5f9;
+                                                        display: flex;
+                                                        align-items: center;
+                                                        justify-content: center;
+                                                        flex-shrink: 0;
+                                                    ">
                             🔒
                         </div>
 
                         <div>
                             <div style="
-                                                    font-size: .78rem;
-                                                    font-weight: 600;
-                                                    color: #475569;
-                                                ">
+                                                            font-size: .78rem;
+                                                            font-weight: 600;
+                                                            color: #475569;
+                                                        ">
                                 Chat Ditutup
                             </div>
 
                             <div style="
-                                                    font-size: .68rem;
-                                                    color: #94a3b8;
-                                                    margin-top: 2px;
-                                                ">
+                                                            font-size: .68rem;
+                                                            color: #94a3b8;
+                                                            margin-top: 2px;
+                                                        ">
                                 {{ $lockedReason }}
                             </div>
                         </div>
