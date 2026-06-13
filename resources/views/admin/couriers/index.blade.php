@@ -7,11 +7,11 @@
 <h1 class="text-2xl font-bold text-gray-800 mb-6">KURIR</h1>
 
 {{-- ✅ Notifikasi --}}
-@if(session('success'))
+{{-- @if(session('success'))
     <div class="bg-green-100 text-green-700 px-4 py-2 rounded mb-4">
         {{ session('success') }}
     </div>
-@endif
+@endif --}}
 
 {{-- 🔍 Filter dan Tombol Tambah --}}
 <div class="bg-white shadow-md rounded-lg p-6 mb-6">
@@ -67,12 +67,25 @@
                         {{ ucfirst($courier->status) }}
                     </td>
                     <td class="border px-4 py-2">
-                        <a href="{{ route('admin.couriers.edit', $courier->id) }}" class="text-blue-600 hover:underline">Edit</a> |
-                        <form action="{{ route('admin.couriers.destroy', $courier->id) }}" method="POST" class="inline">
+                        <a href="{{ route('admin.couriers.edit', $courier->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded">Edit</a>
+                        <form id="delete-form-{{ $courier->id }}"
+      action="{{ route('admin.couriers.destroy', $courier->id) }}"
+      method="POST"
+      class="inline">
+    @csrf
+    @method('DELETE')
+
+    <button type="button"
+            onclick="confirmDelete('{{ $courier->id }}')"
+            class="bg-red-600 text-white px-3 py-1 rounded">
+        Hapus
+    </button>
+</form>
+                        {{-- <form action="{{ route('admin.couriers.destroy', $courier->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" onclick="return confirm('Hapus data kurir ini?')" class="text-red-600 hover:underline">Hapus</button>
-                        </form>
+                        </form> --}}
                     </td>
                 </tr>
             @empty
@@ -85,4 +98,74 @@
         {{ $couriers->withQueryString()->links() }}
     </div>
 </div>
+
+<script>
+function confirmDelete(id) {
+    Swal.fire({
+        title: 'Hapus Data Kurir?',
+        html: `
+            <div style="font-size:14px;color:#6b7280">
+                Data kurir yang dihapus tidak dapat dikembalikan.
+            </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus Sekarang',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#d1d5db',
+        reverseButtons: true,
+        borderRadius: '20px'
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+            Swal.fire({
+                title: 'Menghapus...',
+                text: 'Mohon tunggu',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            document.getElementById('delete-form-' + id).submit();
+        }
+    });
+}
+</script>
+
+{{-- @if(session('success'))
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Berhasil!',
+    text: '{{ session('success') }}',
+    confirmButtonColor: '#16a34a'
+});
+</script>
+@endif --}}
+@if(session('success'))
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: '{{ session('success') }}',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#ffffff',
+        color: '#111827',
+        width: '420px',
+        customClass: {
+            popup: 'shadow-lg rounded-xl'
+        }
+    });
+
+});
+</script>
+@endif
 @endsection

@@ -397,6 +397,10 @@
         #tracker-link-wrap.show {
             display: block;
         }
+
+        .leaflet-marker-icon { 
+            transition: transform 0.15s linear;
+        }
     </style>
 </head>
 
@@ -520,6 +524,8 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    {{-- tambahan script baru --}}
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
     <script>
         /* ═══════════════════════════════════════════════════════════
            GPS SIMULATOR — Production-grade demo tool
@@ -553,6 +559,48 @@
                 html: `<div style="background:${color};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${Math.round(size * .46)}px;box-shadow:0 3px 10px rgba(0,0,0,.25);border:2.5px solid #fff;">${emoji}</div>`,
                 iconSize: [size, size], iconAnchor: [size / 2, size / 2],
             });
+        }
+
+        // Animasi marker agar bergerak smooth (tambahan script baru)
+        function animateMarker(marker, from, to, duration = 1000) {
+            const start = performance.now();
+            
+            function animateFrame(time) {
+                const progress = Math.min((time - start) / duration, 1);
+                
+                // Easing supaya gerakan lebih natural
+                const ease = progress < 0.5
+                ? 2 * progress * progress
+                : -1 + (4 - 2 * progress) * progress;
+                
+                const lat = from.lat + (to.lat - from.lat) * ease;
+                const lng = from.lng + (to.lng - from.lng) * ease;
+                
+                marker.setLatLng([lat, lng]);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateFrame);
+                }
+            }
+            
+            requestAnimationFrame(animateFrame);
+        }
+        
+        // Hitung arah (bearing)
+        function getBearing(start, end) {
+            const lat1 = start.lat * Math.PI / 180;
+            const lon1 = start.lng * Math.PI / 180;
+            const lat2 = end.lat * Math.PI / 180;
+            const lon2 = end.lng * Math.PI / 180;
+            
+            const dLon = lon2 - lon1;
+            
+            const y = Math.sin(dLon) * Math.cos(lat2);
+            const x =
+            Math.cos(lat1) * Math.sin(lat2) -
+            Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+            
+            return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
         }
 
         /* ── Log helper ─────────────────────────────── */
@@ -625,10 +673,23 @@
                 }).addTo(map);
                 routeLayer = [glow, line];
 
+
                 // Markers
                 depotMarker = L.marker([data.depot_lat, data.depot_lng], { icon: mkIcon('🏪', '#2563eb') }).addTo(map).bindPopup('<b>Depot</b>');
                 destMarker = L.marker([data.dest_lat, data.dest_lng], { icon: mkIcon('🏠', '#dc2626') }).addTo(map).bindPopup('<b>Tujuan Customer</b>');
-                courierMarker = L.marker(routeCoords[0], { icon: mkIcon('🛵', '#16a34a', 44), zIndexOffset: 1000 }).addTo(map).bindPopup('<b>Posisi Kurir</b>');
+                const courierIcon = L.icon({
+                    iconUrl: '/assets/icons/kurir-efata.png', // sesuaikan dengan lokasi file
+                    iconSize: [50, 64],                 // ukuran icon (lebar, tinggi)
+                    iconAnchor: [25, 60],               // titik tengah bawah icon
+                    popupAnchor: [0, -60]               // posisi popup relatif terhadap icon
+                });
+                // Marker Kurir
+                courierMarker = L.marker(routeCoords[0], {
+                    icon: courierIcon,
+                    zIndexOffset: 1000
+                }).addTo(map).bindPopup('<b>Posisi Kurir</b>');
+                // courierMarker = L.marker(routeCoords[0], { icon: mkIcon('🛵', '#16a34a', 44), zIndexOffset: 1000 }).addTo(map).bindPopup('<b>Posisi Kurir</b>');
+
 
                 map.fitBounds(L.latLngBounds(routeCoords), { padding: [48, 48] });
 
@@ -729,15 +790,63 @@
 
             const [lat, lng] = routeCoords[currentStep];
             const speed = parseInt(document.getElementById('speed-range').value);
-
-            // Geser marker di simulator
-            courierMarker.setLatLng([lat, lng]);
-
-            // Auto-pan map mengikuti kurir
-            const mapBounds = map.getBounds();
-            if (!mapBounds.contains([lat, lng])) {
-                map.panTo([lat, lng], { animate: true });
+            
+            // Posisi sekarang dan tujuan berikutnya
+            const from = courierMarker.getLatLng();
+            const to = L.latLng(lat, lng);
+            
+            // // Hitung arah perjalanan
+            let bearing = 0;
+            
+            if (currentStep < routeCoords.length - 1) {
+                const current = L.latLng(routeCoords[currentStep]);
+                const next = L.latLng(routeCoords[currentStep + 1]);
+                bearing = getBearing(current, next);
             }
+            // const bearing = getBearing(from, to);
+            // const bearing = getBearing(to, nextPoint);
+            
+            // // Putar icon mengikuti arah jalan
+            if (courierMarker.setRotationAngle) {
+                courierMarker.setRotationAngle(bearing + 180);
+                courierMarker.setRotationOrigin("bottom bottom");
+            }
+            
+            // Animasikan perpindahan marker
+            const intervalMs = parseInt(document.getElementById('interval-range').value);
+            animateMarker(
+                courierMarker,
+                from,
+                to,
+                intervalMs * 0.9
+            );
+
+            // Auto-pan map mengikuti kurir setiap beberapa langkah
+            if (currentStep % 3 === 0) {
+                map.panTo(to, {
+                    animate: true,
+                    duration: 1
+                });
+            }
+            // if (currentStep % 3 === 0) {
+            //     map.panTo([lat, lng], {
+            //         animate: true,
+            //         duration: 1
+            //     });
+            // }
+
+
+            // const [lat, lng] = routeCoords[currentStep];
+            // const speed = parseInt(document.getElementById('speed-range').value);
+
+            // // Geser marker di simulator
+            // courierMarker.setLatLng([lat, lng]);
+
+            // // Auto-pan map mengikuti kurir
+            // const mapBounds = map.getBounds();
+            // if (!mapBounds.contains([lat, lng])) {
+            //     map.panTo([lat, lng], { animate: true });
+            // } dimatikan sementara
 
             // Inject ke server
             try {

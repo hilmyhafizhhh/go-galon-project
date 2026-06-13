@@ -4,7 +4,8 @@
         {{-- ── Header ── --}}
         <div class="ef-chatshow__header">
             <div class="ef-chatshow__header-inner">
-                <a href="{{ auth()->user()->hasRole('customer') ? route('customer.chat') : route('courier.chat') }}"
+                {{-- <a href="{{ auth()->user()->hasRole('customer') ? route('customer.chat') : route('courier.chat') }}" --}}
+                    <a href="{{ url()->previous() }}"
                     class="ef-chatshow__back">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -15,13 +16,17 @@
                 <div class="ef-chatshow__peer">
                     <div class="ef-chatshow__avatar">
                         {{ strtoupper(substr($receiver->name, 0, 1)) }}
-                        <span class="ef-chatshow__online-dot"></span>
+                        {{-- <span class="ef-chatshow__online-dot"></span> dikomen sementara untuk menghilangkan dot --}}
                     </div>
                     <div class="ef-chatshow__peer-text">
                         <p class="ef-chatshow__peer-name">{{ $receiver->name }}</p>
-                        <p class="ef-chatshow__peer-status">
-                            <span class="ef-chatshow__status-dot"></span>Online
+                        <p class="ef-chatshow__peer-status" id="chatOrderInfo">
+                            {{-- <span class="ef-chatshow__status-dot"></span> --}}
+                            {{ $order ? 'ID Pesanan #'.$order->order_code : 'Chat Umum' }}
                         </p>
+                        {{-- <p class="ef-chatshow__peer-status">
+                            <span class="ef-chatshow__status-dot"></span>Online
+                        </p> --}}
                     </div>
                 </div>
             </div>
@@ -109,15 +114,15 @@
                                         @php
                                             $quickReplies = [
                                                 '👋 Halo! Pesanan Anda sedang saya proses.',
-                                                '🚴 Saya sedang dalam perjalanan menuju lokasi Anda.',
+                                                '🛵 Saya sedang dalam perjalanan menuju lokasi Anda.',
                                                 '📍 Saya sudah tiba di depan lokasi Anda.',
-                                                '⏳ Mohon ditunggu, saya sedang mengambil pesanan galon Anda.',
-                                                '🪣 Galon sudah saya angkat, segera diantar.',
+                                                '⏳ Mohon ditunggu.',
+                                                // '🪣 Galon sudah saya angkat, segera diantar.',
                                                 '🏠 Apakah pesanan bisa saya taruh di depan pintu?',
                                                 '📞 Tidak bisa menemukan lokasi, bisa hubungi saya?',
                                                 '✅ Pesanan sudah diterima, terima kasih sudah memesan!',
                                                 '🔄 Apakah galon lama ingin ditukar sekarang?',
-                                                '💧 Stok galon tersedia, pesanan segera dikirim.',
+                                                '📦 Pesanan Anda sudah siap dan akan segera diantar.',
                                             ];
                                         @endphp
 
@@ -158,14 +163,14 @@
                                         @php
                                             $quickReplies = [
                                                 '📍 Saya ada di dalam, tolong taruh di depan pintu ya.',
-                                                '🏠 Titip di depan pintu aja, makasih!',
+                                                // '🏠 Titip di depan pintu aja, makasih!',
                                                 '📞 Bisa telepon saya saat sudah sampai?',
                                                 '⏳ Ditunggu ya, saya segera ke bawah.',
-                                                '🔔 Tolong pencet bel kalau sudah sampai.',
+                                                // '🔔 Tolong pencet bel kalau sudah sampai.',
                                                 '🗺️ Lokasi saya sudah benar, lanjut aja ya.',
                                                 '💧 Galon lamanya siap untuk ditukar.',
-                                                '🛗 Naik lift lantai 3, unit 302.',
-                                                '🚗 Taruh di depan pos satpam ya bang.',
+                                                '🙏 Terima kasih, pesanan sudah saya terima. Semoga sehat selalu!.',
+                                                // '🚗 Taruh di depan pos satpam ya bang.',
                                                 '✅ Oke, saya tunggu. Makasih!',
                                             ];
                                         @endphp

@@ -13,10 +13,21 @@ class ReportController extends Controller
         return view('admin.reports.index');
     }
 
-    public function orders()
+    // public function orders()
+    // {
+    //     $orders = Order::with('product')->latest()->get();
+    //     return view('admin.reports.orders', compact('orders'));
+    // } dimatikan sementara
+
+    public function orders()//script pengganti
     {
-        $orders = Order::with('product')->latest()->get();
+        $orders = Order::with([
+            'user',
+            'items.product'
+        ])->latest()->get();
+        
         return view('admin.reports.orders', compact('orders'));
+        
     }
 
     public function couriers()

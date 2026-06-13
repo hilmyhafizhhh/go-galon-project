@@ -505,6 +505,10 @@
         .fab-recenter:active {
             transform: scale(.93);
         }
+
+        .leaflet-marker-icon {
+            transition: transform 0.15s linear;
+        }
     </style>
 </head>
 
@@ -669,6 +673,7 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
     <script>
         /* ═══════════════════════════════════════════════════════
            TRACKING PAGE — Customer POV  |  Production JS
@@ -717,6 +722,50 @@
             });
         }
 
+        //script baru tambahan
+        // Animasi marker
+        function animateMarker(marker, from, to, duration = 1000) {
+            const start = performance.now();
+            
+            function frame(time) {
+                const progress = Math.min((time - start) / duration, 1);
+                
+                // easing
+                const ease = progress < 0.5
+                ? 2 * progress * progress
+                : -1 + (4 - 2 * progress) * progress;
+                
+                const lat = from.lat + (to.lat - from.lat) * ease;
+                const lng = from.lng + (to.lng - from.lng) * ease;
+                
+                marker.setLatLng([lat, lng]);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(frame);
+                }
+            }
+            
+            requestAnimationFrame(frame);
+        
+        }
+        
+        // Hitung bearing
+        function getBearing(start, end) {
+            const lat1 = start.lat * Math.PI / 180;
+            const lon1 = start.lng * Math.PI / 180;
+            const lat2 = end.lat * Math.PI / 180;
+            const lon2 = end.lng * Math.PI / 180;
+            
+            const dLon = lon2 - lon1;
+            
+            const y = Math.sin(dLon) * Math.cos(lat2);
+            const x =
+            Math.cos(lat1) * Math.sin(lat2) -
+            Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+            
+            return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+        }
+
         /* ── Static markers ─────────────────────────── */
         // Depot
         L.marker([DEPOT_LAT, DEPOT_LNG], { icon: mkIcon('🏪', '#2563eb') })
@@ -729,8 +778,21 @@
         }
 
         // Kurir — default di depot
+        // const courierMarker = L.marker([DEPOT_LAT, DEPOT_LNG], {
+        //     icon: mkIcon('🛵', '#16a34a', 42),
+        //     zIndexOffset: 1000,
+        // }).addTo(map).bindPopup('<b>Posisi Kurir</b>');
+
+        //diganti dengan script baru
+        const courierIcon = L.icon({
+            iconUrl: '/assets/icons/kurir-efata.png',
+            iconSize: [50, 64],
+            iconAnchor: [25, 60],
+            popupAnchor: [0, -60]
+        });
+        
         const courierMarker = L.marker([DEPOT_LAT, DEPOT_LNG], {
-            icon: mkIcon('🛵', '#16a34a', 42),
+            icon: courierIcon,
             zIndexOffset: 1000,
         }).addTo(map).bindPopup('<b>Posisi Kurir</b>');
 
@@ -823,6 +885,10 @@
         /* ── Polling tracker ────────────────────────── */
         let firstGps = true;
 
+        //tambahan script baru
+        let previousPosition = L.latLng(DEPOT_LAT, DEPOT_LNG);
+        const COURIER_ICON_OFFSET = 180;
+
         function fetchTracking() {
             fetch(`/api/tracking/${ORDER_ID}`)
                 .then(r => r.json())
@@ -844,9 +910,46 @@
                         const lat = parseFloat(data.courier_lat);
                         const lng = parseFloat(data.courier_lng);
 
-                        // Geser marker
-                        courierMarker.setLatLng([lat, lng]);
+                        // // Geser marker
+                        // courierMarker.setLatLng([lat, lng]);
 
+                        // // Update rute kurir → tujuan
+                        // if (DEST_LAT && DEST_LNG) {
+                        //     drawRoute(lat, lng, DEST_LAT, DEST_LNG);
+                        // }
+
+                        const newPosition = L.latLng(lat, lng);
+                        
+                        // Hitung arah gerakan
+                        const bearing = getBearing(previousPosition, newPosition);
+                        
+                        // Putar marker agar menghadap arah perjalanan
+                        if (courierMarker.setRotationAngle) {
+                            courierMarker.setRotationAngle(
+                                bearing + COURIER_ICON_OFFSET
+                            );
+                            courierMarker.setRotationOrigin("bottom bottom");
+                        }
+                        
+                        // Animasi perpindahan marker
+                        animateMarker(
+                            courierMarker,
+                            previousPosition,
+                            newPosition,
+                            4500   // polling 5 detik → animasi 4.5 detik
+                        );
+                        
+                        // Simpan posisi sekarang
+                        previousPosition = newPosition;
+
+                        // Geser map secara halus mengikuti posisi kurir
+                        if (!map.getBounds().contains(newPosition)) {
+                            map.panTo(newPosition, {
+                                animate: true,
+                                duration: 1
+                            });
+                        }
+                        
                         // Update rute kurir → tujuan
                         if (DEST_LAT && DEST_LNG) {
                             drawRoute(lat, lng, DEST_LAT, DEST_LNG);

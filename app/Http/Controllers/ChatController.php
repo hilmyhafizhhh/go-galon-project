@@ -28,18 +28,41 @@ class ChatController extends Controller
                     ? $chat->receiver_id
                     : $chat->sender_id;
             })
+            //dimatikan sementara
+            // ->map(function ($group) use ($user) {
+            //     $chat = $group->first();
+            //     $chat->other_user_id = $chat->sender_id == $user->id
+            //         ? $chat->receiver_id
+            //         : $chat->sender_id;
+
+            //     $chat->unread_count = $group->filter(fn($c) =>
+            //         $c->receiver_id == $user->id && is_null($c->read_at)
+            //     )->count();
+
+            //     return $chat;
+            // });
+
             ->map(function ($group) use ($user) {
                 $chat = $group->first();
+                
                 $chat->other_user_id = $chat->sender_id == $user->id
-                    ? $chat->receiver_id
-                    : $chat->sender_id;
-
+                ? $chat->receiver_id
+                : $chat->sender_id;
+                
                 $chat->unread_count = $group->filter(fn($c) =>
-                    $c->receiver_id == $user->id && is_null($c->read_at)
+                $c->receiver_id == $user->id && is_null($c->read_at)
                 )->count();
-
+                
+                // ambil order_id terbaru yang masih ada
+                $activeOrderId = $group
+                ->whereNotNull('order_id')
+                ->sortByDesc('created_at')
+                ->first();
+                
+                $chat->active_order_id = $activeOrderId?->order_id;
+                
                 return $chat;
-            });
+                });
 
         $depotContact = null;
         if ($user->hasRole('courier')) {
@@ -54,6 +77,23 @@ class ChatController extends Controller
         $sender   = Auth::user();
         $receiver = User::findOrFail($receiverId);
         $orderId  = $request->query('order_id');
+
+        //tambahan script baru
+        if (!$orderId) {
+            $activeChat = Chat::where(function ($q) use ($sender, $receiver) {
+                $q->where('sender_id', $sender->id)
+                ->where('receiver_id', $receiver->id);
+                })
+                ->orWhere(function ($q) use ($sender, $receiver) {
+                    $q->where('sender_id', $receiver->id)
+                    ->where('receiver_id', $sender->id);
+                    })
+                    ->whereNotNull('order_id')
+                    ->latest()
+                    ->first();
+                    
+                    $orderId = $activeChat?->order_id;
+                    }
 
         // Scope pesan berdasarkan order_id
         $query = Chat::where(function ($q) use ($sender, $receiver) {

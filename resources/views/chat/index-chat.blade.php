@@ -91,9 +91,19 @@
                     @foreach ($chats as $chat)
                             @php $hasUnread = $chat->unread_count > 0; @endphp
 
+                            {{-- dimatikan sementara --}}
+                            {{-- <a href="{{ auth()->user()->hasRole('customer')
+                            ? route('customer.chat.show', ['receiver' => $chat->other_user_id])
+                            : route('courier.chat.show', $chat->other_user_id) }}" --}}
                             <a href="{{ auth()->user()->hasRole('customer')
-                        ? route('customer.chat.show', ['receiver' => $chat->other_user_id])
-                        : route('courier.chat.show', $chat->other_user_id) }}"
+                            ? route('customer.chat.show', [
+                            'receiver' => $chat->other_user_id,
+                            'order_id' => $chat->active_order_id
+                            ])
+                            : route('courier.chat.show', [
+                            'receiver' => $chat->other_user_id,
+                            'order_id' => $chat->active_order_id
+                            ]) }}" 
                                 class="ef-chat__item {{ $hasUnread ? 'ef-chat__item--unread' : '' }}" data-reveal
                                 data-delay="{{ $loop->index * 50 }}">
 
