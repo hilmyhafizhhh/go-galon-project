@@ -35,19 +35,6 @@
         </div>
 
         <div class="ef-profile__body">
-
-            {{-- Alerts --}}
-            {{-- @if(session('success'))
-            <div class="ef-profile__alert ef-profile__alert--success" data-reveal>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                    <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-                {{ session('success') }}
-            </div>
-            @endif --}}
-
             @if($errors->any())
                 <div class="ef-profile__alert ef-profile__alert--error" data-reveal>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -82,7 +69,7 @@
     : (auth()->user()->hasRole('courier')
         ? route('courier.profile.update')
         : route('customer.profile.update'))
-        }}">
+                    }}">
                 @csrf
 
                 {{-- Informasi Pribadi --}}
@@ -221,6 +208,115 @@
                 </div>
 
             </form>
+            {{-- ── Alamat Saya ── --}}
+            <div class="ef-profile__card" data-reveal style="margin-top:12px">
+                <div class="ef-profile__card-hd">
+                    <div class="ef-profile__card-icon">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <span class="ef-profile__card-title">Alamat Saya</span>
+                    <a href="{{ route('customer.address.create') }}" class="ef-addr-add-btn" style="margin-left:auto;">
+                        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.8"
+                            stroke-linecap="round" viewBox="0 0 24 24">
+                            <path d="M12 5v14M5 12h14" />
+                        </svg>
+                        Tambah
+                    </a>
+                </div>
+
+                @php $addresses = auth()->user()->addresses()->orderByDesc('is_default')->get(); @endphp
+
+                @if($addresses->isEmpty())
+                    {{-- Empty state --}}
+                    <div class="ef-addr-empty">
+                        <div class="ef-addr-empty__icon">📍</div>
+                        <p class="ef-addr-empty__title">Belum ada alamat</p>
+                        <p class="ef-addr-empty__sub">Tambah alamat pengiriman untuk mulai memesan</p>
+                        <a href="{{ route('customer.address.create') }}" class="ef-addr-empty__btn">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
+                                stroke-linecap="round" viewBox="0 0 24 24">
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                            Tambah Alamat Pertama
+                        </a>
+                    </div>
+                @else
+                    <div class="ef-addr-list">
+                        @foreach($addresses as $addr)
+                            <div class="ef-addr-item {{ $loop->last ? '' : 'ef-addr-item--border' }}">
+                                <div class="ef-addr-item__icon">
+                                    @if(str_contains(strtolower($addr->label), 'kantor'))
+                                        🏢
+                                    @elseif(str_contains(strtolower($addr->label), 'kos') || str_contains(strtolower($addr->label), 'apartemen'))
+                                        🏠
+                                    @else
+                                        🏡
+                                    @endif
+                                </div>
+
+                                <div class="ef-addr-item__body">
+                                    <div class="ef-addr-item__top">
+                                        <span class="ef-addr-item__label">{{ $addr->label }}</span>
+                                        @if($addr->is_default)
+                                            <span class="ef-addr-item__badge">Utama</span>
+                                        @endif
+                                    </div>
+                                    <p class="ef-addr-item__detail">{{ Str::limit($addr->address, 60) }}</p>
+                                </div>
+
+                                <div class="ef-addr-item__actions">
+                                    {{-- Jadikan utama --}}
+                                    @if(!$addr->is_default)
+                                        <form method="POST" action="{{ route('customer.address.default', $addr->id) }}"
+                                            style="display:inline">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" class="ef-addr-action ef-addr-action--star"
+                                                title="Jadikan alamat utama">
+                                                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    {{-- Edit --}}
+                                    <a href="{{ route('customer.address.edit', $addr->id) }}"
+                                        class="ef-addr-action ef-addr-action--edit" title="Edit alamat">
+                                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5" />
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                        </svg>
+                                    </a>
+
+                                    {{-- Hapus --}}
+                                    @if(!$addr->is_default || $addresses->count() === 1)
+                                        <form method="POST" action="{{ route('customer.address.destroy', $addr->id) }}"
+                                            onsubmit="return confirm('Hapus alamat ini?')" style="display:inline">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="ef-addr-action ef-addr-action--del" title="Hapus alamat">
+                                                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 
@@ -756,6 +852,178 @@
 
         .ef-toast--error svg {
             color: #e11d48;
+        }
+
+        .ef-addr-add-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 999px;
+            color: #2563eb;
+            font-size: .72rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background .15s;
+        }
+
+        .ef-addr-add-btn:hover {
+            background: #dbeafe;
+        }
+
+        /* ── Empty state ── */
+        .ef-addr-empty {
+            text-align: center;
+            padding: 2rem 1.25rem;
+        }
+
+        .ef-addr-empty__icon {
+            font-size: 2rem;
+            margin-bottom: .6rem;
+        }
+
+        .ef-addr-empty__title {
+            font-size: .9rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: .25rem;
+        }
+
+        .ef-addr-empty__sub {
+            font-size: .75rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        .ef-addr-empty__btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .6rem 1.2rem;
+            background: #2563eb;
+            color: #fff;
+            border-radius: 10px;
+            font-size: .78rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background .15s;
+        }
+
+        .ef-addr-empty__btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* ── Address list ── */
+        .ef-addr-list {
+            padding: 0;
+        }
+
+        .ef-addr-item {
+            display: flex;
+            align-items: flex-start;
+            gap: .85rem;
+            padding: .9rem 1rem;
+        }
+
+        .ef-addr-item--border {
+            border-bottom: 1px solid rgba(37, 99, 235, .07);
+        }
+
+        .ef-addr-item__icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .ef-addr-item__body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ef-addr-item__top {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: 3px;
+        }
+
+        .ef-addr-item__label {
+            font-size: .85rem;
+            font-weight: 700;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ef-addr-item__badge {
+            font-size: .6rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #dbeafe;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .ef-addr-item__detail {
+            font-size: .75rem;
+            color: #64748b;
+            line-height: 1.45;
+        }
+
+        /* ── Action buttons ── */
+        .ef-addr-item__actions {
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+            flex-shrink: 0;
+        }
+
+        .ef-addr-action {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .15s;
+            background: transparent;
+        }
+
+        .ef-addr-action--star {
+            color: #94a3b8;
+        }
+
+        .ef-addr-action--star:hover {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .ef-addr-action--edit {
+            color: #94a3b8;
+        }
+
+        .ef-addr-action--edit:hover {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .ef-addr-action--del {
+            color: #94a3b8;
+        }
+
+        .ef-addr-action--del:hover {
+            background: #fef2f2;
+            color: #dc2626;
         }
     </style>
 
