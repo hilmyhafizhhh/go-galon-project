@@ -24,10 +24,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
          // 🔹 Broadcast (punya kamu)
+        // Force HTTPS ketika diakses via ngrok / reverse proxy
+  \Illuminate\Support\Facades\URL::forceScheme('https');
+    \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
 
-         if (config('app.env') === 'local') {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
-        }
+         
     Broadcast::routes([
         'middleware' => ['web', 'auth'],
     ]);

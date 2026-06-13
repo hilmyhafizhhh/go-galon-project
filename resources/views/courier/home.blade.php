@@ -771,6 +771,117 @@
             color: #475569;
             font-weight: 600;
         }
+
+        /* ── Bottom Sheet Confirm ────────────────────────────── */
+.ef-sheet-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, .45);
+    z-index: 9998;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.ef-sheet-overlay.open {
+    display: flex;
+}
+
+.ef-sheet {
+    background: var(--surface);
+    border-radius: 24px 24px 0 0;
+    width: 100%;
+    max-width: 540px;
+    padding: 1.25rem 1.5rem 2rem;
+    animation: efSheetUp .28s cubic-bezier(.34, 1.3, .64, 1) forwards;
+}
+
+@keyframes efSheetUp {
+    from { transform: translateY(60px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.ef-sheet__pill {
+    width: 36px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 999px;
+    margin: 0 auto .9rem;
+}
+
+.ef-sheet__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--green-lt);
+    border: 1px solid #bbf7d0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto .9rem;
+    color: var(--green);
+}
+
+.ef-sheet__title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-1);
+    text-align: center;
+    margin-bottom: .4rem;
+}
+
+.ef-sheet__body {
+    font-size: .8rem;
+    color: var(--text-2);
+    text-align: center;
+    line-height: 1.55;
+    margin-bottom: 1.25rem;
+}
+
+.ef-sheet__actions {
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+}
+
+.ef-sheet__btn-confirm {
+    width: 100%;
+    padding: .82rem 1rem;
+    background: var(--green);
+    color: #fff;
+    font-size: .85rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: 'Instrument Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    box-shadow: 0 2px 12px rgba(22, 163, 74, .28);
+    transition: all .18s;
+}
+
+.ef-sheet__btn-confirm:hover  { background: #15803d; }
+.ef-sheet__btn-confirm:active { transform: scale(.98); }
+
+.ef-sheet__btn-cancel {
+    width: 100%;
+    padding: .78rem 1rem;
+    background: var(--bg);
+    color: var(--text-2);
+    font-size: .82rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: 'Instrument Sans', sans-serif;
+    transition: all .18s;
+}
+
+.ef-sheet__btn-cancel:hover { background: var(--border); }
     </style>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -1027,6 +1138,33 @@
         </div>
 
         <div class="toast-wrap" id="toastWrap"></div>
+
+        {{-- Bottom Sheet — Konfirmasi Terkirim --}}
+<div class="ef-sheet-overlay" id="deliverSheet">
+    <div class="ef-sheet" id="deliverSheetBox">
+        <div class="ef-sheet__pill"></div>
+        <div class="ef-sheet__icon">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <h3 class="ef-sheet__title">Pesanan Sudah Diterima?</h3>
+        <p class="ef-sheet__body">
+            Pastikan pesanan telah diterima oleh customer.<br>
+            Status pesanan akan diubah menjadi <strong>Selesai</strong>.
+        </p>
+        <div class="ef-sheet__actions">
+            <button class="ef-sheet__btn-confirm" id="deliverSheetConfirm">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Ya, Pesanan Diterima
+            </button>
+            <button class="ef-sheet__btn-cancel" id="deliverSheetCancel">Batal</button>
+        </div>
+    </div>
+</div>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -1349,79 +1487,74 @@
 
         /* ── Deliver ───────────────────────────────── */
         /* ── Deliver ───────────────────────────────── */
-        async function deliverTask(id, btn) {
-            
-            const result = await Swal.fire({
-                title: 'Pesanan Sudah Diterima?',
-                html: `
-                <div class="delivery-icon">
-                    <i class="fas fa-box-open"></i>
-                    </div>
-                    <p class="delivery-text">
-                        Pastikan pesanan telah diterima oleh customer.
-                        Status pesanan akan diubah menjadi <b>Selesai</b>.
-                    </p>
-                `,
-                showCancelButton: true,
-                confirmButtonText: '<i class="fas fa-check"></i> Ya, Pesanan Diterima',
-                cancelButtonText: 'Batal',
-                confirmButtonColor: '#22c55e',
-                cancelButtonColor: '#f1f5f9',
-                customClass: {
-                    popup: 'delivery-popup',
-                    confirmButton: 'delivery-confirm',
-                    cancelButton: 'delivery-cancel'
-                },
-                buttonsStyling: false
-            });
-            
-            if (!result.isConfirmed) return;
-            
-            btn.disabled = true;
-            btn.innerHTML = '⏳ Memproses...';
-            
-            fetch(`/courier/tasks/${id}/deliver`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': CSRF,
-                    'Accept': 'application/json'
-                }
-            })
-            .then(r => r.json())
-            .then(d => {
-                if (d.success) {
-                    
-                    if (gpsTimers[id]) {
-                        clearInterval(gpsTimers[id]);
-                        delete gpsTimers[id];
-                    }
-                    
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Pesanan berhasil diantarkan.',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                    
-                    setTimeout(() => location.reload(), 1500);
-                
-                } else {
-                    
-                    toast('Gagal: ' + (d.message ?? 'Coba lagi'), 'error');
-                    
-                    btn.disabled = false;
-                    btn.innerHTML = 'Konfirmasi Sudah Terkirim';
-                }
-            })
-            .catch(() => {
-                
-                toast('Kesalahan koneksi', 'error');
-                
+        function deliverTask(id, btn) {
+    const sheet = document.getElementById('deliverSheet');
+    const sheetBox = document.getElementById('deliverSheetBox');
+    const confirmBtn = document.getElementById('deliverSheetConfirm');
+    const cancelBtn = document.getElementById('deliverSheetCancel');
+
+    sheet.classList.add('open');
+
+    function closeSheet() {
+        sheetBox.style.animation = 'efSheetDown .22s cubic-bezier(.4,0,1,1) forwards';
+        if (!document.getElementById('efSheetDownKf')) {
+            const s = document.createElement('style');
+            s.id = 'efSheetDownKf';
+            s.textContent = '@keyframes efSheetDown{to{transform:translateY(60px);opacity:0}}';
+            document.head.appendChild(s);
+        }
+        setTimeout(() => {
+            sheet.classList.remove('open');
+            sheetBox.style.animation = '';
+        }, 220);
+    }
+
+    function cleanup() {
+        confirmBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+        sheet.removeEventListener('click', handleBackdrop);
+        document.removeEventListener('keydown', handleEsc);
+    }
+
+    function handleConfirm() {
+        cleanup();
+        closeSheet();
+
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Memproses…';
+
+        fetch(`/courier/tasks/${id}/deliver`, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                if (gpsTimers[id]) { clearInterval(gpsTimers[id]); delete gpsTimers[id]; }
+                toast('🎉 Pesanan berhasil diantarkan!', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                toast('Gagal: ' + (d.message ?? 'Coba lagi'), 'error');
                 btn.disabled = false;
                 btn.innerHTML = 'Konfirmasi Sudah Terkirim';
-            });
-        }
+            }
+        })
+        .catch(() => {
+            toast('Kesalahan koneksi', 'error');
+            btn.disabled = false;
+            btn.innerHTML = 'Konfirmasi Sudah Terkirim';
+        });
+    }
+
+    function handleCancel()  { cleanup(); closeSheet(); }
+    function handleBackdrop(e) { if (e.target === sheet) { cleanup(); closeSheet(); } }
+    function handleEsc(e)    { if (e.key === 'Escape') { cleanup(); closeSheet(); } }
+
+    confirmBtn.addEventListener('click', handleConfirm);
+    cancelBtn.addEventListener('click', handleCancel);
+    sheet.addEventListener('click', handleBackdrop);
+    document.addEventListener('keydown', handleEsc);
+}
         // function deliverTask(id, btn) {
         //     if (!confirm('Konfirmasi: barang sudah diserahkan ke customer?')) return;
         //     btn.disabled = true;
