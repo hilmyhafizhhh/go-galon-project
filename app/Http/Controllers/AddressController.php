@@ -109,29 +109,6 @@ class AddressController extends Controller
             ->with('highlight_address_id', $address->id);
     }
 
-    // public function destroy(Address $address)
-    // {
-    //     abort_if($address->user_id !== auth()->id(), 403);
-
-    //     $wasDefault = $address->is_default;
-    //     $userId     = auth()->id();
-
-    //     DB::transaction(function () use ($address, $wasDefault, $userId) {
-    //         $address->delete();
-
-    //         // Jika alamat yang dihapus adalah default,
-    //         // otomatis jadikan alamat terlama sebagai default baru
-    //         if ($wasDefault) {
-    //             Address::where('user_id', $userId)
-    //                 ->oldest()
-    //                 ->first()
-    //                 ?->update(['is_default' => true]);
-    //         }
-    //     });
-
-    //     return redirect()->route('customer.checkout')
-    //         ->with('success', 'Alamat berhasil dihapus');
-    // }
     public function destroy(Address $address)
     {
         abort_if($address->user_id !== auth()->id(), 403);
@@ -166,5 +143,22 @@ class AddressController extends Controller
     {
         $addresses = auth()->user()->addresses()->orderByDesc('is_default')->get();
         return view('customer.address.select', compact('addresses'));
+    }
+
+    public function setDefault(Address $address)
+    {
+        abort_if($address->user_id !== auth()->id(), 403);
+
+        DB::transaction(function () use ($address) {
+            // Reset semua alamat user jadi tidak default
+            Address::where('user_id', auth()->id())
+                ->where('is_default', true)
+                ->update(['is_default' => false]);
+
+            // Set alamat ini jadi default
+            $address->update(['is_default' => true]);
+        });
+
+        return back()->with('success', 'Alamat utama berhasil diubah');
     }
 }
