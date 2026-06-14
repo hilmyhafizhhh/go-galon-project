@@ -107,6 +107,15 @@ class CourierTaskController extends Controller
             'status'       => 'completed',
             'delivered_at' => now(),
         ]);
+        
+        $order = $task->order;
+        broadcast(new \App\Events\CourierNearby(
+            userId: $order->user_id,
+            message: '🎉 Pesanan Anda telah berhasil diterima. Terima kasih!',
+            type: 'delivered',
+            distanceKm: 0,
+            etaMins: 0,
+        ));
 
         $maxTasksPerKurir = 10;
         $sisaTaskAktif = Task::where('courier_id', Auth::id())
@@ -180,14 +189,89 @@ class CourierTaskController extends Controller
      * Endpoint polling — customer/admin ambil posisi kurir terbaru untuk order tertentu.
      * Dipanggil tiap N detik dari halaman tracking.
      */
+    // public function trackingData(Order $order)
+    // {
+    //     $latest = TrackingLog::where('order_id', $order->id)
+    //         ->latest('recorded_at')
+    //         ->first();
+
+    //     $destination = $order->address;
+    //     $courier     = $order->assignedCourier;
+
+    //     return response()->json([
+    //         'courier_lat'   => $latest?->latitude,
+    //         'courier_lng'   => $latest?->longitude,
+    //         'courier_name'  => $courier?->user?->name ?? '-',
+    //         'courier_phone' => $courier?->user?->phone ?? '-',
+    //         'dest_lat'      => $destination?->latitude,
+    //         'dest_lng'      => $destination?->longitude,
+    //         'dest_address'  => $destination?->address ?? '-',
+    //         'order_status'  => $order->status,
+    //         'updated_at'    => $latest?->recorded_at?->diffForHumans() ?? 'Belum ada data',
+    //     ]);
+    // }
     public function trackingData(Order $order)
     {
-        $latest = TrackingLog::where('order_id', $order->id)
-            ->latest('recorded_at')
-            ->first();
-
+        $latest      = TrackingLog::where('order_id', $order->id)->latest('recorded_at')->first();
         $destination = $order->address;
         $courier     = $order->assignedCourier;
+
+        // ── Hitung jarak & ETA jika ada koordinat ──
+        $distanceKm = null;
+        $etaMins    = null;
+
+        if ($latest && $destination?->latitude && $destination?->longitude) {
+            $distanceKm = $this->haversine(
+                (float) $latest->latitude,
+                (float) $latest->longitude,
+                (float) $destination->latitude,
+                (float) $destination->longitude
+            );
+            // Estimasi kecepatan rata-rata 25 km/h di kota
+            $etaMins = $distanceKm > 0 ? max(1, (int) ceil(($distanceKm / 25) * 60)) : 0;
+
+            // ── Trigger notifikasi ke customer ──
+            $customerId = $order->user_id;
+
+            // Gunakan cache untuk hindari spam notif
+            $cacheKey = "notif_sent_{$order->id}";
+            $sentTypes = cache($cacheKey, []);
+
+            if ($distanceKm <= 0.3 && !in_array('arrived', $sentTypes)) {
+                // Kurir < 300m — hampir sampai
+                broadcast(new \App\Events\CourierNearby(
+                    userId: $customerId,
+                    message: '🛵 Kurir sudah hampir sampai! Siapkan diri untuk menerima pesanan.',
+                    type: 'arrived',
+                    distanceKm: round($distanceKm, 2),
+                    etaMins: $etaMins,
+                ));
+                $sentTypes[] = 'arrived';
+                cache([$cacheKey => $sentTypes], now()->addMinutes(30));
+            } elseif ($distanceKm <= 1.0 && !in_array('arriving', $sentTypes)) {
+                // Kurir < 1km — sekitar 2 menit
+                broadcast(new \App\Events\CourierNearby(
+                    userId: $customerId,
+                    message: "🛵 Kurir sekitar {$etaMins} menit lagi tiba di lokasi kamu!",
+                    type: 'arriving',
+                    distanceKm: round($distanceKm, 2),
+                    etaMins: $etaMins,
+                ));
+                $sentTypes[] = 'arriving';
+                cache([$cacheKey => $sentTypes], now()->addMinutes(30));
+            } elseif ($distanceKm <= 3.0 && !in_array('nearby', $sentTypes)) {
+                // Kurir < 3km — dalam perjalanan
+                broadcast(new \App\Events\CourierNearby(
+                    userId: $customerId,
+                    message: "🛵 Kurir sedang dalam perjalanan, sekitar {$etaMins} menit lagi.",
+                    type: 'nearby',
+                    distanceKm: round($distanceKm, 2),
+                    etaMins: $etaMins,
+                ));
+                $sentTypes[] = 'nearby';
+                cache([$cacheKey => $sentTypes], now()->addMinutes(30));
+            }
+        }
 
         return response()->json([
             'courier_lat'   => $latest?->latitude,
@@ -199,7 +283,23 @@ class CourierTaskController extends Controller
             'dest_address'  => $destination?->address ?? '-',
             'order_status'  => $order->status,
             'updated_at'    => $latest?->recorded_at?->diffForHumans() ?? 'Belum ada data',
+            'distance_km'   => $distanceKm ? round($distanceKm, 2) : null,
+            'eta_mins'      => $etaMins,
         ]);
+    }
+
+    /**
+     * Haversine formula — hitung jarak dua koordinat dalam km
+     */
+    private function haversine(float $lat1, float $lng1, float $lat2, float $lng2): float
+    {
+        $R    = 6371; // radius bumi km
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLng = deg2rad($lng2 - $lng1);
+        $a    = sin($dLat / 2) * sin($dLat / 2)
+            + cos(deg2rad($lat1)) * cos(deg2rad($lat2))
+            * sin($dLng / 2) * sin($dLng / 2);
+        return $R * 2 * atan2(sqrt($a), sqrt(1 - $a));
     }
 
     /**
@@ -229,6 +329,15 @@ class CourierTaskController extends Controller
 
         // ✅ Set on_delivery saat kurir klik "Mulai Antar"
         $task->order()->update(['status' => 'on_delivery']);
+        // ← Broadcast notif "kurir berangkat"
+        $order = $task->order;
+        broadcast(new \App\Events\CourierNearby(
+            userId: $order->user_id,
+            message: '🚀 Kurir sudah berangkat membawa pesanan Anda!',
+            type: 'departed',
+            distanceKm: 0,
+            etaMins: 0,
+        ));
 
         return response()->json(['success' => true]);
     }

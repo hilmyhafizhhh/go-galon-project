@@ -96,7 +96,6 @@ Route::prefix('courier')->middleware(['auth', 'verified', 'role:courier'])->name
     Route::post('/tasks/{taskId}/location', [CourierTaskController::class, 'updateLocation'])->name('tasks.location');
 
     Route::get('/chat/unread', [ChatController::class, 'unreadCount'])->name('chat.unread');
-
 });
 
 /*
@@ -127,6 +126,8 @@ Route::prefix('simulator')
         Route::get('/',           [GpsSimulatorController::class, 'index'])->name('index');
         Route::get('/route',      [GpsSimulatorController::class, 'getRoute'])->name('route');
         Route::post('/inject',    [GpsSimulatorController::class, 'injectPoint'])->name('inject');
+        // Route::post('/simulator/reset-notif', [GpsSimulatorController::class, 'resetNotif'])->name('resetNotif');
+        Route::post('/reset-notif', [GpsSimulatorController::class, 'resetNotif'])->name('resetNotif');
     });
 
 // Route Customer

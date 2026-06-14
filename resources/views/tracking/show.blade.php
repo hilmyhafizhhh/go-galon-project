@@ -659,7 +659,7 @@
             $courierPhone = $order->assignedCourier?->user?->phone ?? '';
             $wa = $courierPhone ? '62' . ltrim($courierPhone, '0') : null;
         @endphp
-        @if($wa)
+        @if ($wa)
             <a href="https://wa.me/{{ $wa }}" target="_blank" class="wa-btn" style="margin-top:.95rem;">
                 <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                     <path
@@ -676,10 +676,11 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
     <script>
         /* ═══════════════════════════════════════════════════════
-           TRACKING PAGE — Customer POV  |  Production JS
-        ═══════════════════════════════════════════════════════ */
+                                   TRACKING PAGE — Customer POV  |  Production JS
+                                ═══════════════════════════════════════════════════════ */
 
         const ORDER_ID = '{{ $order->id }}';
+        const ORDER_USER_ID = '{{ $order->user_id }}'; // ← tambah ini
         const DEST_LAT = {{ $order->address->latitude ?? 'null' }};
         const DEST_LNG = {{ $order->address->longitude ?? 'null' }};
         const DEPOT_LAT = -6.1413375;
@@ -700,10 +701,16 @@
             fab.style.top = (topH + Math.max(mapH, 140) - 52) + 'px';
         }
         layoutMap();
-        window.addEventListener('resize', () => { layoutMap(); map.invalidateSize(); });
+        window.addEventListener('resize', () => {
+            layoutMap();
+            map.invalidateSize();
+        });
 
         /* ── Leaflet init ───────────────────────────── */
-        const map = L.map('map', { zoomControl: false, attributionControl: true })
+        const map = L.map('map', {
+                zoomControl: false,
+                attributionControl: true
+            })
             .setView(DEST_LAT && DEST_LNG ? [DEST_LAT, DEST_LNG] : [DEPOT_LAT, DEPOT_LNG], 14);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -711,14 +718,17 @@
             maxZoom: 19,
         }).addTo(map);
 
-        L.control.zoom({ position: 'topright' }).addTo(map);
+        L.control.zoom({
+            position: 'topright'
+        }).addTo(map);
 
         /* ── Icon helper ────────────────────────────── */
         function mkIcon(emoji, color, size = 38) {
             return L.divIcon({
                 className: '',
                 html: `<div style="background:${color};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${Math.round(size * .48)}px;box-shadow:0 3px 12px rgba(0,0,0,.22);border:2.5px solid #fff;">${emoji}</div>`,
-                iconSize: [size, size], iconAnchor: [size / 2, size / 2],
+                iconSize: [size, size],
+                iconAnchor: [size / 2, size / 2],
             });
         }
 
@@ -768,12 +778,16 @@
 
         /* ── Static markers ─────────────────────────── */
         // Depot
-        L.marker([DEPOT_LAT, DEPOT_LNG], { icon: mkIcon('🏪', '#2563eb') })
+        L.marker([DEPOT_LAT, DEPOT_LNG], {
+                icon: mkIcon('🏪', '#2563eb')
+            })
             .addTo(map).bindPopup('<b>Toko / Depot</b>');
 
         // Tujuan (rumah customer)
         if (DEST_LAT && DEST_LNG) {
-            L.marker([DEST_LAT, DEST_LNG], { icon: mkIcon('🏠', '#dc2626') })
+            L.marker([DEST_LAT, DEST_LNG], {
+                    icon: mkIcon('🏠', '#dc2626')
+                })
                 .addTo(map).bindPopup('<b>Lokasi Kamu</b>');
         }
 
@@ -799,8 +813,9 @@
         // Fit bounds
         if (DEST_LAT && DEST_LNG) {
             map.fitBounds(
-                L.latLngBounds([DEPOT_LAT, DEPOT_LNG], [DEST_LAT, DEST_LNG]),
-                { padding: [56, 56] }
+                L.latLngBounds([DEPOT_LAT, DEPOT_LNG], [DEST_LAT, DEST_LNG]), {
+                    padding: [56, 56]
+                }
             );
         }
 
@@ -813,7 +828,9 @@
             if (!force && now - lastOsrm < 10000) return; // throttle 10s
             lastOsrm = now;
 
-            fetch(`https://router.project-osrm.org/route/v1/driving/${fLng},${fLat};${tLng},${tLat}?overview=full&geometries=geojson`)
+            fetch(
+                    `https://router.project-osrm.org/route/v1/driving/${fLng},${fLat};${tLng},${tLat}?overview=full&geometries=geojson`
+                )
                 .then(r => r.json())
                 .then(data => {
                     if (!data.routes?.length) return;
@@ -827,19 +844,26 @@
 
                     // Glow
                     const glow = L.polyline(coords, {
-                        color: 'rgba(37,99,235,.15)', weight: 10,
-                        lineCap: 'round', lineJoin: 'round',
+                        color: 'rgba(37,99,235,.15)',
+                        weight: 10,
+                        lineCap: 'round',
+                        lineJoin: 'round',
                     }).addTo(map);
 
                     // Rute utama biru solid
                     const line = L.polyline(coords, {
-                        color: '#2563eb', weight: 4, opacity: .88,
-                        lineCap: 'round', lineJoin: 'round',
+                        color: '#2563eb',
+                        weight: 4,
+                        opacity: .88,
+                        lineCap: 'round',
+                        lineJoin: 'round',
                     }).addTo(map);
 
                     // Panah arah — titik kecil di sepanjang rute
                     const arrowDecorator = L.polyline(coords, {
-                        color: '#fff', weight: 2, opacity: .6,
+                        color: '#fff',
+                        weight: 2,
+                        opacity: .6,
                         dashArray: '1, 18',
                         lineCap: 'round',
                     }).addTo(map);
@@ -855,10 +879,18 @@
                     // Fallback garis lurus
                     routeLayers.forEach(l => map.removeLayer(l));
                     const fb = L.polyline(
-                        DEST_LAT && DEST_LNG
-                            ? [[fLat, fLng], [DEST_LAT, DEST_LNG]]
-                            : [[fLat, fLng], [tLat, tLng]],
-                        { color: '#2563eb', weight: 3, opacity: .5, dashArray: '7,5' }
+                        DEST_LAT && DEST_LNG ? [
+                            [fLat, fLng],
+                            [DEST_LAT, DEST_LNG]
+                        ] : [
+                            [fLat, fLng],
+                            [tLat, tLng]
+                        ], {
+                            color: '#2563eb',
+                            weight: 3,
+                            opacity: .5,
+                            dashArray: '7,5'
+                        }
                     ).addTo(map);
                     routeLayers = [fb];
                 });
@@ -874,11 +906,15 @@
             const pos = courierMarker.getLatLng();
             if (DEST_LAT && DEST_LNG) {
                 map.fitBounds(
-                    L.latLngBounds(pos, [DEST_LAT, DEST_LNG]),
-                    { padding: [56, 56], animate: true }
+                    L.latLngBounds(pos, [DEST_LAT, DEST_LNG]), {
+                        padding: [56, 56],
+                        animate: true
+                    }
                 );
             } else {
-                map.setView(pos, 15, { animate: true });
+                map.setView(pos, 15, {
+                    animate: true
+                });
             }
         }
 
@@ -960,8 +996,10 @@
                             firstGps = false;
                             if (DEST_LAT && DEST_LNG) {
                                 map.fitBounds(
-                                    L.latLngBounds([lat, lng], [DEST_LAT, DEST_LNG]),
-                                    { padding: [56, 56], animate: true }
+                                    L.latLngBounds([lat, lng], [DEST_LAT, DEST_LNG]), {
+                                        padding: [56, 56],
+                                        animate: true
+                                    }
                                 );
                             }
                         }
@@ -978,7 +1016,7 @@
                     /* ── Redirect jika selesai ── */
                     if (data.order_status === 'completed') {
                         setTimeout(() => {
-                            window.location.href = '{{ route("customer.order") }}?tab=completed';
+                            window.location.href = '{{ route('customer.order') }}?tab=completed';
                         }, 2500);
                     }
                 })
@@ -1004,7 +1042,8 @@
                 ['step-confirmed', 'step-pickup', 'step-delivery', 'step-done'].forEach(id => {
                     const s = document.getElementById(id);
                     s.className = 'step done';
-                    s.querySelector('.step-dot').innerHTML = `<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>`;
+                    s.querySelector('.step-dot').innerHTML =
+                        `<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>`;
                 });
                 document.getElementById('step-done').querySelector('.step-time').textContent = 'Baru saja';
 
@@ -1022,6 +1061,159 @@
         /* ── Start polling ──────────────────────────── */
         fetchTracking();
         setInterval(fetchTracking, 5000);
+        (function() {
+            function waitForEcho(cb) {
+                let attempts = 0;
+                const iv = setInterval(() => {
+                    attempts++;
+                    if (window.Echo) {
+                        clearInterval(iv);
+                        cb();
+                    }
+                    if (attempts > 50) clearInterval(iv);
+                }, 100);
+            }
+
+            //     function showEtaBanner(message) {
+            //         document.getElementById('eta-banner')?.remove();
+            //         const banner = document.createElement('div');
+            //         banner.id = 'eta-banner';
+            //         banner.style.cssText = `
+        //     position:fixed;top:70px;left:50%;transform:translateX(-50%);
+        //     background:#0f172a;color:#fff;padding:.75rem 1.2rem;
+        //     border-radius:14px;font-size:.82rem;font-weight:600;
+        //     box-shadow:0 8px 32px rgba(0,0,0,.25);z-index:9999;
+        //     display:flex;align-items:center;gap:.6rem;
+        //     max-width:calc(100vw - 2rem);
+        //     animation:slideDown .3s cubic-bezier(.34,1.56,.64,1);
+        // `;
+            //         banner.innerHTML = `
+        //     <style>
+        //         @keyframes slideDown {
+        //             from { opacity:0; transform:translateX(-50%) translateY(-12px); }
+        //             to   { opacity:1; transform:translateX(-50%) translateY(0); }
+        //         }
+        //     </style>
+        //     <span style="font-size:1.1rem;">🛵</span>
+        //     <span>${message}</span>
+        // `;
+            //         document.body.appendChild(banner);
+            //         setTimeout(() => {
+            //             banner.style.opacity = '0';
+            //             banner.style.transition = 'opacity .3s';
+            //             setTimeout(() => banner.remove(), 300);
+            //         }, 6000);
+            //     }
+            function showEtaBanner(message, type = 'nearby') {
+                document.getElementById('eta-banner')?.remove();
+
+                // const styles = {
+                //     nearby: {
+                //         bg: '#0f172a',
+                //         icon: '🛵'
+                //     }, // biru gelap - info
+                //     arriving: {
+                //         bg: '#c2410c',
+                //         icon: '⏰'
+                //     }, // orange - perhatian
+                //     arrived: {
+                //         bg: '#15803d',
+                //         icon: '✅'
+                //     }, // hijau - siap-siap
+                // };
+                const styles = {
+                    departed: {
+                        bg: '#2563eb',
+                        icon: '🚀'
+                    }, // biru - berangkat
+                    nearby: {
+                        bg: '#0f172a',
+                        icon: '🛵'
+                    },
+                    arriving: {
+                        bg: '#c2410c',
+                        icon: '⏰'
+                    },
+                    arrived: {
+                        bg: '#15803d',
+                        icon: '✅'
+                    },
+                    delivered: {
+                        bg: '#16a34a',
+                        icon: '🎉'
+                    }, // hijau cerah - selesai
+                };
+                const s = styles[type] || styles.nearby;
+                const duration = type === 'arrived' ? 10000 : 6000;
+
+                const banner = document.createElement('div');
+                banner.id = 'eta-banner';
+                banner.style.cssText = `
+        position:fixed;top:70px;left:50%;transform:translateX(-50%);
+        background:${s.bg};color:#fff;padding:.75rem 1.2rem;
+        border-radius:14px;font-size:.82rem;font-weight:600;
+        box-shadow:0 8px 32px rgba(0,0,0,.25);z-index:9999;
+        display:flex;align-items:center;gap:.6rem;
+        max-width:calc(100vw - 2rem);
+        animation:slideDown .3s cubic-bezier(.34,1.56,.64,1);
+    `;
+                banner.innerHTML = `
+        <style>
+            @keyframes slideDown {
+                from { opacity:0; transform:translateX(-50%) translateY(-12px); }
+                to   { opacity:1; transform:translateX(-50%) translateY(0); }
+            }
+        </style>
+        <span style="font-size:1.1rem;">${s.icon}</span>
+        <span>${message}</span>
+    `;
+                document.body.appendChild(banner);
+                setTimeout(() => {
+                    banner.style.opacity = '0';
+                    banner.style.transition = 'opacity .3s';
+                    setTimeout(() => banner.remove(), 300);
+                }, duration);
+            }
+
+            // Update status sub dengan pesan ETA
+            function updateStatusSub(message) {
+                const sub = document.getElementById('status-sub');
+                if (sub) sub.textContent = message;
+            }
+
+            waitForEcho(() => {
+                // window.Echo.private('user.{{ auth()->id() }}')
+                window.Echo.private(`user.${ORDER_USER_ID}`)
+                    .listen('.courier.nearby', (e) => {
+                        console.log('🛵 courier.nearby:', e);
+
+                        // Push notif browser
+                        if ('Notification' in window && Notification.permission === 'default') {
+                            Notification.requestPermission();
+                        }
+                        if ('Notification' in window && Notification.permission === 'granted') {
+                            new Notification('🛵 Update Pengiriman', {
+                                body: e.message,
+                                icon: '/favicon.ico',
+                                tag: 'courier-eta',
+                                vibrate: [200, 100, 200],
+                            });
+                        }
+
+                        // Banner di halaman
+                        showEtaBanner(e.message, e.type);
+
+                        // Update status sub
+                        updateStatusSub(e.message);
+
+                        // Update ETA di route stats
+                        if (e.eta_mins) {
+                            document.getElementById('rs-eta').textContent = e.eta_mins + ' mnt';
+                        }
+                    });
+
+            });
+        })();
     </script>
 </body>
 

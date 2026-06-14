@@ -945,14 +945,14 @@
                         $isValidWa = preg_match('/^(08|628|8)\d{8,11}$/', $cleanPhone);
                         $wa = '62' . ltrim($cleanPhone, '08');
                         $chatUrl = route('courier.chat.show', $task->order->user->id) . '?order_id=' . $task->order->id;
-                        $customerId = $task->order->user->id;                            // ← dan ini
+                        $customerId = $task->order->user->id; // ← dan ini
                         $unreadFromCustomer = \App\Models\Chat::where('sender_id', $task->order->user->id)
                             ->where('receiver_id', auth()->id())
-                            ->where('order_id', $task->order->id)  // ← filter by order
+                            ->where('order_id', $task->order->id) // ← filter by order
                             ->whereNull('read_at')
                             ->count();
                     @endphp
-                    
+
                     @php
                         if (str_starts_with($cleanPhone, '62')) {
                             $wa = $cleanPhone;
@@ -976,7 +976,8 @@
                                     <div class="task-code">{{ $task->order->order_code ?? '-' }}</div>
                                     <div class="task-customer">{{ $task->order->user->name ?? '-' }}</div>
                                     <div class="task-address">
-                                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg width="12" height="12" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1002,7 +1003,8 @@
                         <div class="task-actions">
                             @if ($task->status === 'pending')
                                 <button onclick="pickupTask({{ $task->id }}, this)" class="btn-main pickup">
-                                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg width="13" height="13" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
                                             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                     </svg>
@@ -1012,7 +1014,8 @@
                                 <button
                                     onclick="openDeliveryMap({{ $task->id }}, {{ $destLat ?? 'null' }}, {{ $destLng ?? 'null' }})"
                                     class="btn-main show-map" id="btn-start-{{ $task->id }}">
-                                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg width="13" height="13" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
                                             d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                                     </svg>
@@ -1020,7 +1023,8 @@
                                 </button>
                             @else
                                 <button class="btn-main done" disabled>
-                                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg width="13" height="13" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
                                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -1043,11 +1047,10 @@
                                             d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                                     </svg>
                                 </a>
-
                             @else
                                 <div class="btn-wa" style="cursor:default;opacity:.5;" title="Nomor tidak valid">
-                                    <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"
-                                        viewBox="0 0 24 24">
+                                    <svg width="17" height="17" fill="none" stroke="currentColor"
+                                        stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                     </svg>
@@ -1058,13 +1061,14 @@
                             <a href="{{ $chatUrl }}" class="btn-wa"
                                 style="background:#eff6ff;color:#2563eb;border-color:#dbeafe;position:relative;"
                                 aria-label="Chat in-app">
-                                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"
-                                    viewBox="0 0 24 24">
+                                <svg width="17" height="17" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
                                 </svg>
                                 {{-- ID unik per customer untuk di-update JS --}}
-                                <span id="chat-badge-task-{{ $task->order->id }}" style="display:none;position:absolute;top:-5px;right:-5px;
+                                <span id="chat-badge-task-{{ $task->order->id }}"
+                                    style="display:none;position:absolute;top:-5px;right:-5px;
                                      background:#ef4444;color:#fff;font-size:.55rem;font-weight:700;
                                      min-width:16px;height:16px;border-radius:999px;
                                      align-items:center;justify-content:center;
@@ -1108,7 +1112,8 @@
 
                                 <div class="confirm-bar">
                                     <div class="confirm-hint">
-                                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg width="13" height="13" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
@@ -1116,7 +1121,8 @@
                                     </div>
                                     <button onclick="deliverTask({{ $task->id }}, this)" class="btn-confirm"
                                         id="btn-deliver-{{ $task->id }}">
-                                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg width="15" height="15" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
                                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
@@ -1170,7 +1176,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-       let hiddenAt = null;
+        let hiddenAt = null;
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
@@ -1216,12 +1222,12 @@
             btn.innerHTML = '⏳ Memproses…';
 
             fetch(`/courier/tasks/${id}/pickup`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': CSRF,
-                    'Accept': 'application/json'
-                }
-            })
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    }
+                })
                 .then(r => r.json())
                 .then(d => {
                     if (d.success) {
@@ -1253,12 +1259,12 @@
             }
 
             fetch(`/courier/tasks/${id}/start-delivery`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': CSRF,
-                    'Accept': 'application/json'
-                }
-            })
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    }
+                })
                 .then(r => r.json())
                 .then(d => {
                     if (!d.success) {
@@ -1291,8 +1297,8 @@
         /* ── Init Leaflet ──────────────────────────── */
         function initMap(id, dLat, dLng) {
             const map = L.map('map-' + id, {
-                zoomControl: true
-            })
+                    zoomControl: true
+                })
                 .setView([DEPOT_LAT, DEPOT_LNG], 13);
             maps[id] = map;
 
@@ -1303,14 +1309,14 @@
 
             // Depot
             L.marker([DEPOT_LAT, DEPOT_LNG], {
-                icon: mkIcon('🏪', '#2563eb')
-            })
+                    icon: mkIcon('🏪', '#2563eb')
+                })
                 .addTo(map).bindPopup('<b>Depot / Toko</b>');
 
             // Tujuan
             L.marker([dLat, dLng], {
-                icon: mkIcon('📦', '#dc2626')
-            })
+                    icon: mkIcon('📦', '#dc2626')
+                })
                 .addTo(map).bindPopup('<b>Tujuan Customer</b>');
 
             // Kurir — mulai di depot
@@ -1321,8 +1327,8 @@
 
             map.fitBounds(
                 L.latLngBounds([DEPOT_LAT, DEPOT_LNG], [dLat, dLng]), {
-                padding: [52, 52]
-            }
+                    padding: [52, 52]
+                }
             );
 
             // Rute awal depot → tujuan
@@ -1350,8 +1356,8 @@
             osrmTimer[id] = now;
 
             fetch(
-                `https://router.project-osrm.org/route/v1/driving/${fLng},${fLat};${tLng},${tLat}?overview=full&geometries=geojson`
-            )
+                    `https://router.project-osrm.org/route/v1/driving/${fLng},${fLat};${tLng},${tLat}?overview=full&geometries=geojson`
+                )
                 .then(r => r.json())
                 .then(data => {
                     if (!data.routes?.length) return;
@@ -1447,18 +1453,18 @@
 
                     // Kirim ke server
                     fetch(`/courier/tasks/${id}/location`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': CSRF,
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            latitude: lat,
-                            longitude: lng,
-                            speed: spd
-                        }),
-                    })
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': CSRF,
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                latitude: lat,
+                                longitude: lng,
+                                speed: spd
+                            }),
+                        })
                         .then(r => r.json())
                         .then(d => {
                             if (d.success) {
@@ -1589,7 +1595,7 @@
         //         });
         // }
 
-        (function () {
+        (function() {
             const authId = @json(auth()->id());
 
             function waitForEcho(cb) {
@@ -1610,7 +1616,7 @@
 
             const unreadMap = {};
 
-            @foreach($tasks as $task)
+            @foreach ($tasks as $task)
                 @php
                     $unreadCount = \App\Models\Chat::where('sender_id', $task->order->user->id)
                         ->where('receiver_id', auth()->id())
@@ -1635,31 +1641,31 @@
                 renderBadge(orderId, count);
             });
 
-        waitForEcho(() => {
+            waitForEcho(() => {
 
-            window.Echo
-                .private('user.{{ auth()->id() }}')
-                .listen('.chat.sent', (e) => {
+                window.Echo
+                    .private('user.{{ auth()->id() }}')
+                    .listen('.chat.sent', (e) => {
 
-                    console.log('CHAT MASUK', e);
+                        console.log('CHAT MASUK', e);
 
-                    if (String(e.chat.sender_id) === String(authId)) {
-                        return;
-                    }
+                        if (String(e.chat.sender_id) === String(authId)) {
+                            return;
+                        }
 
-                    const orderId = String(e.chat.order_id);
+                        const orderId = String(e.chat.order_id);
 
-                    unreadMap[orderId] = (unreadMap[orderId] || 0) + 1;
+                        unreadMap[orderId] = (unreadMap[orderId] || 0) + 1;
 
-                    renderBadge(orderId, unreadMap[orderId]);
+                        renderBadge(orderId, unreadMap[orderId]);
 
-                    toast(
-                        `💬 Pesan baru dari ${e.chat.sender?.name ?? 'Customer'}`,
-                        'info'
-                    );
-                });
+                        toast(
+                            `💬 Pesan baru dari ${e.chat.sender?.name ?? 'Customer'}`,
+                            'info'
+                        );
+                    });
 
-        });
+            });
         })();
 
         // Real-time polling setiap 10 detik
@@ -1745,17 +1751,27 @@
             </button>
             ${isValidWa
                 ? `<a href="https://wa.me/${waPhone}" target="_blank" class="btn-wa" aria-label="WhatsApp">
-                                <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                                </svg>
-                               </a>`
+                                                <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                                </svg>
+                                               </a>`
                 : `<div class="btn-wa" style="cursor:default;opacity:.5;">
-                                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                </svg>
-                               </div>`
+                                                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                                </svg>
+                                               </div>`
             }
+<a href="/courier/chat/${task.customer_id}?order_id=${task.order_id}"
+   class="btn-wa"
+   style="background:#eff6ff;color:#2563eb;border-color:#dbeafe;position:relative;"
+   aria-label="Chat">
+    <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+    </svg>
+    <span id="chat-badge-task-${task.order_id}" style="display:none;position:absolute;top:-5px;right:-5px;background:#ef4444;color:#fff;font-size:.55rem;font-weight:700;min-width:16px;height:16px;border-radius:999px;align-items:center;justify-content:center;padding:0 3px;border:2px solid #fff;line-height:1;"></span>
+</a>
+
         </div>
     `;
             return div;
@@ -1764,11 +1780,11 @@
         // ── Polling tanpa reload ──
         setInterval(() => {
             fetch('/courier/tasks/poll', {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': CSRF
-                }
-            })
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF
+                    }
+                })
                 .then(r => r.json())
                 .then(data => {
                     // Update stats
@@ -1810,7 +1826,7 @@
                     });
 
                     // Kalau task list kosong
-                    if (newIds.length === 0 && taskList.querySelectorAll('.task-card').length === 0) {	
+                    if (newIds.length === 0 && taskList.querySelectorAll('.task-card').length === 0) {
                         if (!taskList.querySelector('.empty-state')) {
                             taskList.innerHTML = `
                     <div class="empty-state">
@@ -1821,7 +1837,7 @@
                         }
                     }
                 })
-                .catch(() => { });
+                .catch(() => {});
         }, 10000);
     </script>
 </x-app-layout>

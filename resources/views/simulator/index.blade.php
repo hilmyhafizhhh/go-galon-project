@@ -421,7 +421,7 @@
                 <label class="field-label" for="task-select">Pilih Task (status: picked_up)</label>
                 <select class="task-select" id="task-select">
                     <option value="">— Pilih task —</option>
-                    @foreach($tasks as $task)
+                    @foreach ($tasks as $task)
                         <option value="{{ $task->id }}" data-order="{{ $task->order->order_code ?? '-' }}">
                             #{{ $task->order->order_code ?? $task->id }} —
                             {{ Str::limit($task->order->user->name ?? '-', 20) }}
@@ -460,7 +460,8 @@
                         <span class="speed-val" id="interval-label">1.5s</span>
                         <span style="font-size:.72rem;color:var(--text-2);">5s</span>
                     </div>
-                    <input type="range" id="interval-range" min="500" max="5000" value="1500" step="500">
+                    <input type="range" id="interval-range" min="500" max="5000" value="1500"
+                        step="500">
                 </div>
 
                 {{-- Info cards --}}
@@ -528,13 +529,13 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
     <script>
         /* ═══════════════════════════════════════════════════════════
-           GPS SIMULATOR — Production-grade demo tool
-        ═══════════════════════════════════════════════════════════ */
+                       GPS SIMULATOR — Production-grade demo tool
+                    ═══════════════════════════════════════════════════════════ */
 
         const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
         // State
-        let routeCoords = [];   // [{lat, lng}, ...]
+        let routeCoords = []; // [{lat, lng}, ...]
         let currentStep = 0;
         let simInterval = null;
         let isRunning = false;
@@ -544,7 +545,8 @@
         // Map
         const map = L.map('map').setView([-6.1413375, 106.7869347], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors', maxZoom: 19
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
         }).addTo(map);
 
         // Markers
@@ -557,7 +559,8 @@
             return L.divIcon({
                 className: '',
                 html: `<div style="background:${color};width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${Math.round(size * .46)}px;box-shadow:0 3px 10px rgba(0,0,0,.25);border:2.5px solid #fff;">${emoji}</div>`,
-                iconSize: [size, size], iconAnchor: [size / 2, size / 2],
+                iconSize: [size, size],
+                iconAnchor: [size / 2, size / 2],
             });
         }
 
@@ -605,11 +608,13 @@
 
         /* ── Log helper ─────────────────────────────── */
         let sentCount = 0;
+
         function log(msg, type = 'info') {
             const body = document.getElementById('log-body');
             const el = document.createElement('div');
             el.className = `log-entry ${type}`;
-            el.innerHTML = `<span class="log-time">${new Date().toLocaleTimeString('id-ID')}</span><span class="log-msg">${msg}</span>`;
+            el.innerHTML =
+                `<span class="log-time">${new Date().toLocaleTimeString('id-ID')}</span><span class="log-msg">${msg}</span>`;
             body.appendChild(el);
             body.scrollTop = body.scrollHeight;
         }
@@ -628,7 +633,7 @@
         });
 
         /* ── Task select ─────────────────────────────── */
-        document.getElementById('task-select').addEventListener('change', async function () {
+        document.getElementById('task-select').addEventListener('change', async function() {
             const taskId = this.value;
             if (!taskId) return;
 
@@ -649,7 +654,10 @@
 
             try {
                 const res = await fetch('/simulator/route?task_id=' + taskId, {
-                    headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    }
                 });
                 const data = await res.json();
 
@@ -666,10 +674,17 @@
 
                 // Gambar rute
                 const glow = L.polyline(routeCoords, {
-                    color: 'rgba(37,99,235,.15)', weight: 10, lineCap: 'round', lineJoin: 'round'
+                    color: 'rgba(37,99,235,.15)',
+                    weight: 10,
+                    lineCap: 'round',
+                    lineJoin: 'round'
                 }).addTo(map);
                 const line = L.polyline(routeCoords, {
-                    color: '#2563eb', weight: 4, opacity: .85, lineCap: 'round', lineJoin: 'round'
+                    color: '#2563eb',
+                    weight: 4,
+                    opacity: .85,
+                    lineCap: 'round',
+                    lineJoin: 'round'
                 }).addTo(map);
                 routeLayer = [glow, line];
 
@@ -691,7 +706,9 @@
                 // courierMarker = L.marker(routeCoords[0], { icon: mkIcon('🛵', '#16a34a', 44), zIndexOffset: 1000 }).addTo(map).bindPopup('<b>Posisi Kurir</b>');
 
 
-                map.fitBounds(L.latLngBounds(routeCoords), { padding: [48, 48] });
+                map.fitBounds(L.latLngBounds(routeCoords), {
+                    padding: [48, 48]
+                });
 
                 // Update UI
                 document.getElementById('ic-dist').textContent = data.dist_km ? data.dist_km + ' km' : '–';
@@ -704,7 +721,8 @@
                 if (data.fallback) {
                     log('⚠️ OSRM gagal, pakai garis lurus sebagai rute', 'err');
                 } else {
-                    log(`✓ Rute dimuat: ${routeCoords.length} titik, ${data.dist_km} km, ETA ${data.eta_mins} mnt`, 'ok');
+                    log(`✓ Rute dimuat: ${routeCoords.length} titik, ${data.dist_km} km, ETA ${data.eta_mins} mnt`,
+                        'ok');
                 }
 
             } catch (err) {
@@ -744,6 +762,20 @@
                 currentStep = 0; // restart
                 sentCount = 0;
             }
+            // Clear notif cache
+            if (currentTaskId) {
+                fetch('/simulator/reset-notif', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        task_id: currentTaskId
+                    }),
+                });
+            }
 
             isRunning = true;
             const btn = document.getElementById('btn-play');
@@ -768,9 +800,25 @@
             pauseSim();
             currentStep = 0;
             sentCount = 0;
+            // Clear notif cache
+            if (currentTaskId) {
+                fetch('/simulator/reset-notif', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        task_id: currentTaskId
+                    }),
+                });
+            }
             if (routeCoords.length && courierMarker) {
                 courierMarker.setLatLng(routeCoords[0]);
-                map.setView(routeCoords[0], 14, { animate: true });
+                map.setView(routeCoords[0], 14, {
+                    animate: true
+                });
             }
             document.getElementById('btn-play').textContent = '▶ Mulai Simulasi';
             document.getElementById('btn-play').classList.remove('running');
@@ -783,7 +831,8 @@
             if (currentStep >= routeCoords.length) {
                 pauseSim();
                 document.getElementById('btn-play').textContent = '✓ Selesai';
-                document.getElementById('step-indicator').textContent = '🎉 Simulasi selesai! Kurir sudah sampai tujuan.';
+                document.getElementById('step-indicator').textContent =
+                    '🎉 Simulasi selesai! Kurir sudah sampai tujuan.';
                 log('✓ Simulasi selesai!', 'ok');
                 return;
             }
@@ -879,7 +928,8 @@
             }
 
             currentStep++;
-            document.getElementById('step-indicator').textContent = `Langkah ${currentStep} / ${routeCoords.length - 1}`;
+            document.getElementById('step-indicator').textContent =
+                `Langkah ${currentStep} / ${routeCoords.length - 1}`;
             updateProgress();
         }
     </script>

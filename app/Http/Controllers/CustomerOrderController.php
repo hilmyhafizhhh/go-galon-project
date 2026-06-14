@@ -85,7 +85,7 @@ class CustomerOrderController extends Controller
         ];
 
         // Kalau tab=all, ambil semua order tanpa filter status
-        $query = Order::with(['items.product', 'address'])
+        $query = Order::with(['items.product', 'address','task.courier'])
             ->where('user_id', auth()->id())
             ->latest();
 
@@ -101,6 +101,8 @@ class CustomerOrderController extends Controller
             'total_amount' => $o->total_amount,
             'created_at'   => $o->created_at->format('d M, H:i'),
             'address_label' => $o->address->label ?? 'Tanpa Alamat',
+            'courier_name'  => $o->task?->courier?->name,   // ← tambah ini
+            'courier_id'    => $o->task?->courier?->id,     // ← tambah ini
             'items'        => $o->items->map(fn($i) => [
                 'quantity' => $i->quantity,
                 'name'     => optional($i->product)->name ?? 'Produk Dihapus',
