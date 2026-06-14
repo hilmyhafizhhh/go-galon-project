@@ -4,11 +4,16 @@
 .ef-chatshow {
     font-family: "Plus Jakarta Sans", sans-serif;
     background: #f0f6ff;
-    /* Isi tepat sisa viewport — tidak ada scroll di luar */
-    height: calc(100vh - 64px);
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: env(safe-area-inset-bottom, 0px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    /* Tambahkan ini — mencegah iOS scroll seluruh halaman saat swipe di chat */
+    touch-action: pan-y;
 }
 
 .dark .ef-chatshow {
@@ -195,6 +200,9 @@
     gap: 5px;
     scrollbar-width: thin;
     scrollbar-color: rgba(37, 99, 235, 0.15) transparent;
+    /* Tambahkan ini — fix scroll iOS agar smooth dan tidak "macet" */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
 
 .ef-chatshow__messages::-webkit-scrollbar {
@@ -325,10 +333,11 @@
 }
 
 /* ── Input bar ─────────────────────────────────────────────── */
+/* ── Input bar ── */
 .ef-chatshow__input-bar {
     padding: 10px 12px;
-    /* iOS safe area notch support */
-    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    /* Hapus safe-area di sini karena sudah di-handle parent */
+    padding-bottom: 10px;
     border-top: 1px solid rgba(37, 99, 235, 0.08);
     background: rgba(255, 255, 255, 0.98);
     flex-shrink: 0;

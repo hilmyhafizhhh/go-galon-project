@@ -84,40 +84,40 @@
 
                 @if($chatLocked)
                     <div style="
-                                                    padding: 1rem 1.25rem;
-                                                    background: #f8fafc;
-                                                    border-top: 1px solid #e8ecf4;
-                                                    display: flex;
-                                                    align-items: center;
-                                                    gap: .75rem;
-                                                ">
+                                                                    padding: 1rem 1.25rem;
+                                                                    background: #f8fafc;
+                                                                    border-top: 1px solid #e8ecf4;
+                                                                    display: flex;
+                                                                    align-items: center;
+                                                                    gap: .75rem;
+                                                                ">
                         <div style="
-                                                        width: 36px;
-                                                        height: 36px;
-                                                        border-radius: 10px;
-                                                        background: #f1f5f9;
-                                                        display: flex;
-                                                        align-items: center;
-                                                        justify-content: center;
-                                                        flex-shrink: 0;
-                                                    ">
+                                                                        width: 36px;
+                                                                        height: 36px;
+                                                                        border-radius: 10px;
+                                                                        background: #f1f5f9;
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        justify-content: center;
+                                                                        flex-shrink: 0;
+                                                                    ">
                             🔒
                         </div>
 
                         <div>
                             <div style="
-                                                            font-size: .78rem;
-                                                            font-weight: 600;
-                                                            color: #475569;
-                                                        ">
+                                                                            font-size: .78rem;
+                                                                            font-weight: 600;
+                                                                            color: #475569;
+                                                                        ">
                                 Chat Ditutup
                             </div>
 
                             <div style="
-                                                            font-size: .68rem;
-                                                            color: #94a3b8;
-                                                            margin-top: 2px;
-                                                        ">
+                                                                            font-size: .68rem;
+                                                                            color: #94a3b8;
+                                                                            margin-top: 2px;
+                                                                        ">
                                 {{ $lockedReason }}
                             </div>
                         </div>
@@ -272,6 +272,28 @@
 
             chatBox.scrollTop = chatBox.scrollHeight;
 
+            // iOS keyboard fix: scroll ke bawah saat keyboard muncul
+            // ── Fix keyboard iOS & Android ──
+            if (window.visualViewport) {
+                const chatEl = document.querySelector('.ef-chatshow');
+
+                const adjustForKeyboard = () => {
+                    const offsetBottom = window.innerHeight
+                        - window.visualViewport.height
+                        - window.visualViewport.offsetTop;
+
+                    chatEl.style.bottom = Math.max(0, offsetBottom) + 'px';
+
+                    // Scroll ke bawah setelah layout adjust
+                    requestAnimationFrame(() => {
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    });
+                };
+
+                window.visualViewport.addEventListener('resize', adjustForKeyboard);
+                window.visualViewport.addEventListener('scroll', adjustForKeyboard);
+            }
+
             // ── Mark semua pesan yang belum dibaca sebagai read saat buka halaman ──
             // (broadcast via JS agar realtime, bukan hanya via PHP controller)
             const unreadIds = [
@@ -319,8 +341,13 @@
                     })
                     .finally(() => {
                         sendBtn.disabled = false;
-
-                        if (input) {
+                        input.value = '';
+                        // Mobile: turunkan keyboard setelah kirim
+                        // Desktop: tetap fokus supaya bisa langsung ketik lagi
+                        const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+                        if (isMobile) {
+                            input.blur();
+                        } else {
                             input.focus();
                         }
                     });
