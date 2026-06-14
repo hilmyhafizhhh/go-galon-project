@@ -882,6 +882,60 @@
 }
 
 .ef-sheet__btn-cancel:hover { background: var(--border); }
+
+/* ── Payment hint di task card ── */
+.task-payment-hint { margin-top: .4rem; }
+
+.payment-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    font-size: .62rem; font-weight: 700;
+    padding: .2rem .6rem;
+    border-radius: 999px;
+    letter-spacing: .02em;
+}
+.payment-badge--cod  { background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; }
+.payment-badge--paid { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
+
+/* ── Order detail sheet ── */
+.od-sheet { padding:0 !important; max-height:88dvh; overflow:hidden; display:flex; flex-direction:column; }
+.od-sheet .ef-sheet__pill { margin:.85rem auto .5rem; flex-shrink:0; }
+
+.od-header { display:flex; align-items:flex-start; justify-content:space-between; padding:0 1.25rem .85rem; flex-shrink:0; border-bottom:1px solid var(--border); }
+.od-title { font-family:'Bricolage Grotesque',sans-serif; font-size:1rem; font-weight:800; color:var(--text-1); }
+.od-subtitle { font-size:.7rem; color:var(--text-3); margin-top:2px; }
+.od-close { width:30px; height:30px; border-radius:8px; background:var(--bg); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-2); transition:background .15s; flex-shrink:0; }
+.od-close:hover { background:var(--border); }
+
+.od-body { overflow-y:auto; padding:.85rem 1.25rem 1.5rem; flex:1; -webkit-overflow-scrolling:touch; }
+
+.od-section { display:flex; flex-direction:column; gap:.15rem; }
+.od-section-title { font-size:.6rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--text-3); margin-bottom:.55rem; }
+
+.od-row { display:flex; align-items:flex-start; gap:.75rem; padding:.6rem 0; }
+.od-row--total { margin-top:.2rem; }
+
+.od-row__icon { width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:.95rem; flex-shrink:0; }
+.od-row__icon--blue   { background:var(--blue-lt); }
+.od-row__icon--green  { background:var(--green-lt); }
+.od-row__icon--amber  { background:var(--amber-lt); }
+.od-row__icon--purple { background:#f5f3ff; }
+
+.od-row__label { font-size:.62rem; color:var(--text-3); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px; }
+.od-row__val   { font-size:.85rem; font-weight:600; color:var(--text-1); line-height:1.4; }
+.od-total      { font-family:'Bricolage Grotesque',sans-serif; font-size:1rem; font-weight:800; color:var(--green); }
+
+.od-divider { height:1px; background:var(--border); margin:.75rem 0; }
+
+.od-item { display:flex; align-items:center; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid var(--border); gap:.5rem; }
+.od-item:last-child { border-bottom:none; }
+.od-item__name { font-size:.82rem; font-weight:600; color:var(--text-1); }
+.od-item__qty  { font-size:.72rem; color:var(--text-3); margin-top:1px; }
+.od-item__price { font-size:.82rem; font-weight:700; color:var(--text-1); flex-shrink:0; font-family:'Bricolage Grotesque',sans-serif; }
+
+.od-cod-alert { display:flex; align-items:flex-start; gap:.75rem; background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:.85rem 1rem; font-size:.75rem; color:#c2410c; margin-top:.75rem; line-height:1.5; }
+.od-cod-alert svg { flex-shrink:0; margin-top:1px; }
+
+.od-note { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:.75rem .9rem; font-size:.8rem; color:var(--text-2); line-height:1.55; }
     </style>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -984,6 +1038,27 @@
                                         </svg>
                                         {{ Str::limit($task->order->address->address ?? '-', 52) }}
                                     </div>
+                                    <div class="task-payment-hint">
+                                        @php
+                                            $payMethod = $task->order->payment_method ?? 'cod';
+                                            $isCod = $payMethod === 'cod';
+                                        @endphp
+                                        @if($isCod)
+                                            <span class="payment-badge payment-badge--cod">
+                                                <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                                </svg>
+                                                COD · Tagih Rp{{ number_format($task->order->total_amount, 0, ',', '.') }}
+                                            </span>
+                                        @else
+                                            <span class="payment-badge payment-badge--paid">
+                                                <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                Sudah Dibayar Online
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                                 <span class="badge {{ $task->status }}">
                                     @if ($task->status === 'pending')
@@ -1071,6 +1146,17 @@
                                      padding:0 3px;border:2px solid #fff;line-height:1;">
                                 </span>
                             </a>
+                            <button
+                                onclick="openOrderDetail({{ $task->id }})"
+                                class="btn-wa"
+                                style="background:#f5f3ff;color:#7c3aed;border-color:#ddd6fe;"
+                                aria-label="Detail pesanan"
+                                title="Detail pesanan">
+                                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                                </svg>
+                            </button>
                         </div>
 
                         {{-- Map panel — only picked_up --}}
@@ -1127,6 +1213,28 @@
                         @endif
 
                     </div>
+                    <script>
+                        window.__taskData = window.__taskData || {};
+                        window.__taskData[{{ $task->id }}] = {
+                            id:            {{ $task->id }},
+                            order_code:    "{{ $task->order->order_code ?? '-' }}",
+                            customer_name: "{{ addslashes($task->order->user->name ?? '-') }}",
+                            address:       "{{ addslashes($task->order->address->address ?? '-') }}",
+                            payment_method:"{{ $task->order->payment_method ?? 'cod' }}",
+                            total_amount:  {{ $task->order->total_amount ?? 0 }},
+                            items: [
+                                @foreach($task->order->items as $item)
+                                {
+                                    name: "{{ addslashes(optional($item->product)->name ?? 'Produk') }}",
+                                    qty:  {{ $item->quantity }},
+                                    price:{{ $item->subtotal ?? 0 }},
+                                },
+                                @endforeach
+                            ],
+                            note: "{{ addslashes($task->order->note ?? '') }}",
+                            queue_number: "{{ $task->order->queue_number ?? '-' }}",
+                        };
+                        </script>
                 @empty
                     <div class="empty-state">
                         <div class="empty-icon">📭</div>
@@ -1140,31 +1248,116 @@
         <div class="toast-wrap" id="toastWrap"></div>
 
         {{-- Bottom Sheet — Konfirmasi Terkirim --}}
-<div class="ef-sheet-overlay" id="deliverSheet">
-    <div class="ef-sheet" id="deliverSheetBox">
-        <div class="ef-sheet__pill"></div>
-        <div class="ef-sheet__icon">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+        <div class="ef-sheet-overlay" id="deliverSheet">
+            <div class="ef-sheet" id="deliverSheetBox">
+                <div class="ef-sheet__pill"></div>
+                <div class="ef-sheet__icon">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="ef-sheet__title">Pesanan Sudah Diterima?</h3>
+                <p class="ef-sheet__body">
+                    Pastikan pesanan telah diterima oleh customer.<br>
+                    Status pesanan akan diubah menjadi <strong>Selesai</strong>.
+                </p>
+                <div class="ef-sheet__actions">
+                    <button class="ef-sheet__btn-confirm" id="deliverSheetConfirm">
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Ya, Pesanan Diterima
+                    </button>
+                    <button class="ef-sheet__btn-cancel" id="deliverSheetCancel">Batal</button>
+                </div>
+            </div>
         </div>
-        <h3 class="ef-sheet__title">Pesanan Sudah Diterima?</h3>
-        <p class="ef-sheet__body">
-            Pastikan pesanan telah diterima oleh customer.<br>
-            Status pesanan akan diubah menjadi <strong>Selesai</strong>.
-        </p>
-        <div class="ef-sheet__actions">
-            <button class="ef-sheet__btn-confirm" id="deliverSheetConfirm">
-                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Ya, Pesanan Diterima
-            </button>
-            <button class="ef-sheet__btn-cancel" id="deliverSheetCancel">Batal</button>
+
+        <div class="ef-sheet-overlay" id="orderDetailSheet">
+        <div class="ef-sheet od-sheet" id="orderDetailSheetBox">
+            <div class="ef-sheet__pill"></div>
+
+            <div class="od-header">
+                <div>
+                    <div class="od-title">Detail Pesanan</div>
+                    <div class="od-subtitle" id="od-order-code">–</div>
+                </div>
+                <button onclick="closeOrderDetail()" class="od-close">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="od-body">
+                <div class="od-section">
+                    <div class="od-row">
+                        <div class="od-row__icon od-row__icon--blue">👤</div>
+                        <div class="od-row__body">
+                            <div class="od-row__label">Customer</div>
+                            <div class="od-row__val" id="od-customer">–</div>
+                        </div>
+                    </div>
+                    <div class="od-row">
+                        <div class="od-row__icon od-row__icon--green">📍</div>
+                        <div class="od-row__body">
+                            <div class="od-row__label">Alamat Pengiriman</div>
+                            <div class="od-row__val" id="od-address">–</div>
+                        </div>
+                    </div>
+                    <div class="od-row">
+                        <div class="od-row__icon od-row__icon--purple">🔢</div>
+                        <div class="od-row__body">
+                            <div class="od-row__label">Nomor Antrian</div>
+                            <div class="od-row__val" id="od-queue">–</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="od-divider"></div>
+
+                <div class="od-section-title">Produk Pesanan</div>
+                <div class="od-items" id="od-items"></div>
+
+                <div class="od-divider"></div>
+
+                <div class="od-section">
+                    <div class="od-row">
+                        <div class="od-row__icon od-row__icon--amber">💳</div>
+                        <div class="od-row__body">
+                            <div class="od-row__label">Metode Pembayaran</div>
+                            <div class="od-row__val" id="od-payment">–</div>
+                        </div>
+                    </div>
+                    <div class="od-row od-row--total">
+                        <div class="od-row__icon od-row__icon--green">💰</div>
+                        <div class="od-row__body">
+                            <div class="od-row__label">Total Tagihan</div>
+                            <div class="od-row__val od-total" id="od-total">–</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="od-cod-alert" id="od-cod-alert" style="display:none;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <div>
+                        <div style="font-weight:700;margin-bottom:2px;">Pembayaran COD</div>
+                        <div>Tagihkan uang tunai ke customer saat menyerahkan pesanan.</div>
+                    </div>
+                </div>
+
+                <div id="od-note-wrap" style="display:none;">
+                    <div class="od-divider"></div>
+                    <div class="od-section-title">Catatan Customer</div>
+                    <div class="od-note" id="od-note">–</div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -1823,5 +2016,65 @@
                 })
                 .catch(() => { });
         }, 10000);
+
+        function openOrderDetail(taskId) {
+    const data = window.__taskData?.[taskId];
+    if (!data) return;
+
+    const sheet    = document.getElementById('orderDetailSheet');
+    const sheetBox = document.getElementById('orderDetailSheetBox');
+
+    document.getElementById('od-order-code').textContent = '#' + data.order_code;
+    document.getElementById('od-customer').textContent   = data.customer_name;
+    document.getElementById('od-address').textContent    = data.address;
+    document.getElementById('od-queue').textContent      = data.queue_number ? '#' + data.queue_number : '-';
+
+    const itemsEl = document.getElementById('od-items');
+    itemsEl.innerHTML = data.items.map(item => `
+        <div class="od-item">
+            <div>
+                <div class="od-item__name">${item.name}</div>
+                <div class="od-item__qty">× ${item.qty}</div>
+            </div>
+            <div class="od-item__price">Rp${item.price.toLocaleString('id-ID')}</div>
+        </div>
+    `).join('');
+
+    const isCod = data.payment_method === 'cod';
+    document.getElementById('od-payment').innerHTML = isCod
+        ? '<span style="color:#c2410c;font-weight:700;">💵 Bayar di Tempat (COD)</span>'
+        : '<span style="color:#15803d;font-weight:700;">✅ Sudah Dibayar Online</span>';
+
+    document.getElementById('od-total').textContent = 'Rp' + data.total_amount.toLocaleString('id-ID');
+    document.getElementById('od-cod-alert').style.display = isCod ? 'flex' : 'none';
+
+    const noteWrap = document.getElementById('od-note-wrap');
+    if (data.note) {
+        noteWrap.style.display = 'block';
+        document.getElementById('od-note').textContent = data.note;
+    } else {
+        noteWrap.style.display = 'none';
+    }
+
+    sheetBox.querySelector('.od-body').scrollTop = 0;
+    sheet.classList.add('open');
+    sheet.onclick = e => { if (e.target === sheet) closeOrderDetail(); };
+    document.addEventListener('keydown', _odEscHandler);
+}
+
+function closeOrderDetail() {
+    const sheet    = document.getElementById('orderDetailSheet');
+    const sheetBox = document.getElementById('orderDetailSheetBox');
+    sheetBox.style.animation = 'efSheetDown .22s cubic-bezier(.4,0,1,1) forwards';
+    setTimeout(() => {
+        sheet.classList.remove('open');
+        sheetBox.style.animation = '';
+    }, 220);
+    document.removeEventListener('keydown', _odEscHandler);
+}
+
+function _odEscHandler(e) {
+    if (e.key === 'Escape') closeOrderDetail();
+}
     </script>
 </x-app-layout>
