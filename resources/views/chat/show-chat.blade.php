@@ -272,6 +272,23 @@
 
             chatBox.scrollTop = chatBox.scrollHeight;
 
+            // ── Mark semua pesan yang belum dibaca sebagai read saat buka halaman ──
+            // (broadcast via JS agar realtime, bukan hanya via PHP controller)
+            const unreadIds = [
+                @foreach($chats as $chat)
+                    @if($chat->receiver_id === auth()->id() && !$chat->read_at)
+                        {{ $chat->id }},
+                    @endif
+                @endforeach
+            ];
+
+            if (unreadIds.length > 0) {
+                // Tunggu Echo siap baru broadcast, supaya customer sudah subscribe channel
+                setTimeout(() => {
+                    markAsRead(unreadIds);
+                }, 800); // delay kecil biar Echo selesai connect
+            }
+
             // ── Send ──────────────────────────────────────────────────
             window.sendChat = function (message = null) {
                 const msg = message ?? input.value.trim();

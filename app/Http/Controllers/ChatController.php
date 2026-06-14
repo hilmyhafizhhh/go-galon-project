@@ -223,4 +223,36 @@ if ($order) {
             ]
         ]);
     }
+
+    public function markRead(Request $request)
+{
+    $request->validate(['chat_ids' => 'required|array']);
+
+    $userId = auth()->id();
+
+    $chats = Chat::whereIn('id', $request->chat_ids)
+        ->where('receiver_id', $userId)
+        ->whereNull('read_at')
+        ->get();
+
+    if ($chats->isEmpty()) {
+        return response()->json(['ok' => true]);
+    }
+
+    Chat::whereIn('id', $chats->pluck('id'))
+        ->update(['read_at' => now()]);
+
+    // Ambil sender_id — semua chat ini dari satu pengirim
+    $senderId = $chats->first()->sender_id;
+    $orderId  = $chats->first()->order_id;
+
+    broadcast(new ChatRead([
+        'reader_id' => $userId,
+        'sender_id' => $senderId,
+        'order_id'  => $orderId,
+        'chat_ids'  => $chats->pluck('id')->toArray(),
+    ]));
+
+    return response()->json(['ok' => true]);
+}
 }
