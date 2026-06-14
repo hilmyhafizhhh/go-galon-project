@@ -152,8 +152,11 @@ class DashboardController extends Controller
 
             // 5. Cek apakah kurir sudah mencapai batas maksimal task
             $activeTasks = $kurir->active_tasks + 1; // +1 karena baru saja ditambah
+            // if ($activeTasks >= $maxTasksPerKurir) {
+            //     $kurir->update(['status' => 'on_delivery']); // Penuh, tidak bisa terima lagi
+            // }
             if ($activeTasks >= $maxTasksPerKurir) {
-                $kurir->update(['status' => 'on_delivery']); // Penuh, tidak bisa terima lagi
+                Courier::where('id', $kurir->id)->update(['status' => 'on_delivery']);
             }
             // Kalau belum penuh, status tetap 'available'
 
