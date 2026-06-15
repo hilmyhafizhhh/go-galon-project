@@ -25,35 +25,16 @@ class DashboardController extends Controller
 
 
         $todayIncome = Order::whereDate('created_at', $today)
-            ->where('payment_status', 'paid')
+            ->where('status', 'completed')
             ->sum('total_amount');
 
-        // $activeOrders = Order::whereIn('status', [
-        //     // 'draft', //tambahan
-        //     'pending',
-        //     'confirmed',
-        //     'assigned',
-        //     'delivering'
-        // ])->count();
         $activeOrders = Order::whereDate('created_at', $today)
             ->whereIn('status', ['pending', 'confirmed', 'on_delivery'])
             ->count();
-        // $courierOnline = User::role('courier')
-        //     ->where('is_online', true)
-        //     ->count();
 
-        // $totalCourier = User::role('courier')->count();
         $courierOnline = Courier::where('status', 'available')->count();
         $totalCourier = Courier::count();
 
-        // $orders = Order::with(['user', 'courier.user', 'items.product', 'address'])
-        //     ->latest()
-        //     ->take(10)
-        //     ->get();
-        // $orders = Order::with(['user', 'courier.user', 'items.product', 'address'])
-        //     ->whereDate('created_at', $today)
-        //     ->latest()
-        //     ->get();
         $orders = Order::with(['user', 'courier.user', 'items.product', 'address'])
             ->where(function ($q) use ($today) {
                 $q->whereDate('created_at', $today)
@@ -97,14 +78,6 @@ class DashboardController extends Controller
         $action = $request->input('action');
 
         if ($action === 'accept') {
-
-
-
-            // // $maxTasksPerKurir = 10;
-            // $queueNumber = Order::whereDate('created_at', Carbon::today())
-            //     ->whereNotNull('queue_number')
-            //     ->where('created_at', '<', $order->created_at)
-            //     ->count() + 1;
             $queueNumber = Order::whereDate('created_at', Carbon::today())
                 ->where('created_at', '<=', $order->created_at)
                 ->whereIn('status', ['pending', 'confirmed', 'delivered', 'completed', 'on_delivery'])
